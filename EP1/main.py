@@ -156,3 +156,57 @@ def wilkinson_h(alphas : np.array, betas : np.array) -> float:
     """
     d_k = (alphas[len(alphas) - 1]  - alphas[len(alphas) - 2]) / 2
     return alphas[len(alphas) - 1] + d_k - sgn(d_k) * np.sqrt(d_k**2 + betas[len(alphas) - 2]**2)
+
+def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = True, epsilon : float = 1e-6) -> Tuple[np.array, np.array, np.array]:
+    alphas_k = alphas.copy()
+    betas_k = betas.copy()
+    V = np.identity(len(alphas_k))
+    mu = 0
+    iterations = 0
+    for m in reversed(range(1, len(alphas))):
+        while abs(betas_k[m - 1]) >= epsilon:
+            (c_ks, s_ks, alphas_sub, betas_sub) = qr_factorization(alphas_k[: m + 1] - mu * np.ones(m + 1), betas_k[: m + 1])
+            (alphas_k[: m + 1], betas_k[: m + 1]) = update_matrix(c_ks, s_ks, alphas_sub, betas_sub)
+
+            alphas_k[: m + 1] += mu * np.ones(m + 1)
+
+            V = update_eigenvectors(V, c_ks, s_ks)
+
+            mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if spectralShift else 0
+
+            iterations += 1
+
+    return (alphas_k, betas_k, V, iterations)
+
+# if __name__ == "__main__":
+#     for n in [4, 8, 16, 32]:
+#         alphas = np.array(n * [2.0])
+#         betas = np.array(n * [-1.0])
+#         (valores, bs, vetores, iterations_wo) = qr_algorithm(alphas, betas, spectralShift = False)
+
+#         print(f'n = {n}, sem deslocamento espectral')
+#         print(f'Autovalores: {valores}')
+#         print()
+#         print(f'Subdiagonal: {bs}')
+#         print()
+#         print(f'Autovetores: {vetores}')
+#         print()
+#         print(f'Numero de iteracoes: {iterations_wo}')
+#         print()
+#         print()
+
+#         (valores, bs, vetores, iterations_w) = qr_algorithm(alphas, betas, spectralShift = True)
+
+#         print(f'n = {n}, com deslocamento espectral')
+#         print(f'Autovalores: {valores}')
+#         print()
+#         print(f'Subdiagonal: {bs}')
+#         print()
+#         print(f'Autovetores: {vetores}')
+#         print()
+#         print(f'Numero de iteracoes: {iterations_w}')
+#         print()
+#         print()
+#         print(f'Diferença no numero de iteracoes: {iterations_wo - iterations_w}')
+#         print()
+#         print()
