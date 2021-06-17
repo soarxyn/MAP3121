@@ -46,7 +46,7 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
         c_ks.append(c_k)
         s_ks.append(s_k)
 
-        alpha_k = c_k * alphas[k] - s_k * betas[k]
+        alpha_k = c_k * alphas[k] - s_k * lower_betas[k]
         beta_k = c_k * betas[k] - s_k * alphas[k + 1]
 
         alpha_k1 = s_k * betas[k] + c_k * alphas[k + 1]
@@ -60,3 +60,9 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
 
     return (c_ks, s_ks, alphas, betas)
 
+alpha = [4, 4, 4]
+beta = [3, 3]
+
+c,s,a,b=qr_factorization(alpha,beta)
+
+print(a)
