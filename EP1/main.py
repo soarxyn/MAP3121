@@ -38,7 +38,6 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
             Quadra que retorna os vetores `c_ks` e `s_ks`, que são os cossenos e senos utilizados nas rotações de Givens,
             e `alphas` e `betas`, que retornam a representação da matriz R.
     """
-    n : int = len(alphas)
     c_ks, s_ks = [], []
     (alphas, betas) = (alphas.copy(), betas.copy())
     
@@ -93,10 +92,9 @@ def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : n
             Dupla que retorna os vetores `alphas` e `betas`, que retornam a representação da matriz
             tridiagonal simétrica, através de sua diagonal principal e sua sobrediagonal.
     """
-    n : int = len(alphas)
     (alphas, betas) = (alphas.copy(), betas.copy())
 
-    for k in range(n - 1):
+    for k in range(len(alphas) - 1):
         alphas[k] = c_ks[k] * alphas[k] - s_ks[k] * betas[k]
         betas[k] = -s_ks[k] * alphas[k + 1]
 
