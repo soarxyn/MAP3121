@@ -30,39 +30,66 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
     """
     n : int = len(alphas)
     c_ks, s_ks = [], []
-
-    (alphas, betas, lower_betas) = (alphas.copy(), betas.copy(), betas.copy())
+    (alphas, betas) = (alphas.copy(), betas.copy())
     
-    for k in range(n - 1):
-        if abs(alphas[k]) > abs(lower_betas[k]):
-            tau_k = - lower_betas[k] / alphas[k]
-            c_k = 1 / np.sqrt(1 + tau_k**2)
-            s_k = tau_k * c_k
+    for k in range(len(alphas) - 1):
+        if abs(alphas[k]) > abs(betas[k]):
+            tau_k = - betas[k] / alphas[k]
+            c_ks.append(1 / np.sqrt(1 + tau_k**2))
+            s_ks.append(tau_k * c_ks[k])
         else:
-            tau_k = - alphas[k] / lower_betas[k]
-            s_k = 1 / np.sqrt(1 + tau_k**2)
-            c_k = tau_k * s_k
+            tau_k = - alphas[k] / betas[k]
+            s_ks.append(1 / np.sqrt(1 + tau_k**2))
+            c_ks.append(tau_k * s_ks[k])
 
-        c_ks.append(c_k)
-        s_ks.append(s_k)
-
-        alpha_k = c_k * alphas[k] - s_k * lower_betas[k]
-        beta_k = c_k * betas[k] - s_k * alphas[k + 1]
-
-        alpha_k1 = s_k * betas[k] + c_k * alphas[k + 1]
-
-        if k < n - 2:
-            betas[k + 1] = betas[k + 1] * c_k
-
-        alphas[k] = alpha_k
-        alphas[k + 1] = alpha_k1
-        betas[k] = beta_k
+        alphas[k] = c_ks[k] * alphas[k] - s_ks[k] * betas[k]
+        betas[k] *= c_ks[k - 1] if k > 0 else 1
+        (alphas[k + 1], betas[k]) = (s_ks[k] * betas[k] + c_ks[k] * alphas[k + 1], c_ks[k] * betas[k] - s_ks[k] * alphas[k + 1])
 
     return (c_ks, s_ks, alphas, betas)
 
-alpha = [4, 4, 4]
-beta = [3, 3]
+def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : np.array) -> Tuple[np.array, np.array]:
+    """
+        Atualização da matriz
+        ------------
+        Dada uma matriz triangular superior, representada por dois vetores `alphas` e `betas`, que armazenam
+        sua diagonal principal e sua sobrediagonal, e as matrizes de rotação de Givens, representadas por dois
+        vetores com senos e cossenos utilizados a cada rotação, retorna uma nova matriz tridiagonal simétrica.
 
-c,s,a,b=qr_factorization(alpha,beta)
+        Os valores fora das diagonais mencionadas, mas pertencentes ao triângulo superior da matriz não são
+        utilizados para o cálculo dos valores na nova matriz.
 
-print(a)
+        A matriz é retornada por meio de dois vetores, `alphas` e `betas`, que recebem sua diagonal principal
+        e sua sobrediagonal, respectivamente.
+
+        Parâmetros
+        ----------
+
+        c_ks    :   np.array
+            Vetor que armazena os cossenos utilizados nas rotações de Givens.
+
+        s_ks    :   np.array
+            Vetor que armazena os senos utilizados nas rotações de Givens.
+
+        alphas  :   np.array
+            Vetor que armazena as entradas da diagonal principal da matriz.
+
+        betas   :   np.array
+            Vetor que armazena as entradas da sobrediagonal da matriz.
+
+        Retorna
+        -------
+        (alphas, betas) : Tuple[np.array, np.array]
+            Dupla que retorna os vetores `alphas` e `betas`, que retornam a representação da matriz
+            tridiagonal simétrica, através de sua diagonal principal e sua sobrediagonal.
+    """
+    n : int = len(alphas)
+    (alphas, betas) = (alphas.copy(), betas.copy())
+
+    for k in range(n - 1):
+        alphas[k] = c_ks[k] * alphas[k] - s_ks[k] * betas[k]
+        betas[k] = -s_ks[k] * alphas[k + 1]
+
+        alphas[k + 1] = c_ks[k] * alphas[k + 1]
+
+    return (alphas, betas)
