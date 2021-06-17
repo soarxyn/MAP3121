@@ -96,11 +96,8 @@ def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : n
     """
     (alphas, betas) = (alphas.copy(), betas.copy())
 
-    for k in range(len(alphas) - 1):
-        alphas[k] = c_ks[k] * alphas[k] - s_ks[k] * betas[k]
-        betas[k] = -s_ks[k] * alphas[k + 1]
-
-        alphas[k + 1] = c_ks[k] * alphas[k + 1]
+    for i, (c, s) in enumerate(zip(c_ks, s_ks)):
+        (alphas[i], betas[i], alphas[i + 1]) = (c * alphas[i] - s * betas[i], -s * alphas[i + 1], c * alphas[i + 1])
 
     return (alphas, betas)
 
