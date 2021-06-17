@@ -1,5 +1,15 @@
 import numpy as np 
 from typing import Tuple
+from functools import partial
+from math import copysign
+
+"""
+    Função Sinal
+    ------------
+
+    sgn(x) retorna 1 se x > 0, -1 caso contrário.
+"""
+sgn = partial(copysign, 1)
 
 def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.array, np.array, np.array]:
     """
