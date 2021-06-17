@@ -10,8 +10,8 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
 
         A matriz Q é retornada por meio de dois vetores `c_ks` e `s_ks` que recebem os cossenos e senos utilizados em cada etapa da
         fatoração. A matriz R, triangular superior, é retornada em dois vetores que armazenam sua diagonal principal e a 
-        sobrediagonal. A diagonal extra que foi adicionada pela aplicação das rotações de Givens não foram calculadas pois não
-        são necessárias para a implementação do algoritmo QR.
+        sobrediagonal. A diagonal extra que é adicionada pela aplicação das rotações de Givens não foi calculada pois não
+        será necessárias para a implementação do algoritmo QR.
 
         Parâmetros
         ----------
