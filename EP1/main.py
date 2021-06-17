@@ -1,15 +1,16 @@
+from turtle import update
 import numpy as np 
 from typing import Tuple
 from functools import partial
 from math import copysign
 
-"""
-    Função Sinal
-    ------------
-
-    sgn(x) retorna 1 se x >= 0, -1 caso contrário.
-"""
 def sgn(x):
+    """
+        Função Sinal
+        ------------
+
+        `sgn(x)` retorna 1 se x >= 0, -1 caso contrário.
+    """
     return partial(copysign, 1)(x)
 
 def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.array, np.array, np.array]:
@@ -102,3 +103,34 @@ def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : n
         alphas[k + 1] = c_ks[k] * alphas[k + 1]
 
     return (alphas, betas)
+
+def update_eigenvectors(V : np.array, c_ks : np.array, s_ks : np.array) -> np.array:
+    """
+        Atualização dos Autovetores da Matriz
+        -------------------------------------
+        Dada uma matriz V, que armazena os autovetores encontrados até a `(k-1)-ésima` iteração do algoritmo QR, atualiza-os
+        por meio das rotações inversas de Givens, que são construídas a partir de operações nas colunas com os cossenos e 
+        senos obtidos anteriormente pela fatoração QR.
+
+        Parâmetros
+        ----------
+
+        V   :   np.array
+            Matriz cujas colunas são os autovetores encontrados até a `(k-1)ésima` iteração do algoritmo QR.
+
+        c_ks    :   np.array
+            Vetor que armazena os cossenos utilizados nas rotações de Givens.
+
+        s_ks    :   np.array
+            Vetor que armazena os senos utilizados nas rotações de Givens.
+
+        Retorna
+        -------
+
+        V_k :   np.array
+            Matriz cujas colunas são os autovetores atualizados até a `k=ésima` iteração do algoritmo QR.
+    """
+    V_k = V.copy()
+    for i, (c, s) in enumerate(zip(c_ks, s_ks)):
+        (V_k[:, i], V_k[:, i + 1]) = (c * V_k[:, i] - s * V_k[:, i + 1], s * V_k[:, i] + c * V_k[:, i + 1])
+    return V_k
