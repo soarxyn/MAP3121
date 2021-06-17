@@ -131,3 +131,28 @@ def update_eigenvectors(V : np.array, c_ks : np.array, s_ks : np.array) -> np.ar
     for i, (c, s) in enumerate(zip(c_ks, s_ks)):
         (V_k[:, i], V_k[:, i + 1]) = (c * V_k[:, i] - s * V_k[:, i + 1], s * V_k[:, i] + c * V_k[:, i + 1])
     return V_k
+
+def wilkinson_h(alphas : np.array, betas : np.array) -> float:
+    """
+        Coeficientes de Deslocamento Espectral
+        --------------------------------------
+        Dada a matriz A, representada por seus valores da diagonal principal e sobrediagonal com os vetores `alphas` e `betas`,
+        calcula o valor do coeficiente de deslocamento espectral da `k-ésima` iteração por meio da heurística de Wilkinson.
+
+        Parâmetros
+        ----------
+
+        alphas  :   np.array
+            Vetor da diagonal principal da matriz A.
+
+        betas   :   np.array
+            Vetor da sobrediagonal da matriz A.
+
+        Retorna
+        -------
+
+        \mu_k   :   float
+            Valor do coeficiente de deslocamento espectral para a `k-ésima` iteração.
+    """
+    d_k = (alphas[len(alphas) - 1]  - alphas[len(alphas) - 2]) / 2
+    return alphas[len(alphas) - 1] + d_k - sgn(d_k) * np.sqrt(d_k**2 + betas[len(alphas) - 2]**2)
