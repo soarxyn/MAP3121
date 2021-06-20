@@ -216,6 +216,8 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
 
     return (alphas_k, betas_k, V, iterations)
 
+import sys
+
 if __name__ == "__main__":
     teste = int(input("""
          _____ ____  _       __  __    _    ____ _____ _ ____  _ 
@@ -239,3 +241,91 @@ if __name__ == "__main__":
       (4) Matriz arbitrária.
 
       Digite um número (1 - 4): """))
+
+    np.set_printoptions(precision = 6)
+    if teste == 1:
+        print("""
+      Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
+
+        text = ["Primeira", "Segunda", "Terceira", "Quarta"]
+        for i, n in enumerate([4, 8, 16, 32]):
+            print(f"""
+      [=== {text[i]} Rotina: n = {n} ===]
+      """)
+
+            alphas = np.array(n * [2.0])
+            betas = np.array((n - 1) * [-1.0])
+
+            print("""      Matriz original:
+            """)
+            print(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas))
+            
+            (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
+
+            print("""\n      > Procedimentos sem deslocamento espectral <
+            """)
+            print(f"""      Concluído em {iterations_sem} iterações.
+            """)
+            print(f"""      Autovalores Encontrados: {alphas_k}\n""")
+
+            print("""      Matriz dos Autovetores:
+            """)
+            print(V)
+
+            (alphas_k, betas_k, V, iterations_com) = qr_algorithm(alphas, betas, spectralShift = True)
+
+            print("""\n      > Procedimentos com deslocamento espectral <
+            """)
+            print(f"""      Concluído em {iterations_com} iterações. Diferença com/sem deslocamento: {iterations_sem - iterations_com} iterações.
+            """)
+            print(f"""      Autovalores Encontrados: {alphas_k}\n""")
+
+            print("""      Matriz dos Autovetores:
+            """)
+            print(V)
+
+            input("\n     Pressione [ENTER] para continuar para a próxima rotina.")   
+            sys.stdout.write('\x1b[1A') 
+            sys.stdout.write('\x1b[2K')      
+            print("\n")
+
+        # for n in
+
+        # ns = [4, 8, 16, 32]
+        # for n in ns:
+        #     alphas = np.array(n * [2.0])
+        #     betas = np.array(n * [-1.0])
+        #     (alphas_k, betas_k, V, iterations_wo) = qr_algorithm(alphas, betas, spectralShift = False)
+        #     print(f'n = {n}')
+        #     print(f'Sem deslocamento espectral')
+        #     print()
+        #     print(f'Auto-valores: {alphas}')
+        #     print()
+        #     print(f'Sub-diagonal: {betas}')
+        #     print()
+        #     print(f'Auto-vetores: {V}')
+        #     print()
+        #     print(f'Número de iterações: {iterations_wo}')
+        #     print()
+        #     (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
+        #     print(f'Com deslocamento espectral')
+        #     print()
+        #     print(f'Auto-valores: {alphas}')
+        #     print()
+        #     print(f'Sub-diagonal: {betas}')
+        #     print()
+        #     print(f'Auto-vetores: {V}')
+        #     print()
+        #     print(f'Número de iterações: {iterations_w}')
+        #     print()
+        #     print(f'Diferença no número de iterações: {iterations_wo - iterations_w}')
+        #     print()
+        #     print()
+
+        
+
+
+    else:
+        pass
+
+    print("Rotinas de teste concluídas! Obrigado pela execução!")
