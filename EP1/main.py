@@ -157,7 +157,45 @@ def wilkinson_h(alphas : np.array, betas : np.array) -> float:
     d_k = (alphas[len(alphas) - 1]  - alphas[len(alphas) - 2]) / 2
     return alphas[len(alphas) - 1] + d_k - sgn(d_k) * np.sqrt(d_k**2 + betas[len(alphas) - 2]**2)
 
-def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = True, epsilon : float = 1e-6) -> Tuple[np.array, np.array, np.array]:
+def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = True, epsilon : float = 1e-6) -> Tuple[np.array, np.array, np.array, int]:
+    """
+        Algoritmo QR
+        --------------------------------------
+        Dada uma matriz tridiagonal simétrica, representada por dois vetores `alphas` e `betas`, que armazenam
+        sua diagonal principal e sua sobrediagonal, efetua o Algoritmo QR, com ou sem deslocamento espectral, até
+        atingir um determinado erro epsilon, e retorna a matriz com os auto-valores calculados, a matriz com os
+        auto-vetores e o número total de iterações executadas pelo algoritmo
+
+        Parâmetros
+        ----------
+
+        alphas  :   np.array
+            Vetor da diagonal principal da matriz A.
+
+        betas   :   np.array
+            Vetor da sobrediagonal da matriz A.
+
+        spectralShift : bool
+            Se for True, a função executa o algoritmo com deslocamento espectral. Se for False, executa o algoritmo
+            sem deslocamento espectral.
+
+        epsilon : float
+            Valor utilizado para determinar convergência dos valores calculados. Quanto menor for, menor será o erro
+            do valor final calculado em relação ao ideal.
+
+        Retorna
+        -------
+
+        (alphas, betas)   :   Tuple[np.array, np.array]
+            Dupla que retorna os vetores `alphas` e `betas`, que retornam a representação da matriz
+            tridiagonal simétrica dos auto-valores, através de sua diagonal principal e sua sobrediagonal.
+
+        V : np.array
+            Matriz com os auto-vetores da matriz A.
+
+        iterations : int
+            Número de iterações executadas pelo algoritmo.
+    """
     alphas_k = alphas.copy()
     betas_k = betas.copy()
     V = np.identity(len(alphas_k))
