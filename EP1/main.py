@@ -288,44 +288,145 @@ if __name__ == "__main__":
             sys.stdout.write('\x1b[1A') 
             sys.stdout.write('\x1b[2K')      
             print("\n")
+    
+    elif teste == 2:
+        print("""
+      Você selecionou o teste: Sistema massa-mola com 5 molas.""")
+        print("""
+      =====================
+      Massa das Molas: 2 kg.
+      Constantes elásticas:""")
 
-        # for n in
+        k = [40 + 2 * i for i in range(1, 7)]
 
-        # ns = [4, 8, 16, 32]
-        # for n in ns:
-        #     alphas = np.array(n * [2.0])
-        #     betas = np.array(n * [-1.0])
-        #     (alphas_k, betas_k, V, iterations_wo) = qr_algorithm(alphas, betas, spectralShift = False)
-        #     print(f'n = {n}')
-        #     print(f'Sem deslocamento espectral')
-        #     print()
-        #     print(f'Auto-valores: {alphas}')
-        #     print()
-        #     print(f'Sub-diagonal: {betas}')
-        #     print()
-        #     print(f'Auto-vetores: {V}')
-        #     print()
-        #     print(f'Número de iterações: {iterations_wo}')
-        #     print()
-        #     (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
-        #     print(f'Com deslocamento espectral')
-        #     print()
-        #     print(f'Auto-valores: {alphas}')
-        #     print()
-        #     print(f'Sub-diagonal: {betas}')
-        #     print()
-        #     print(f'Auto-vetores: {V}')
-        #     print()
-        #     print(f'Número de iterações: {iterations_w}')
-        #     print()
-        #     print(f'Diferença no número de iterações: {iterations_wo - iterations_w}')
-        #     print()
-        #     print()
+        for i, j in enumerate(k):
+            print(f"        k{i + 1} = {j} N/m.")
+        print("      =====================")
 
-        
+        alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
+        betas = np.array([-b/2 for b in k[1:-1]])
 
+        print("""
+      Matriz A dos Coeficientes da EDO:
+      """)
+
+        print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
+
+        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
+
+        print(f"""
+      Número de iterações necessárias: {iterations_w}
+
+      Frequências de vibração das massas: {np.sqrt(alphas_k)}
+
+      Modos de vibração:
+      """)
+        print(V)
+        print("\n\n")
+
+    elif teste == 3:
+        print("""
+      Você selecionou o teste: Sistema massa-mola com 10 molas.""")
+        print("""
+      =====================
+      Massa das Molas: 2 kg.
+      Constantes elásticas:""")
+
+        k = [40 + 2 * (-1) ** i for i in range(1, 12)]
+
+        for i, j in enumerate(k):
+                print(f"        k{i + 1} = {j} N/m.")
+        print("      =====================")
+
+
+        alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
+        betas = np.array([-b/2 for b in k[1:-1]])
+
+        print("""
+      Matriz A dos Coeficientes da EDO:
+      """)
+
+        print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
+
+        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
+
+        print(f"""
+      Número de iterações necessárias: {iterations_w}
+
+      Frequências de vibração das massas: {np.sqrt(alphas_k)}
+
+      Modos de vibração:
+      """)
+        print(V)
+        print("\n\n")
+
+    elif teste == 4:
+        print("""
+      Você selecionou o teste: Matriz arbitrária.""")
+
+        n = int(input("""
+      Entre com o tamanho da matriz tridiagonal simétrica a ser diagonalizado: """))
+
+        alphas = []
+        betas = []
+
+        print("""
+      Insira as entradas da diagonal principal da matriz: """, end = '')
+
+        alphas.append(int(input("""[""")))
+        for i in range(1, n):
+            sys.stdout.write('\x1b[1A') 
+            print("""      Insira as entradas da diagonal principal da matriz: [""", end = "")
+            for elem in alphas:
+                print(f"{elem}, ", end = "")
+            alphas.append(int(input("")))
+        sys.stdout.write('\x1b[1A')
+        print(f"""      Diagonal principal: {alphas}                                      """)
+
+        print("""
+      Insira as entradas da sobrediagonal da matriz: """, end = '')
+
+        betas.append(int(input("""[""")))
+        for i in range(1, n - 1):
+            sys.stdout.write('\x1b[1A') 
+            print("""      Insira as entradas da sobrediagonal da matriz: [""", end = "")
+            for elem in betas:
+                print(f"{elem}, ", end = "")
+            betas.append(int(input("")))
+        sys.stdout.write('\x1b[1A')
+        print(f"""      Sobrediagonal: {betas}                                      """)
+
+        spectralShift = True
+
+        if input("""
+      Utilizar deslocamento espectral? (S/n): """) == 'n':
+            spectralShift = False
+
+        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas, spectralShift)
+
+        print("""
+      Matriz a ser diagonalizada: 
+        """)
+        print(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1))
+
+        print(f"""
+      Concluído em {iterations_w} iterações.  
+        """)
+
+        print("""
+      Autovalores: 
+        """)
+        print(alphas_k)
+
+        print("""
+      Autovetores: 
+        """)
+        print(V)
+
+        print("\n\n")
 
     else:
-        pass
+        print("\nInválido!\n\n")
+
 
     print("Rotinas de teste concluídas! Obrigado pela execução!")
