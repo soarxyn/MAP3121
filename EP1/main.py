@@ -216,35 +216,26 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
 
     return (alphas_k, betas_k, V, iterations)
 
-# if __name__ == "__main__":
-#     for n in [4, 8, 16, 32]:
-#         alphas = np.array(n * [2.0])
-#         betas = np.array(n * [-1.0])
-#         (valores, bs, vetores, iterations_wo) = qr_algorithm(alphas, betas, spectralShift = False)
+if __name__ == "__main__":
+    teste = int(input("""
+         _____ ____  _       __  __    _    ____ _____ _ ____  _ 
+        | ____|  _ \/ |     |  \/  |  / \  |  _ \___ // |___ \/ |
+        |  _| | |_) | |_____| |\/| | / _ \ | |_) ||_ \| | __) | |
+        | |___|  __/| |_____| |  | |/ ___ \|  __/___) | |/ __/| |
+        |_____|_|   |_|     |_|  |_/_/   \_\_|  |____/|_|_____|_|
+            [ Exercício Programa # 1 - Métodos Numéricos ]    
 
-#         print(f'n = {n}, sem deslocamento espectral')
-#         print(f'Autovalores: {valores}')
-#         print()
-#         print(f'Subdiagonal: {bs}')
-#         print()
-#         print(f'Autovetores: {vetores}')
-#         print()
-#         print(f'Numero de iteracoes: {iterations_wo}')
-#         print()
-#         print()
+      Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
+      =============================================================
 
-#         (valores, bs, vetores, iterations_w) = qr_algorithm(alphas, betas, spectralShift = True)
+      Gabriel Macias de Oliveira - NUSP: 11260811
+      Rodrigo Ryuji Ikegami      - NUSP: 10297265
 
-#         print(f'n = {n}, com deslocamento espectral')
-#         print(f'Autovalores: {valores}')
-#         print()
-#         print(f'Subdiagonal: {bs}')
-#         print()
-#         print(f'Autovetores: {vetores}')
-#         print()
-#         print(f'Numero de iteracoes: {iterations_w}')
-#         print()
-#         print()
-#         print(f'Diferença no numero de iteracoes: {iterations_wo - iterations_w}')
-#         print()
-#         print()
+      Por favor, escolha uma das seguintes rotinas de teste para proseeguir:
+      
+      (1) Matriz com diagonal principal e subdiagonal constantes.
+      (2) Sistema massa-mola com 5 molas.
+      (3) Sistema massa-mola com 10 molas.
+      (4) Matriz arbitrária.
+
+      Digite um número (1 - 4): """))
