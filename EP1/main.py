@@ -1,5 +1,5 @@
 from turtle import update
-import numpy as np 
+import numpy as np
 from typing import Tuple
 from functools import partial
 from math import copysign
@@ -21,7 +21,7 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
         sua diagonal principal e sua sobrediagonal, retorna sua fatoração QR utilizando rotações de Givens.
 
         A matriz Q é retornada por meio de dois vetores `c_ks` e `s_ks` que recebem os cossenos e senos utilizados em cada etapa da
-        fatoração. A matriz R, triangular superior, é retornada em dois vetores que armazenam sua diagonal principal e a 
+        fatoração. A matriz R, triangular superior, é retornada em dois vetores que armazenam sua diagonal principal e a
         sobrediagonal. A diagonal extra que é adicionada pela aplicação das rotações de Givens não foi calculada pois não
         será necessárias para a implementação do algoritmo QR.
 
@@ -42,7 +42,7 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
     """
     c_ks, s_ks = [], []
     (alphas, betas) = (alphas.copy(), betas.copy())
-    
+
     for k in range(len(alphas) - 1):
         if abs(alphas[k]) > abs(betas[k]):
             tau_k = - betas[k] / alphas[k]
@@ -106,7 +106,7 @@ def update_eigenvectors(V : np.array, c_ks : np.array, s_ks : np.array) -> np.ar
         Atualização dos Autovetores da Matriz
         -------------------------------------
         Dada uma matriz V, que armazena os autovetores encontrados até a `(k-1)-ésima` iteração do algoritmo QR, atualiza-os
-        por meio das rotações inversas de Givens, que são construídas a partir de operações nas colunas com os cossenos e 
+        por meio das rotações inversas de Givens, que são construídas a partir de operações nas colunas com os cossenos e
         senos obtidos anteriormente pela fatoração QR.
 
         Parâmetros
@@ -220,12 +220,12 @@ import sys
 
 if __name__ == "__main__":
     teste = int(input("""
-         _____ ____  _       __  __    _    ____ _____ _ ____  _ 
+         _____ ____  _       __  __    _    ____ _____ _ ____  _
         | ____|  _ \/ |     |  \/  |  / \  |  _ \___ // |___ \/ |
         |  _| | |_) | |_____| |\/| | / _ \ | |_) ||_ \| | __) | |
         | |___|  __/| |_____| |  | |/ ___ \|  __/___) | |/ __/| |
         |_____|_|   |_|     |_|  |_/_/   \_\_|  |____/|_|_____|_|
-            [ Exercício Programa # 1 - Métodos Numéricos ]    
+            [ Exercício Programa # 1 - Métodos Numéricos ]
 
       Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
       =============================================================
@@ -234,7 +234,7 @@ if __name__ == "__main__":
       Rodrigo Ryuji Ikegami      - NUSP: 10297265
 
       Por favor, escolha uma das seguintes rotinas de teste para proseeguir:
-      
+
       (1) Matriz com diagonal principal e subdiagonal constantes.
       (2) Sistema massa-mola com 5 molas.
       (3) Sistema massa-mola com 10 molas.
@@ -259,7 +259,7 @@ if __name__ == "__main__":
             print("""      Matriz original:
             """)
             print(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas))
-            
+
             (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
 
             print("""\n      > Procedimentos sem deslocamento espectral <
@@ -284,11 +284,11 @@ if __name__ == "__main__":
             """)
             print(V)
 
-            input("\n     Pressione [ENTER] para continuar para a próxima rotina.")   
-            sys.stdout.write('\x1b[1A') 
-            sys.stdout.write('\x1b[2K')      
+            input("\n     Pressione [ENTER] para continuar para a próxima rotina.")
+            sys.stdout.write('\x1b[1A')
+            sys.stdout.write('\x1b[2K')
             print("\n")
-    
+
     elif teste == 2:
         print("""
       Você selecionou o teste: Sistema massa-mola com 5 molas.""")
@@ -375,7 +375,7 @@ if __name__ == "__main__":
 
         alphas.append(int(input("""[""")))
         for i in range(1, n):
-            sys.stdout.write('\x1b[1A') 
+            sys.stdout.write('\x1b[1A')
             print("""      Insira as entradas da diagonal principal da matriz: [""", end = "")
             for elem in alphas:
                 print(f"{elem}, ", end = "")
@@ -388,7 +388,7 @@ if __name__ == "__main__":
 
         betas.append(int(input("""[""")))
         for i in range(1, n - 1):
-            sys.stdout.write('\x1b[1A') 
+            sys.stdout.write('\x1b[1A')
             print("""      Insira as entradas da sobrediagonal da matriz: [""", end = "")
             for elem in betas:
                 print(f"{elem}, ", end = "")
@@ -405,21 +405,21 @@ if __name__ == "__main__":
         (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas, spectralShift)
 
         print("""
-      Matriz a ser diagonalizada: 
+      Matriz a ser diagonalizada:
         """)
         print(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1))
 
         print(f"""
-      Concluído em {iterations_w} iterações.  
+      Concluído em {iterations_w} iterações.
         """)
 
         print("""
-      Autovalores: 
+      Autovalores:
         """)
         print(alphas_k)
 
         print("""
-      Autovetores: 
+      Autovetores:
         """)
         print(V)
 
