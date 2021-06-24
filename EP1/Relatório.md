@@ -9,9 +9,12 @@ papersize: a4
 table-of-contents: true
 bibliography: biblio.bib
 citation-style: abnt
-monofont: JetBrainsMono-Regular.ttf
+monofont: FiraCode-Regular.ttf
 colorlinks: true
 header-includes: |
+    \usepackage[bb=ams]{mathalpha}
+    \usepackage{algorithm}
+    \usepackage{algpseudocode}
     \usepackage[utf8]{inputenc}
     \usepackage{amsmath,amsthm}
     \usepackage{graphicx,cite,enumerate}
@@ -39,8 +42,8 @@ header-includes: |
         \vfill
 
         \normalsize
-        São Paulo,\\        
-        2021.           
+        São Paulo,\\
+        2021.
    \end{center}
 \end{titlepage}
 
@@ -63,11 +66,11 @@ header-includes: |
 
 ## As Rotações de Givens
 
-Conforme [@MAT3121], as _Rotações de Givens_ são transformações lineares ortogonais $Q:\symbb{R}^n\rightarrow\mathbb{R}^n$ da forma $Q(i, j, \theta)$ que operam sobre o espaço de matrizes como uma rotação no plano gerado pelas coordenadas $i$ e $j$. Dada uma matriz de interesse $A$, se $Y=Q(i,j,\theta)A$, então:
+Conforme [@MAT3121], as _Rotações de Givens_ são transformações lineares ortogonais $Q:\mathbb{R}^n\rightarrow\mathbb{R}^n$ da forma $Q(i, j, \theta)$ que operam sobre o espaço de matrizes como uma rotação no plano gerado pelas coordenadas $i$ e $j$. Dada uma matriz de interesse $A$, se $Y=Q(i,j,\theta)A$, então:
 
 \begin{equation}
 y_{k,l}=
-    \begin{cases} 
+    \begin{cases}
         a_{k,l} & k\neq i,j \\
         ca_{k,l}-sa_{j,l} & k=i \\
         sa_{k,l}+ca_{j,l} & k=j
@@ -76,7 +79,7 @@ y_{k,l}=
 
 sendo $c=\cos{\theta}$ e $s=\sin{\theta}$. Se $A$ é tridiagonal simétrica, podemos, particularmente, explorar essa operação para anular as entradas abaixo da diagonal principal. Se $A_n$ é definido pelos vetores $\alpha = (\alpha_1, \alpha_2, \cdots, \alpha_n)$ e $\beta = (\beta_1, \beta_2, \cdots, \beta_{n-1})$, ou seja,
 
-$$A = 
+$$A =
     \begin{bmatrix}
         \alpha_1 & \beta_1 \\
         \beta_1 & \alpha_2 & \beta_2 \\
@@ -124,19 +127,19 @@ Destarte, todas as matrizes nesta implementação, à exceção da matriz de aut
 
 ### Função de Implementação da Fatoração QR
 
-Com as considerações acima, criou-se a função `qr_factorization`. Dada uma matriz de entrada $A$, representada por seus vetores `alphas` e `betas`, retorna sua fatoração QR. 
+Com as considerações acima, criou-se a função `qr_factorization`. Dada uma matriz de entrada $A$, representada por seus vetores `alphas` e `betas`, retorna sua fatoração QR.
 
-As matrizes $Q$ e $R$ da fatoração são representadas por uma 4-tupla ordenada. As posições $0$ e $1$ da 4-tupla contêm os valores de $c_k$ e $s_k$ das rotações de Givens. Igualmente, as posições $2$ e $3$ armazenam a diagonal principal e a sobrediagonal da matriz $R$ na forma de `alphas` e `betas`. 
+As matrizes $Q$ e $R$ da fatoração são representadas por uma 4-tupla ordenada. As posições $0$ e $1$ da 4-tupla contêm os valores de $c_k$ e $s_k$ das rotações de Givens. Igualmente, as posições $2$ e $3$ armazenam a diagonal principal e a sobrediagonal da matriz $R$ na forma de `alphas` e `betas`.
 
 A implementação está no Código \ref{code:qr_fact}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
 
-\footnotesize
+\scriptsize
 
 ~~~~ {#qrfactor .python .numberLines}
 def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.array, np.array, np.array]:
     c_ks, s_ks = [], []
     (alphas, betas) = (alphas.copy(), betas.copy())
-    
+
     for k in range(len(alphas) - 1):
         if abs(alphas[k]) > abs(betas[k]):
             tau_k = - betas[k] / alphas[k]
@@ -162,7 +165,50 @@ Uma vez construída a fatoração QR, implementa-se o Algoritmo QR com deslocame
 
 ## O Algoritmo QR
 
+Conforme [@MAT3121], o _Algoritmo QR_ determina os autovalores de uma matriz simétrica $A\in\mathbb{R}^{n\times n}$ e é dado por
+
+<!-- \begin{algorithmic}
+    \State $A^{(0)}=A;\,V^{(0)}=I_{n\times n}$
+    \State $k=0$
+    \State repita
+        \State $A^{(k)}\rightarrow Q^{(k)}R^{(k)}$ (fatoração $QR$ de $A^{(k)})
+        \State $A^{(k+1)}=R^{(k)}Q^{(k)}$ (atualização da matriz)
+        \State $V^{(k+1)}=V^{(k)}Q^{(k)}$ (atualização dos autovetores)
+    \State até a convergência
+\end{algorithmic}
+onde $V$ é a matriz dos autovetores de $A$. -->
+
+Vale notar que $A^{(k+1)}=R^{(k)}Q^{(k)}=(Q^{(k)})^TQ^{(k)}R^{(k)}Q^{(k)}=(Q^{(k)})^TA^{(k)}Q^{(k)}$. Disso podemos dizer que $A^{(k+1)}$ e $A^{(k)}$ são (ortogonalmente) semelhantes. Isso significa que, se $A^{(k)}$ é tridiagonal simétrica, então $A^{(k+1)}$ também o é.
+
+Isso significa que podemos fatorar a matriz de entrada, tridiagonal simétrica, e restaurar uma matriz, também tridiagonal simétrica, de maneira iterativa, de modo a convergir a uma matriz diagonal com os autovalores da matriz de entrada.
+
 ### Função de Atualização da Matriz
+
+Para se implementar o Algoritmo QR, é necessária, além da fatoração QR da matriz $A$, sua reconstrução, ao fazer o produto $RQ$, de modo a criar convergência à matriz diagonal dos autovalores da matriz.
+
+Assim, criou-se a função `update_matrix`. Dadas as matrizes $Q$ e $R$ oriundas da fatoração da matriz $A$, representadas pela 4-tupla ordenada, com a mesma ordem da saída de \ref{code:qr_fact}, retorna a matriz $A$, reconstruída pela aplicação das rotações reversas a $R$.
+
+A saída é representada por uma dupla de vetores, `alphas` e `betas`, que armazenam sua diagonal principal e sua sobrediagonal, respectivamente.
+
+A implementação está no Código \ref{code:updt_matrix}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
+
+\footnotesize
+
+~~~~ {#updatematrix .python .numberLines}
+def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : np.array) -> Tuple[np.array, np.array]:
+    (alphas, betas) = (alphas.copy(), betas.copy())
+
+    for i, (c, s) in enumerate(zip(c_ks, s_ks)):
+        (alphas[i], betas[i], alphas[i + 1]) = (c * alphas[i] - s * betas[i], -s * alphas[i + 1], c * alphas[i + 1])
+
+    return (alphas, betas)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:updt_matrix}Código \ref{code:updt_matrix}:** Função que implementa a reconstrução de uma matriz fatorada, dada pelos vetores `alphas` e `betas` da matriz R e pelos vetores `c_ks` e `s_ks`, que representam os senos e cossenos que compõem a matriz Q.
+
+O código atualiza, na linha 5, os valores das colunas da matriz a partir dos valores dos senos e cossenos das rotações de Givens. Foi utilizada atribuição simultânea das variáveis, na mesma linha, mas a atribuição sequencial dos valores, da esquerda para a direita, também funciona.
+
+Na linha 4, utilizam-se duas funções da linguagem, `enumerate` e `zip`. A função `zip` recebe dois ou mais vetores e retorna outro vetor com os elementos dos vetores pareados em uma n-tupla, cujo comprimento é equivalente ao menor dos vetores. A função `enumerate` recebe um vetor e retorna outro vetor cujos elementos são duplas (índice, elemento) do vetor passado.
 
 ### Função de Atualização dos Autovetores
 
@@ -174,7 +220,46 @@ Uma vez construída a fatoração QR, implementa-se o Algoritmo QR com deslocame
 
 ## O Algoritmo QR com Deslocamento Espectral
 
+Para o _Algoritmo QR_, podemos acelerar sua convergência ao utilizar os Coeficientes de Deslocamento, pela Heurística de Wilkinson, para alterar os valores da diagonal principal, de tal modo que, ao efetuar uma iteração do algoritmo QR sobre ela, a nova matriz será numericamente mais próxima da matriz $\Lambda$ desejada.
+
+[PSEUDOCÓDIGO]
+
+Todas as deduções feitas para o _Algoritmo QR_ sem deslocamento espectral valem. Ou seja, ao introduzir o deslocamento espectral, não há grandes modificações a serem feitas à implementação do algoritmo para possibilitar o deslocamento.
+
 ### Função de Implementação do Algoritmo
+
+Finalmente, foi criada a função `qr_algorithm`. Dada uma matriz de entrada, representada pelos vetores `alphas` e `betas`, retorna uma 4-tupla com a matriz calculada após se atingir um determinado erro `epsilon`, além da matriz $V$, com seus autovetores, e o número de iterações necessárias para se atingir o critério de parada. Além disso, a função recebe um booleano `spectralShift`, que indica se o algoritmo deve ser efetuado com ou sem deslocamento espectral.
+
+A implementação está no Código \ref{code:qr_fact}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
+
+\footnotesize
+
+~~~~ {#qralgo .python .numberLines}
+def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = True, epsilon : float = 1e-6) -> Tuple[np.array, np.array, np.array, int]:
+    alphas_k = alphas.copy()
+    betas_k = betas.copy()
+    V = np.identity(len(alphas_k))
+    mu = 0
+    iterations = 0
+    for m in reversed(range(1, len(alphas))):
+        while abs(betas_k[m - 1]) >= epsilon:
+            (c_ks, s_ks, alphas_sub, betas_sub) = qr_factorization(alphas_k[: m + 1] - mu * np.ones(m + 1), betas_k[: m + 1])
+            (alphas_k[: m + 1], betas_k[: m + 1]) = update_matrix(c_ks, s_ks, alphas_sub, betas_sub)
+
+            alphas_k[: m + 1] += mu * np.ones(m + 1)
+
+            V = update_eigenvectors(V, c_ks, s_ks)
+
+            mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if spectralShift else 0
+
+            iterations += 1
+
+    return (alphas_k, betas_k, V, iterations)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:qr_algo}Código \ref{code:qr_algo}:** Função que implementa o Algoritmo QR, com ou sem deslocamento espectral, a partir de uma matriz dada por seus vetores `alphas` e `betas`, até atingir um certo erro `epsilon`.
+
+O código segue a descrição formal apresentada anteriormente. Na linha 9 é executada a fatoração QR da submatriz cujos valores ainda não convergiram. Na linha 10, são atualizados os valores da submatriz, de acordo com a função `update_matrix`. Na linha 12 é desfeito o deslocamento espectral. Na linha 14 é atualizada a matriz dos autovalores. Na linha 16 é calculado $\mu_{k+1}$, o coeficiente da próxima iteração.
 
 \pagebreak
 # Construção dos Testes
