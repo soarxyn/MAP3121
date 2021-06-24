@@ -128,9 +128,10 @@ Com as considerações acima, criou-se a função `qr_factorization`. Dada uma m
 
 As matrizes $Q$ e $R$ da fatoração são representadas por uma 4-tupla ordenada. As posições $0$ e $1$ da 4-tupla contêm os valores de $c_k$ e $s_k$ das rotações de Givens. Igualmente, as posições $2$ e $3$ armazenam a diagonal principal e a sobrediagonal da matriz $R$ na forma de `alphas` e `betas`. 
 
-A implementação está no Código 1, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
+A implementação está no Código \ref{code:qr_fact}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
 
 \footnotesize
+
 ~~~~ {#qrfactor .python .numberLines}
 def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.array, np.array, np.array]:
     c_ks, s_ks = [], []
@@ -153,25 +154,27 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
     return (c_ks, s_ks, alphas, betas)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \normalsize
-**Código 1:** Função que implementa a Fatoração QR de uma matriz dada por seus vetores `alphas` e `betas`.
+**\label{code:qr_fact}Código \ref{code:qr_fact}:** Função que implementa a Fatoração QR de uma matriz dada por seus vetores `alphas` e `betas`.
 
 O código segue a descrição formal apresentada anteriormente. As linhas 6 a 13 calculam os valores de $\tau_k$, $c_k$ e $s_k$. As linhas 15 a 17 correspondem à atualização das linhas da matriz a partir dos valores da diagonal principal e sobrediagonal. Nota-se que na linha 17 utilizou-se a atribuição simultânea da linguagem para permitir a atualização dos valores de $\alpha_{k+1}$ e $\beta_k$ sem a introdução de uma variável adicional, uma vez que a atualização delas é interdependente e, se feita em sequência, não apresentaria o valor correto.
 
 Uma vez construída a fatoração QR, implementa-se o Algoritmo QR com deslocamento espectral, o que se fará em sequência.
 
-## A Heurística de Wilkinson
-
-### Função `sgn`
-
-### Função `wilkinson_h`
-
 ## O Algoritmo QR
 
-### Função `update_matrix`
+### Função de Atualização da Matriz
 
-### Função `update_eigenvectors`
+### Função de Atualização dos Autovetores
 
-### Função `qr_algorithm`
+## A Heurística de Wilkinson
+
+### Função Sinal
+
+### Função de Cálculo dos Coeficientes de Deslocamento
+
+## O Algoritmo QR com Deslocamento Espectral
+
+### Função de Implementação do Algoritmo
 
 \pagebreak
 # Construção dos Testes
