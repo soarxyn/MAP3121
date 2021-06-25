@@ -1,7 +1,6 @@
 from turtle import update
 import numpy as np
 from typing import Tuple
-from functools import partial
 from math import copysign
 
 def sgn(x):
@@ -11,7 +10,7 @@ def sgn(x):
 
         `sgn(x)` retorna 1 se x >= 0, -1 caso contrário.
     """
-    return partial(copysign, 1)(x)
+    return copysign(1, x)
 
 def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.array, np.array, np.array]:
     """

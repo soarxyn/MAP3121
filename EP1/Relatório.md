@@ -165,9 +165,10 @@ Uma vez construída a fatoração QR, implementa-se o Algoritmo QR com deslocame
 
 ## O Algoritmo QR
 
-Em conformidade com a discussão de [@MAT3121], o _Algoritmo QR_ determina os autovalores e autovetores de uma matriz $A\in\mathbb{R}^{n\times n}$ e é construído a partir do pseudocódigo abaixo, cujos retornos são a matriz $A$ em sua forma diagonalizada $\Lambda$ e sua matriz de autovetores $V$, em que se armazena os autovetores nas respectivas colunas.
+Em conformidade com a discussão de [@MAT3121], o _Algoritmo QR_ determina os autovalores e autovetores de uma matriz $A\in\mathbb{R}^{n\times n}$ e é construído a partir do pseudocódigo \ref{alg:qr} abaixo, cujos retornos são a matriz $A$ em sua forma diagonalizada $\Lambda$ e sua matriz de autovetores $V$, em que se armazena os autovetores nas respectivas colunas.
 
 \begin{algorithm}
+    \label{alg:qr}
     \caption{Algoritmo QR} 
     \begin{algorithmic}[1]
         \State $A^{(0)}=A$
@@ -229,7 +230,7 @@ def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : n
 
 O código atualiza, na linha 5, os valores das colunas da matriz a partir dos valores dos senos e cossenos das rotações de Givens. Foi utilizada atribuição simultânea das variáveis, na mesma linha, mas a atribuição sequencial dos valores, da esquerda para a direita, também funciona.
 
-Na linha 4, utilizam-se duas funções da linguagem, `enumerate` e `zip`. A função `zip` recebe dois ou mais vetores e retorna outro vetor com os elementos dos vetores pareados em uma n-tupla, cujo comprimento é equivalente ao menor dos vetores. A função `enumerate` recebe um vetor e retorna outro vetor cujos elementos são duplas `(índice, elemento)` do vetor passado.
+Na linha 4, utilizam-se duas funções da linguagem, `enumerate` e `zip`. A função `zip` recebe dois ou mais vetores e retorna outro vetor com os elementos dos vetores pareados em uma n-tupla, cujo comprimento é equivalente ao menor dos vetores. A função `enumerate` recebe um vetor e retorna outro vetor cujos elementos são duplas `(índice, elemento)` do vetor de entrada.
 
 ### Função de Atualização dos Autovetores
 
@@ -252,19 +253,61 @@ def update_eigenvectors(V : np.array, c_ks : np.array, s_ks : np.array) -> np.ar
 
 As entradas da função são as matrizes $V$ e $Q$ da `k`-ésima iteração, esta última representada por seus vetores `c_ks` e `s_ks` de cossenos e senos. Na linha 4, executamos um laço sobre as colunas de $V$, associando a cada coluna $i$ o par $(c_i, s_i)$ da rotação $Q(i, i+1, \theta_i)^T$. A rotação de Givens é executada na linha 5. A função retorna a matriz $V^{(k+1)}$, contendo os autovetores atualizados até a iteração atual do algoritmo QR.
 
-## A Heurística de Wilkinson
+## O Algoritmo QR com Deslocamento Espectral
+
+### A Heurística de Wilkinson
+
+De acordo com [@MAT3121], a taxa de convergência do Algoritmo QR depende da razão $|\lambda_{j+1}/\lambda_j|$, o que a torna muito lenta caso a razão entre os módulos de autovalores consecutivos esteja próxima de 1. 
+
+Visando acelerar a convergência do método, podemos subtrair da matriz $A^{(k)}$, em cada iteração, a matriz identidade múltiplicada por uma constante escalar $\mu_k$, denominada _constante de deslocamento espectral_, que esteja próxima a um autovalor. 
+
+É importante perceber que $\mu_k$ deve ser recalculado a cada iteração. Seguindo o argumento de [@MAT3121], ao alterarmos o pseudocódigo \ref{alg:qr}, fazendo iterações da forma
+$$A^{(k)}-\mu_kI_n\rightarrow Q^{(k)}R^{(k)}$$
+$$A^{(k+1)}=R^{(k)}Q^{(k)}+\mu_kI_n$$
+a taxa de convergência de uma entrada da diagonal principal $\alpha_j^{(k)}$ para o respectivo autovalor $\lambda_j$ será proporcional a $|(\lambda_{j}-\mu_k)/(\lambda_{j-1}-\mu_k)|$. Se $\mu_k$ está próximo de $\lambda_j$, esperamos que $\beta_{j-1}^{(k)}\to 0$ mais rápido que $\beta_{i}^{(k)}, \forall i<j$, o que corresponde a $\alpha_j^{(k)}$ convergir rapidamente para $\lambda_j$.
+
+Para calcular os coeficientes de deslocamento $\mu_k$ de cada iteração, utilizamos a heurística de Wilkinson.
+
+**Heurística de Wilkinson:** Seja $d_k=(\alpha_{n-1}^{(k)}-\alpha_n^{(k)})/2$, definimos $\mu_k=\alpha_n^{(k)}+d_k-sgn(d_k)\sqrt{d_k^2+\big(\beta_{n-1}^{(k)} \big)^2}$, onde $sgn(d)$ é a função _sinal_, isto é: 
+
+\begin{equation}
+sgn(d)=
+\begin{cases}
+    1,  & d \geq 0 \\
+    0,  & d < 0
+\end{cases}\label{eq:3}
+\end{equation}
 
 ### Função Sinal
 
+A implementação em código da função `sgn` é imediata, como se observa no código \ref{code:sgn} abaixo, do qual se retiraram os comentários, mantidos no _script_ original.
+
+\footnotesize
+~~~~ {#sgn .python .numberLines}
+def sgn(x):
+    return copysign(1, x)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:sgn}Código \ref{code:sgn}:** Função _sinal_ da heurística de Wilkinson.
+
+A função `copysign(x, y)`, da biblioteca `math` retorna um número construído pelo módulo de `x` e o sinal de `y`, assim a função `sgn` recebe um $x \in \mathbb{R}$ e copia o sinal de $x$ para o número $1$, resultando no mesmo efeito descrito pela equação \ref{eq:3}.
+
 ### Função de Cálculo dos Coeficientes de Deslocamento
 
-## O Algoritmo QR com Deslocamento Espectral
+A função exibida no Código \ref{code:wilk} implementa o cálculo dos coeficientes de deslocamento $\mu_k$ a partir da heurística de Wilkinson. 
 
-Para o _Algoritmo QR_, podemos acelerar sua convergência ao utilizar os Coeficientes de Deslocamento, pela Heurística de Wilkinson, para alterar os valores da diagonal principal, de tal modo que, ao efetuar uma iteração do algoritmo QR sobre ela, a nova matriz será numericamente mais próxima da matriz $\Lambda$ desejada.
+\footnotesize
+~~~~ {#wilk .python .numberLines}
+def wilkinson_h(alphas : np.array, betas : np.array) -> float:
+    d_k = (alphas[len(alphas) - 1]  - alphas[len(alphas) - 2]) / 2
+    return alphas[len(alphas) - 1] + d_k - sgn(d_k) * np.sqrt(d_k**2 + betas[len(alphas) - 2]**2)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:wilk}Código \ref{code:wilk}:** Função de cálculo dos coeficientes de deslocamento pela heurística de Wilkinson.
 
-[PSEUDOCÓDIGO]
+Todas as deduções feitas para o _Algoritmo QR_ sem deslocamento espectral valem. Isto é, todas as matrizes $A^{(k)}$ são ortogonalmente semelhantes a $A$ e, ao introduzir o deslocamento espectral,   as hipóteses realizadas anteriormente para particularização do algoritmo a Matrizes Tridiagonais Simétricas ainda são verificadas. 
 
-Todas as deduções feitas para o _Algoritmo QR_ sem deslocamento espectral valem. Ou seja, ao introduzir o deslocamento espectral, não há grandes modificações a serem feitas à implementação do algoritmo para possibilitar o deslocamento.
+Fixado um $\epsilon$ de tolerância, consideramos a convergência de $\alpha_n^{(k)}$ para $\lambda_n$ quando $|\beta_{n-1}^{(k)}|<\epsilon$. Já determinado o autovalor associado a `n`-ésima posição, continua-se a execução do algoritmo com a submatriz tridiagonal $n-1\times n-1$ obtida pelo _slice_ de $A$. Esta rotina se repete até obtermos todos os autovalores de $A$ mediante a tolerância fornecida. 
 
 ### Função de Implementação do Algoritmo
 
