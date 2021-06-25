@@ -72,8 +72,8 @@ Conforme [@MAT3121], as _Rotações de Givens_ são transformações lineares or
 y_{k,l}=
     \begin{cases}
         a_{k,l} & k\neq i,j \\
-        ca_{k,l}-sa_{j,l} & k=i \\
-        sa_{k,l}+ca_{j,l} & k=j
+        ca_{i,l}-sa_{j,l} & k=i \\
+        sa_{i,l}+ca_{j,l} & k=j
     \end{cases}\label{eq:1}
 \end{equation}
 
@@ -165,28 +165,49 @@ Uma vez construída a fatoração QR, implementa-se o Algoritmo QR com deslocame
 
 ## O Algoritmo QR
 
-Conforme [@MAT3121], o _Algoritmo QR_ determina os autovalores de uma matriz simétrica $A\in\mathbb{R}^{n\times n}$ e é dado por
+Em conformidade com a discussão de [@MAT3121], o _Algoritmo QR_ determina os autovalores e autovetores de uma matriz $A\in\mathbb{R}^{n\times n}$ e é construído a partir do pseudocódigo abaixo, cujos retornos são a matriz $A$ em sua forma diagonalizada $\Lambda$ e sua matriz de autovetores $V$, em que se armazena os autovetores nas respectivas colunas.
 
-<!-- \begin{algorithmic}
-    \State $A^{(0)}=A;\,V^{(0)}=I_{n\times n}$
-    \State $k=0$
-    \State repita
-        \State $A^{(k)}\rightarrow Q^{(k)}R^{(k)}$ (fatoração $QR$ de $A^{(k)})
-        \State $A^{(k+1)}=R^{(k)}Q^{(k)}$ (atualização da matriz)
-        \State $V^{(k+1)}=V^{(k)}Q^{(k)}$ (atualização dos autovetores)
-    \State até a convergência
-\end{algorithmic}
-onde $V$ é a matriz dos autovetores de $A$. -->
+\begin{algorithm}
+    \caption{Algoritmo QR} 
+    \begin{algorithmic}[1]
+        \State $A^{(0)}=A$
+        \State $V^{(0)}=I_n$
+		\For {$k=1,2,\ldots$}
+            \State $A^{(k)} \rightarrow Q^{(k)} R^{(k)}$
+            \State $A^{(k+1)}=R^{(k)}Q^{(k)}$
+            \State $V^{(k+1)}=V^{(k)}Q^{(k)}$
+		\EndFor
+	\end{algorithmic} 
+\end{algorithm}
 
 Vale notar que $A^{(k+1)}=R^{(k)}Q^{(k)}=(Q^{(k)})^TQ^{(k)}R^{(k)}Q^{(k)}=(Q^{(k)})^TA^{(k)}Q^{(k)}$. Disso podemos dizer que $A^{(k+1)}$ e $A^{(k)}$ são (ortogonalmente) semelhantes. Isso significa que, se $A^{(k)}$ é tridiagonal simétrica, então $A^{(k+1)}$ também o é.
 
-Isso significa que podemos fatorar a matriz de entrada, tridiagonal simétrica, e restaurar uma matriz, também tridiagonal simétrica, de maneira iterativa, de modo a convergir a uma matriz diagonal com os autovalores da matriz de entrada.
+Consequentemente podemos fatorar a matriz de entrada, tridiagonal simétrica, e restaurar uma matriz, também tridiagonal simétrica, de maneira iterativa, de modo a convergir a uma matriz diagonal com os autovalores da matriz de entrada.
 
 ### Função de Atualização da Matriz
 
-Para se implementar o Algoritmo QR, é necessária, além da fatoração QR da matriz $A$, sua reconstrução, ao fazer o produto $RQ$, de modo a criar convergência à matriz diagonal dos autovalores da matriz.
+Para se implementar o Algoritmo QR, é necessária, além da fatoração QR da matriz $A$, sua reconstrução, ao fazer o produto $RQ$, de modo a criar convergência à matriz diagonal dos autovalores da matriz. Iremos, nos próximos parágrafos, explorar essa operação e como implementá-la[^1].
 
-Assim, criou-se a função `update_matrix`. Dadas as matrizes $Q$ e $R$ oriundas da fatoração da matriz $A$, representadas pela 4-tupla ordenada, com a mesma ordem da saída de \ref{code:qr_fact}, retorna a matriz $A$, reconstruída pela aplicação das rotações reversas a $R$.
+[^1]: **Observação:** por brevidade, nos trechos desta descrição, omitiremos os índices de iteração das operações matriciais, que ficarão subentendidos.
+
+Recuperando a definição de $Q$, temos $Q=(Q_1^TQ_2^T\cdots Q_{n-1}^T)$, assim $RQ=R(Q_1^TQ_2^T\cdots Q_{n-1}^T)$ que podemos reescrever como $RQ=\Big\{(Q_1^TQ_2^T\cdots Q_{n-1}^T)^TR^T\Big\}^T=\Big\{Q_{n-1}\cdots Q_2Q_1R^T\Big\}^T$. Logo, a reconstrução da matriz $A$ é a aplicação das rotações de Givens às colunas de $R$.
+
+Portanto, recuperando a definição de \ref{eq:1}, podemos analisar a operação sob mesma perspectiva, resultando, portanto nas considerações da relação \ref{eq:2} abaixo. Se $Y=AQ(i,j,\theta)^T$, vale:
+
+\begin{equation}
+y_{k,l}=
+    \begin{cases}
+        a_{k,l} & k\neq i,j \\
+        ca_{k,i}-sa_{k,j} & l=i \\
+        sa_{k,i}+ca_{k,j} & l=j
+    \end{cases}\label{eq:2}
+\end{equation}
+
+Logo, computamos $RQ$ iterativamente aplicando a rotação $Q_k^T = Q^T(k, k+1, \theta_k)$ a cada passo em que $\theta_k$ é originado do par `(c_k, s_k)` de cossenos e senos definido previamente pela representação da matriz Q da fatoração de A. 
+
+É válido notar que as parcelas em $R_{k,k+2}$ produzidas pelas rotações de Givens originais não influenciam nos cálculos em \ref{eq:2}, haja vista que as entradas da sobrediagonal $\beta'=(\beta_1', \beta_2', \cdots, \beta_{n-1}')$ são gerados pela subdiagonal, por simetria da matriz, justificando a ausência de um vetor $\gamma=(\gamma_1,\cdots,\gamma_{n-2})$ para as armazenar.
+
+A partir dessa descrição, criou-se a função `update_matrix`. Dadas as matrizes $Q$ e $R$ oriundas da fatoração da matriz $A$, representadas pela 4-tupla ordenada, com a mesma ordem da saída de \ref{code:qr_fact}, retorna a matriz $A$, reconstruída pela aplicação das rotações reversas a $R$.
 
 A saída é representada por uma dupla de vetores, `alphas` e `betas`, que armazenam sua diagonal principal e sua sobrediagonal, respectivamente.
 
@@ -208,9 +229,28 @@ def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : n
 
 O código atualiza, na linha 5, os valores das colunas da matriz a partir dos valores dos senos e cossenos das rotações de Givens. Foi utilizada atribuição simultânea das variáveis, na mesma linha, mas a atribuição sequencial dos valores, da esquerda para a direita, também funciona.
 
-Na linha 4, utilizam-se duas funções da linguagem, `enumerate` e `zip`. A função `zip` recebe dois ou mais vetores e retorna outro vetor com os elementos dos vetores pareados em uma n-tupla, cujo comprimento é equivalente ao menor dos vetores. A função `enumerate` recebe um vetor e retorna outro vetor cujos elementos são duplas (índice, elemento) do vetor passado.
+Na linha 4, utilizam-se duas funções da linguagem, `enumerate` e `zip`. A função `zip` recebe dois ou mais vetores e retorna outro vetor com os elementos dos vetores pareados em uma n-tupla, cujo comprimento é equivalente ao menor dos vetores. A função `enumerate` recebe um vetor e retorna outro vetor cujos elementos são duplas `(índice, elemento)` do vetor passado.
 
 ### Função de Atualização dos Autovetores
+
+O mesmo desenvolvimento a respeito da operação $A^{(k+1)}=R^{(k)}Q^{(k)}$ na seção anterior vale para a operação $V^{(k+1)}=V^{(k)}Q^{(k)}$ e, por causa disso, a implementação desta operação é praticamente análoga à primeira. A matriz $Q^{(k)}=(Q_1^TQ_2^T\cdots Q_{n-1}^T)^{(k)}$ aplicada à direita atua como uma série de rotações de Givens sobre as colunas de $V^{(k)}$. Apesar disso, devemos ter em mente que a matriz de autovalores _não é tridiagonal simétrica_. Por conseguinte, devemos operar sobre a matriz $V$ pura, conforme \ref{eq:2}, sem considerar a abstração em `alphas` e `betas` como feito para as demais matrizes.
+
+É com essa constatação que se desenvolveu a função `update_eigenvectors`, cuja implementação está no Código \ref{code:updt_eigen} abaixo, do qual omitimos os comentários que estão no _script_ original. 
+
+\footnotesize
+~~~~ {#updateeigen .python .numberLines}
+def update_eigenvectors(V : np.array, c_ks : np.array, s_ks : np.array) -> np.array:
+    V_k = V.copy()
+
+    for i, (c, s) in enumerate(zip(c_ks, s_ks)):
+        (V_k[:, i], V_k[:, i + 1]) = (c * V_k[:, i] - s * V_k[:, i + 1], s * V_k[:, i] + c * V_k[:, i + 1])
+
+    return V_k
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:updt_eigen}Código \ref{code:updt_eigen}:** Função que implementa a atualização dos autovetores de $A$, armazenando-os nas colunas de $V$.
+
+As entradas da função são as matrizes $V$ e $Q$ da `k`-ésima iteração, esta última representada por seus vetores `c_ks` e `s_ks` de cossenos e senos. Na linha 4, executamos um laço sobre as colunas de $V$, associando a cada coluna $i$ o par $(c_i, s_i)$ da rotação $Q(i, i+1, \theta_i)^T$. A rotação de Givens é executada na linha 5. A função retorna a matriz $V^{(k+1)}$, contendo os autovetores atualizados até a iteração atual do algoritmo QR.
 
 ## A Heurística de Wilkinson
 
