@@ -1,7 +1,7 @@
 from turtle import update
 import numpy as np
 from typing import Tuple
-from math import copysign
+from math import copysign, cos, sin, pi
 
 def sgn(x):
     """
@@ -153,7 +153,7 @@ def wilkinson_h(alphas : np.array, betas : np.array) -> float:
         \mu_k   :   float
             Valor do coeficiente de deslocamento espectral para a `k-ésima` iteração.
     """
-    d_k = (alphas[len(alphas) - 1]  - alphas[len(alphas) - 2]) / 2
+    d_k = (alphas[len(alphas) - 2]  - alphas[len(alphas) - 1]) / 2
     return alphas[len(alphas) - 1] + d_k - sgn(d_k) * np.sqrt(d_k**2 + betas[len(alphas) - 2]**2)
 
 def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = True, epsilon : float = 1e-6) -> Tuple[np.array, np.array, np.array, int]:
@@ -215,217 +215,273 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
 
     return (alphas_k, betas_k, V, iterations)
 
+def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float = 1e-6) -> Tuple[np.array, np.array, np.array, np.array, int]:
+    alphas_k = alphas.copy()
+    betas_k = betas.copy()
+    V = np.identity(len(alphas_k))
+    mu = 0
+    iterations = 0
+    eigenvalues = [2 * (1 - cos(i * pi / (len(alphas_k) + 1))) for i in range(1, (len(alphas_k) + 1))][::-1]
+    E = []
+    for m in reversed(range(1, len(alphas))):
+        while abs(betas_k[m - 1]) >= eps:
+            (c_ks, s_ks, alphas_sub, betas_sub) = qr_factorization(alphas_k[: m + 1] - mu * np.ones(m + 1), betas_k[: m + 1])
+            (alphas_k[: m + 1], betas_k[: m + 1]) = update_matrix(c_ks, s_ks, alphas_sub, betas_sub)
+
+            alphas_k[: m + 1] += mu * np.ones(m + 1)
+
+            V = update_eigenvectors(V, c_ks, s_ks)
+
+            mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if shift else 0
+
+            E.append(max(abs(alphas_k[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+
+            iterations += 1
+
+    return (alphas_k, betas_k, V, np.array(E), iterations)
+
+def teste_1():
+    iters_com = []
+    iters_sem = []
+    for n in [4, 8, 16, 32]:
+        print(f"n = {n}")
+
+        alphas = np.array(n * [2.0])
+        betas = np.array((n - 1) * [-1.0])
+
+        print("Com deslocamento espectral")
+        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
+        iters_com.append(iterations)
+
+        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n Erro absoluto por iteração: {E}\n")
+
+        print("Sem deslocamento espectral")
+        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
+        iters_sem.append(iterations)
+
+        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n Erro absoluto por iteração: {E}\n")
+
+        eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
+        eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
+
+        print(f"Valores esperados: {eigenvalues}. \nVetores esperados: \n{eigenvectors}\n")
+        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
+        print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
+
+    print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
+
 import sys
 
 if __name__ == "__main__":
-    teste = int(input("""
-         _____ ____  _       __  __    _    ____ _____ _ ____  _
-        | ____|  _ \/ |     |  \/  |  / \  |  _ \___ // |___ \/ |
-        |  _| | |_) | |_____| |\/| | / _ \ | |_) ||_ \| | __) | |
-        | |___|  __/| |_____| |  | |/ ___ \|  __/___) | |/ __/| |
-        |_____|_|   |_|     |_|  |_/_/   \_\_|  |____/|_|_____|_|
-            [ Exercício Programa # 1 - Métodos Numéricos ]
+    teste_1()
+    # teste = int(input("""
+    #      _____ ____  _       __  __    _    ____ _____ _ ____  _
+    #     | ____|  _ \/ |     |  \/  |  / \  |  _ \___ // |___ \/ |
+    #     |  _| | |_) | |_____| |\/| | / _ \ | |_) ||_ \| | __) | |
+    #     | |___|  __/| |_____| |  | |/ ___ \|  __/___) | |/ __/| |
+    #     |_____|_|   |_|     |_|  |_/_/   \_\_|  |____/|_|_____|_|
+    #         [ Exercício Programa # 1 - Métodos Numéricos ]
 
-      Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
-      =============================================================
+    #   Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
+    #   =============================================================
 
-      Gabriel Macias de Oliveira - NUSP: 11260811
-      Rodrigo Ryuji Ikegami      - NUSP: 10297265
+    #   Gabriel Macias de Oliveira - NUSP: 11260811
+    #   Rodrigo Ryuji Ikegami      - NUSP: 10297265
 
-      Por favor, escolha uma das seguintes rotinas de teste para proseeguir:
+    #   Por favor, escolha uma das seguintes rotinas de teste para proseeguir:
 
-      (1) Matriz com diagonal principal e subdiagonal constantes.
-      (2) Sistema massa-mola com 5 molas.
-      (3) Sistema massa-mola com 10 molas.
-      (4) Matriz arbitrária.
+    #   (1) Matriz com diagonal principal e subdiagonal constantes.
+    #   (2) Sistema massa-mola com 5 molas.
+    #   (3) Sistema massa-mola com 10 molas.
+    #   (4) Matriz arbitrária.
 
-      Digite um número (1 - 4): """))
+    #   Digite um número (1 - 4): """))
 
-    np.set_printoptions(precision = 6)
-    if teste == 1:
-        print("""
-      Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
+    # np.set_printoptions(precision = 6)
+    # if teste == 1:
+    #     print("""
+    #   Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
 
-        text = ["Primeira", "Segunda", "Terceira", "Quarta"]
-        for i, n in enumerate([4, 8, 16, 32]):
-            print(f"""
-      [=== {text[i]} Rotina: n = {n} ===]
-      """)
+    #     text = ["Primeira", "Segunda", "Terceira", "Quarta"]
+    #     for i, n in enumerate([4, 8, 16, 32]):
+    #         print(f"""
+    #   [=== {text[i]} Rotina: n = {n} ===]
+    #   """)
 
-            alphas = np.array(n * [2.0])
-            betas = np.array((n - 1) * [-1.0])
+    #         alphas = np.array(n * [2.0])
+    #         betas = np.array((n - 1) * [-1.0])
 
-            print("""      Matriz original:
-            """)
-            print(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas))
+    #         print("""      Matriz original:
+    #         """)
+    #         print(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas))
 
-            (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
+    #         (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
 
-            print("""\n      > Procedimentos sem deslocamento espectral <
-            """)
-            print(f"""      Concluído em {iterations_sem} iterações.
-            """)
-            print(f"""      Autovalores Encontrados: {alphas_k}\n""")
+    #         print("""\n      > Procedimentos sem deslocamento espectral <
+    #         """)
+    #         print(f"""      Concluído em {iterations_sem} iterações.
+    #         """)
+    #         print(f"""      Autovalores Encontrados: {alphas_k}\n""")
 
-            print("""      Matriz dos Autovetores:
-            """)
-            print(V)
+    #         print("""      Matriz dos Autovetores:
+    #         """)
+    #         print(V)
 
-            (alphas_k, betas_k, V, iterations_com) = qr_algorithm(alphas, betas, spectralShift = True)
+    #         (alphas_k, betas_k, V, iterations_com) = qr_algorithm(alphas, betas, spectralShift = True)
 
-            print("""\n      > Procedimentos com deslocamento espectral <
-            """)
-            print(f"""      Concluído em {iterations_com} iterações. Diferença com/sem deslocamento: {iterations_sem - iterations_com} iterações.
-            """)
-            print(f"""      Autovalores Encontrados: {alphas_k}\n""")
+    #         print("""\n      > Procedimentos com deslocamento espectral <
+    #         """)
+    #         print(f"""      Concluído em {iterations_com} iterações. Diferença com/sem deslocamento: {iterations_sem - iterations_com} iterações.
+    #         """)
+    #         print(f"""      Autovalores Encontrados: {alphas_k}\n""")
 
-            print("""      Matriz dos Autovetores:
-            """)
-            print(V)
+    #         print("""      Matriz dos Autovetores:
+    #         """)
+    #         print(V)
 
-            input("\n     Pressione [ENTER] para continuar para a próxima rotina.")
-            sys.stdout.write('\x1b[1A')
-            sys.stdout.write('\x1b[2K')
-            print("\n")
+    #         input("\n     Pressione [ENTER] para continuar para a próxima rotina.")
+    #         sys.stdout.write('\x1b[1A')
+    #         sys.stdout.write('\x1b[2K')
+    #         print("\n")
 
-    elif teste == 2:
-        print("""
-      Você selecionou o teste: Sistema massa-mola com 5 molas.""")
-        print("""
-      =====================
-      Massa das Molas: 2 kg.
-      Constantes elásticas:""")
+    # elif teste == 2:
+    #     print("""
+    #   Você selecionou o teste: Sistema massa-mola com 5 molas.""")
+    #     print("""
+    #   =====================
+    #   Massa das Molas: 2 kg.
+    #   Constantes elásticas:""")
 
-        k = [40 + 2 * i for i in range(1, 7)]
+    #     k = [40 + 2 * i for i in range(1, 7)]
 
-        for i, j in enumerate(k):
-            print(f"        k{i + 1} = {j} N/m.")
-        print("      =====================")
+    #     for i, j in enumerate(k):
+    #         print(f"        k{i + 1} = {j} N/m.")
+    #     print("      =====================")
 
-        alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
-        betas = np.array([-b/2 for b in k[1:-1]])
+    #     alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
+    #     betas = np.array([-b/2 for b in k[1:-1]])
 
-        print("""
-      Matriz A dos Coeficientes da EDO:
-      """)
+    #     print("""
+    #   Matriz A dos Coeficientes da EDO:
+    #   """)
 
-        print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
+    #     print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
 
-        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
+    #     (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
 
-        print(f"""
-      Número de iterações necessárias: {iterations_w}
+    #     print(f"""
+    #   Número de iterações necessárias: {iterations_w}
 
-      Frequências de vibração das massas: {np.sqrt(alphas_k)}
+    #   Frequências de vibração das massas: {np.sqrt(alphas_k)}
 
-      Modos de vibração:
-      """)
-        print(V)
-        print("\n\n")
+    #   Modos de vibração:
+    #   """)
+    #     print(V)
+    #     print("\n\n")
 
-    elif teste == 3:
-        print("""
-      Você selecionou o teste: Sistema massa-mola com 10 molas.""")
-        print("""
-      =====================
-      Massa das Molas: 2 kg.
-      Constantes elásticas:""")
+    # elif teste == 3:
+    #     print("""
+    #   Você selecionou o teste: Sistema massa-mola com 10 molas.""")
+    #     print("""
+    #   =====================
+    #   Massa das Molas: 2 kg.
+    #   Constantes elásticas:""")
 
-        k = [40 + 2 * (-1) ** i for i in range(1, 12)]
+    #     k = [40 + 2 * (-1) ** i for i in range(1, 12)]
 
-        for i, j in enumerate(k):
-                print(f"        k{i + 1} = {j} N/m.")
-        print("      =====================")
-
-
-        alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
-        betas = np.array([-b/2 for b in k[1:-1]])
-
-        print("""
-      Matriz A dos Coeficientes da EDO:
-      """)
-
-        print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
-
-        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
-
-        print(f"""
-      Número de iterações necessárias: {iterations_w}
-
-      Frequências de vibração das massas: {np.sqrt(alphas_k)}
-
-      Modos de vibração:
-      """)
-        print(V)
-        print("\n\n")
-
-    elif teste == 4:
-        print("""
-      Você selecionou o teste: Matriz arbitrária.""")
-
-        n = int(input("""
-      Entre com o tamanho da matriz tridiagonal simétrica a ser diagonalizado: """))
-
-        alphas = []
-        betas = []
-
-        print("""
-      Insira as entradas da diagonal principal da matriz: """, end = '')
-
-        alphas.append(int(input("""[""")))
-        for i in range(1, n):
-            sys.stdout.write('\x1b[1A')
-            print("""      Insira as entradas da diagonal principal da matriz: [""", end = "")
-            for elem in alphas:
-                print(f"{elem}, ", end = "")
-            alphas.append(int(input("")))
-        sys.stdout.write('\x1b[1A')
-        print(f"""      Diagonal principal: {alphas}                                      """)
-
-        print("""
-      Insira as entradas da sobrediagonal da matriz: """, end = '')
-
-        betas.append(int(input("""[""")))
-        for i in range(1, n - 1):
-            sys.stdout.write('\x1b[1A')
-            print("""      Insira as entradas da sobrediagonal da matriz: [""", end = "")
-            for elem in betas:
-                print(f"{elem}, ", end = "")
-            betas.append(int(input("")))
-        sys.stdout.write('\x1b[1A')
-        print(f"""      Sobrediagonal: {betas}                                      """)
-
-        spectralShift = True
-
-        if input("""
-      Utilizar deslocamento espectral? (S/n): """) == 'n':
-            spectralShift = False
-
-        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas, spectralShift)
-
-        print("""
-      Matriz a ser diagonalizada:
-        """)
-        print(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1))
-
-        print(f"""
-      Concluído em {iterations_w} iterações.
-        """)
-
-        print("""
-      Autovalores:
-        """)
-        print(alphas_k)
-
-        print("""
-      Autovetores:
-        """)
-        print(V)
-
-        print("\n\n")
-
-    else:
-        print("\nInválido!\n\n")
+    #     for i, j in enumerate(k):
+    #             print(f"        k{i + 1} = {j} N/m.")
+    #     print("      =====================")
 
 
-    print("Rotinas de teste concluídas! Obrigado pela execução!")
+    #     alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
+    #     betas = np.array([-b/2 for b in k[1:-1]])
+
+    #     print("""
+    #   Matriz A dos Coeficientes da EDO:
+    #   """)
+
+    #     print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
+
+    #     (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
+
+    #     print(f"""
+    #   Número de iterações necessárias: {iterations_w}
+
+    #   Frequências de vibração das massas: {np.sqrt(alphas_k)}
+
+    #   Modos de vibração:
+    #   """)
+    #     print(V)
+    #     print("\n\n")
+
+    # elif teste == 4:
+    #     print("""
+    #   Você selecionou o teste: Matriz arbitrária.""")
+
+    #     n = int(input("""
+    #   Entre com o tamanho da matriz tridiagonal simétrica a ser diagonalizado: """))
+
+    #     alphas = []
+    #     betas = []
+
+    #     print("""
+    #   Insira as entradas da diagonal principal da matriz: """, end = '')
+
+    #     alphas.append(int(input("""[""")))
+    #     for i in range(1, n):
+    #         sys.stdout.write('\x1b[1A')
+    #         print("""      Insira as entradas da diagonal principal da matriz: [""", end = "")
+    #         for elem in alphas:
+    #             print(f"{elem}, ", end = "")
+    #         alphas.append(int(input("")))
+    #     sys.stdout.write('\x1b[1A')
+    #     print(f"""      Diagonal principal: {alphas}                                      """)
+
+    #     print("""
+    #   Insira as entradas da sobrediagonal da matriz: """, end = '')
+
+    #     betas.append(int(input("""[""")))
+    #     for i in range(1, n - 1):
+    #         sys.stdout.write('\x1b[1A')
+    #         print("""      Insira as entradas da sobrediagonal da matriz: [""", end = "")
+    #         for elem in betas:
+    #             print(f"{elem}, ", end = "")
+    #         betas.append(int(input("")))
+    #     sys.stdout.write('\x1b[1A')
+    #     print(f"""      Sobrediagonal: {betas}                                      """)
+
+    #     spectralShift = True
+
+    #     if input("""
+    #   Utilizar deslocamento espectral? (S/n): """) == 'n':
+    #         spectralShift = False
+
+    #     (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas, spectralShift)
+
+    #     print("""
+    #   Matriz a ser diagonalizada:
+    #     """)
+    #     print(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1))
+
+    #     print(f"""
+    #   Concluído em {iterations_w} iterações.
+    #     """)
+
+    #     print("""
+    #   Autovalores:
+    #     """)
+    #     print(alphas_k)
+
+    #     print("""
+    #   Autovetores:
+    #     """)
+    #     print(V)
+
+    #     print("\n\n")
+
+    # else:
+    #     print("\nInválido!\n\n")
+
+
+    # print("Rotinas de teste concluídas! Obrigado pela execução!")
