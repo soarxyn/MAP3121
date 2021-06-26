@@ -315,7 +315,7 @@ Finalmente, foi criada a função `qr_algorithm`. Dada uma matriz de entrada, re
 
 A implementação está no Código \ref{code:qr_fact}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
 
-\footnotesize
+\tiny
 
 ~~~~ {#qralgo .python .numberLines}
 def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = True, epsilon : float = 1e-6) -> Tuple[np.array, np.array, np.array, int]:
@@ -342,7 +342,7 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
 \normalsize
 **\label{code:qr_algo}Código \ref{code:qr_algo}:** Função que implementa o Algoritmo QR, com ou sem deslocamento espectral, a partir de uma matriz dada por seus vetores `alphas` e `betas`, até atingir um certo erro `epsilon`.
 
-O código segue a descrição formal apresentada anteriormente. Na linha 9 é executada a fatoração QR da submatriz cujos valores ainda não convergiram. Na linha 10, são atualizados os valores da submatriz, de acordo com a função `update_matrix`. Na linha 12 é desfeito o deslocamento espectral. Na linha 14 é atualizada a matriz dos autovalores. Na linha 16 é calculado $\mu_{k+1}$, o coeficiente da próxima iteração.
+O código segue a descrição formal apresentada anteriormente. Na linha 7 é criada uma variável `m`, que vai de $N - 1$ até $1$, utilizada para determinar o tamanho da submatriz na iteração atual. A cada iteração, a matriz sobre a qual os cálculos são feitos é menor que a anterior, de tal forma que, quando um determinado $\beta_j$ converge, seu valor não é mais calculado nas próximas iterações. A verificação da condição de convergência é feita na linha 8, ao se comparar o $\beta_j$ mais à direita, na submatriz atual, com um dado $\epsilon$. Na linha 9 é executada a fatoração QR da submatriz cujos valores ainda não convergiram. Na linha 10, são atualizados os valores da submatriz, de acordo com a função `update_matrix`. Na linha 12 é desfeito o deslocamento espectral. Na linha 14 é atualizada a matriz dos autovalores. Na linha 16 é calculado $\mu_{k+1}$, o coeficiente da próxima iteração.
 
 \pagebreak
 # Construção dos Testes
@@ -350,6 +350,24 @@ O código segue a descrição formal apresentada anteriormente. Na linha 9 é ex
 ## Teste 1: Verificação do Algoritmo
 
 ### Implementação do Teste
+
+Na seção 2.3 a) de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência
+
+\footnotesize
+
+<!-- ~~~~ {#teste1 .python .numberLines}
+for i, n in enumerate([4, 8, 16, 32]):
+    alphas = np.array(n * [2.0])
+    betas = np.array((n - 1) * [-1.0])
+
+    (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
+
+    (alphas_k, betas_k, V, iterations_com) = qr_algorithm(alphas, betas, spectralShift = True)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:teste_1}Código \ref{code:teste_1}:** Laço que implementa o teste de verificação do Algoritmo QR, tanto com deslocamento espectral quanto sem.
+
+O código apresentado itera sobre os casos desejados (matriz de dimensões 4x4, 8x8, 16x16 e 32x32). Nas linhas 2 e 3 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121]. Na linha 5 é feita a execução do Algoritmo QR sem deslocamento espectral e, na linha 7, é feita a execução com deslocamento espectral. -->
 
 ## Teste 2: Sistema Massa-Mola com 5 Massas
 
