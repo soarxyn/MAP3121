@@ -222,7 +222,9 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
     mu = 0
     iterations = 0
     eigenvalues = [2 * (1 - cos(i * pi / (len(alphas_k) + 1))) for i in range(1, (len(alphas_k) + 1))][::-1]
-    E = []
+    E_max = []
+    E_min = []
+    E_avg = []
     for m in reversed(range(1, len(alphas))):
         while abs(betas_k[m - 1]) >= eps:
             (c_ks, s_ks, alphas_sub, betas_sub) = qr_factorization(alphas_k[: m + 1] - mu * np.ones(m + 1), betas_k[: m + 1])
@@ -234,11 +236,13 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 
             mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if shift else 0
 
-            E.append(max(abs(alphas_k[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+            E_min.append(min(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+            E_avg.append(sum(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))) / len(alphas_k))
+            E_max.append(max(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
 
             iterations += 1
 
-    return (alphas_k, betas_k, V, np.array(E), iterations)
+    return (alphas_k, betas_k, V, np.array([np.array(E_min), np.array(E_avg), np.array(E_max)]), iterations)
 
 def teste_1():
     iters_com = []
@@ -253,13 +257,15 @@ def teste_1():
         (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
         iters_com.append(iterations)
 
-        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n Erro absoluto por iteração: {E}\n")
+        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+        print(f"Erro mínimo por iteração: {E[0]}\n Erro médio por iteração: {E[1]}\n Erro máximo por iteração: {E[2]}\n")
 
         print("Sem deslocamento espectral")
         (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
         iters_sem.append(iterations)
 
-        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n Erro absoluto por iteração: {E}\n")
+        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+        print(f"Erro mínimo por iteração: {E[0]}\n Erro médio por iteração: {E[1]}\n Erro máximo por iteração: {E[2]}\n")
 
         eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
         eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
