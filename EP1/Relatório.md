@@ -96,7 +96,36 @@ O arquivo principal deve ser executado no mesmo diretório em que foi descompact
     \label{fig:1}
 \end{figure}
 
+Na visualização principal do programa, deve-se escolher uma entre cinco rotinas de exibição. As 3 primeiras rotinas exibem autovalores, autovetores e outras grandezas relevantes para os 3 testes propostos no enunciado em [@MAT3121]. A quarta rotina permite a diagonalização de uma matriz tridiagonal simétrica arbitrária. Por último, a quinta rotina exibe os gráficos relevantes para cada um dos testes, conforme se esclarecerá em sequência.
+
+Ao escolher a primeira rotina, são exibidos, em sequência, os resultados para o primeiro teste considerando cada especificação do tamanho da matriz. Entre uma execução e outra, deve-se pressionar `[ENTER]` para prosseguir para a próxima entrada, como se observa na Figura \ref{fig:2} abaixo. Desejamos que o usuário possa analisar os autovalores e autovetores das matrizes propostas, bem como comparar a (_grande!_) diferença do número de iterações quando utilizamos ou não o deslocamento espectral.
+
+\begin{figure}[h]
+    \includegraphics[height = 10cm]{fig_term2.png}
+    \centering
+    \caption{Resultado da escolha da primeira rotina de testes.}
+    \label{fig:2}
+\end{figure}
+
 \pagebreak
+
+A segunda rotina, associada ao teste do sistema de 5 massas e 6 molas, exibe os valores dos coeficientes elásticos de cada mola, a matriz $A$ dos coeficientes do sistema de EDOs $X''(t)+AX(t)=0$ solucionado, bem como a frequência de vibração das massas e seus modos naturais de vibração.
+
+A terceira rotina exibe as mesmas informações que a segunda, porém considerando o sistema de 10 massas e 11 molas. O que varia, de uma execução para outra, é o tamanho das matrizes exibidas, bem como a matriz a ser diagonalizada.
+
+A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simétrica, fornecendo sua diagonal principal e sua sobrediagonal. 
+
+**Nota:** Ao fornecer as entradas, é essencial que o usuário pressione `[ENTER]` entre uma entrada e outra. Logo, o padrão de digitação deve ser, por exemplo `1 [ENTER] 2 [ENTER]` etc, para garantir que todas as entradas sejam lidas corretamente. Um exemplo de execução está na Figura \ref{fig:4} abaixo.
+
+\begin{figure}[h]
+    \includegraphics[height = 10cm]{fig_term4.png}
+    \centering
+    \caption{Exemplo de execução ao selecionar a quarta rotina.}
+    \label{fig:4}
+\end{figure}
+
+\newpage
+
 # Implementação {#sec:impl}
 
 ## As Rotações de Givens

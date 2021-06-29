@@ -717,6 +717,8 @@ if __name__ == "__main__":
         betas = []
 
         print("""
+      OBSERVAÇÃO: Ao inserir dados nos campos a seguir, entre com um por vez, pressionando [ENTER] entre cada entrada.""")
+        print("""
       Insira as entradas da diagonal principal da matriz: """, end = '')
 
         alphas.append(int(input("""[""")))
