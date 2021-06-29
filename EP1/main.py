@@ -1,4 +1,3 @@
-from turtle import update
 import numpy as np
 from typing import Tuple
 from math import copysign, cos, sin, pi

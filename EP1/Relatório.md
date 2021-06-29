@@ -6,6 +6,7 @@ geometry:
     - right=2cm
 numbersections: true
 papersize: a4
+linestretch: 1.5
 table-of-contents: true
 bibliography: biblio.bib
 citation-style: abnt
@@ -55,14 +56,48 @@ header-includes: |
 
 # Introdução
 
-## Descrição do Problema
+Matrizes reais simétricas surgem comumente no estudo de aplicações de métodos em engenharia. Além disso seus autovalores e autovetores carregam informações sobre diversos modelos e descrições de muito interesse na análise e projeto de sistemas.
+
+Neste Exercício Programa, implementamos o _Algoritmo QR_ aplicado a _Matrizes Tridiagonais Simétricas_, embora seu uso seja relevante para matrizes quaisquer. Abordaremos aspectos mais formais da implementação, como a descrição em código, bem como características de desempenho e acertividade. Por fim, o método será aplicado à solução de um Sistema de EDOs Lineares de Segunda Ordem.
+
+Nosso objetivo é, dada uma matriz $A \in \mathbb{R}^{n\times n}$ tridiagonal simétrica, encontrar seus autovalores $\{\lambda_1, \lambda_2, \cdots, \lambda_n\}$ e seus respectivos autovetores $\{\symbf{v}_1, \symbf{v}_2, \cdots, \symbf{v}_n\}$, de forma eficiente e atendendo limites de erro e convergência. Recordamos que, segundo [@Algelin], o Teorema Espectral garante que uma matriz real simétrica é ortogonalmente diagonalizável, todos os seus autovalores são reais e podemos escolher os respectivos autovetores de modo a formar uma base ortonormal do $\mathbb{R}^n$. 
+
+Na Seção \ref{sec:impl}, detalha-se a implementação do Algoritmo QR em funções. Primeiro, há uma descrição da base matemática que orienta a construção de cada função, acompanhada pelo código e alguns comentários. A execução dos testes propostos é detalhada na Seção \ref{sec:test}, em que se retrata especificamente como foram implementados e o que se espera observar nas variáveis de retorno. Também é descrita a interface de comando (CLI) que acompanha o programa. Ao final, a Seção \ref{sec:results} contém a exibição, análise e discussão dos resultados dos testes, bem como comentários gerais sobre o desempenho do algoritmo.
 
 ## Ferramentas Utilizadas
 
+Foram utilizadas as seguintes ferramentas para construção do código:
+
+* Linguagem de Programação: _Python 3.7.9+_
+* Bibliotecas Externas:
+    * `numpy`, para trabalhar com aritmética de vetores
+    * `matplotlib`, para produção de gráficos e animações
+* _IDE_: _Visual Studio Code_
+* Desenvolvimento Paralelo: _Git_
+
+Além das bibliotecas externas, utilizaram-se as bibliotecas nativas `math`, para funções matemáticas básicas, `typing`, para utilizar tipos estáticos em _Python_, e `sys` para personalização da CLI. 
+
+Todos os testes em que são envolvidas métricas de tempo / número de iterações foram executados com base em um AMD Ryzen 5 3600X @ 4.2 GHz, portanto sendo suscetíveis a variações. 
+
+Todo o código está concentrado no arquivo `main.py`, cujos detalhes de execução se encontram em sequência e no arquivo `LEIA-ME.txt`. 
+
+Este relatório foi escrito em \LaTeX\.
+
 ## Execução dos _Scripts_
 
+Estando o _Python_ atualizado para uma versão compatível, isto é, 3.7.9 ou mais recente, deve-se certificar que ambas bibliotecas `numpy` e `matplotlib` estejam instaladas. Caso contrário, basta executar `pip install -r requirements.txt` em um terminal, para recebê-las.
+
+O arquivo principal deve ser executado no mesmo diretório em que foi descompactado, utilizando o comando `python main.py`. A exibição do terminal deve ser da CLI que acompanha o programa, conforme a Figura \ref{fig:1}.
+
+\begin{figure}[h]
+    \includegraphics[width = \linewidth]{fig_term1.png}
+    \centering
+    \caption{Exibição inicial da Command Line Interface (CLI) do programa.}
+    \label{fig:1}
+\end{figure}
+
 \pagebreak
-# Implementação
+# Implementação {#sec:impl}
 
 ## As Rotações de Givens
 
@@ -345,7 +380,7 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
 O código segue a descrição formal apresentada anteriormente. Na linha 7 é criada uma variável `m`, que vai de $N - 1$ até $1$, utilizada para determinar o tamanho da submatriz na iteração atual. A cada iteração, a matriz sobre a qual os cálculos são feitos é menor que a anterior, de tal forma que, quando um determinado $\beta_j$ converge, seu valor não é mais calculado nas próximas iterações. A verificação da condição de convergência é feita na linha 8, ao se comparar o $\beta_j$ mais à direita, na submatriz atual, com um dado $\epsilon$. Na linha 9 é executada a fatoração QR da submatriz cujos valores ainda não convergiram. Na linha 10, são atualizados os valores da submatriz, de acordo com a função `update_matrix`. Na linha 12 é desfeito o deslocamento espectral. Na linha 14 é atualizada a matriz dos autovalores. Na linha 16 é calculado $\mu_{k+1}$, o coeficiente da próxima iteração.
 
 \pagebreak
-# Construção dos Testes
+# Construção dos Testes {#sec:test}
 
 ## Teste 1: Verificação do Algoritmo
 
@@ -385,7 +420,7 @@ O código apresentado itera sobre os casos desejados (matriz de dimensões 4x4, 
 ### Implementação do Teste
 
 \pagebreak
-# Resultados e Discussão
+# Resultados e Discussão {#sec:results}
 
 \pagebreak
 # Referências {-}
