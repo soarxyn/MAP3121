@@ -2,6 +2,8 @@ from turtle import update
 import numpy as np
 from typing import Tuple
 from math import copysign, cos, sin, pi
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 def sgn(x):
     """
@@ -236,9 +238,9 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 
             mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if shift else 0
 
-            E_min.append(min(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
-            E_avg.append(np.average(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
-            E_max.append(max(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+            # E_min.append(min(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+            E_avg.append(np.mean(np.array([abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))])))
+            # E_max.append(max(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
 
             iterations += 1
 
@@ -276,6 +278,63 @@ def teste_1():
 
     print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
 
+    # iters_sem = []
+    # iters_com = []
+
+    # for i in range(3, 129):
+    #     alphas = np.array(i * [2.0])
+    #     betas = np.array((i-1) * [-1.0])
+
+    
+    #     (_, _, _, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+    #     iters_sem.append(iterations)
+
+    #     (_, _, _, iterations) = qr_algorithm(alphas, betas)
+    #     iters_com.append(iterations)
+
+    # fig = plt.figure()
+    # fig.set_figwidth(6)
+    # (axis1, axis2) = fig.subplots(1, 2)
+    # fig.suptitle("Número de Iterações por Tamanho da Matriz")
+
+    # n_space = np.linspace(3, 128, len(iters_com))
+
+    # axis1.plot(n_space, iters_sem, color = "red", lw = 1.5)
+    # axis1.set_title("Sem Deslocamento Espectral")
+    # axis1.set_xlabel("Tamanho da Matriz")
+    # axis1.set_ylabel("Número de Iterações")
+
+    # axis2.plot(n_space, iters_com, color = "green", lw = 1.5)
+    # axis2.set_title("Com Deslocamento Espectral")
+    # axis2.set_xlabel("Tamanho da Matriz")
+    # axis2.set_ylabel("Número de Iterações")
+
+    # plt.show()
+    # fig.savefig("fig1.png", dpi = 300)
+
+    # alphas = np.array(512 * [2.0])
+    # betas = np.array(511 * [-1.0])
+
+    # (_, _, _, E, iterations) = qr_1(alphas, betas)
+    # E = E[1]
+
+    # fig = plt.figure()
+    # fig.set_figwidth(6)
+
+    # ax = fig.add_subplot(111)
+    
+    # ax.set_yscale('log')
+
+    # n_space = np.linspace(0, iterations, iterations)
+
+    # ax.plot(n_space, E, color = "red", lw = 1.5)
+    # ax.set_title("Evolução do Erro por Iteração")
+    # ax.set_xlabel("Iteração")
+    # ax.set_ylabel("Erro Médio dos Autovalores")
+
+    # plt.show()
+    # fig.savefig("fig2.png", dpi = 300)
+
 def teste_2():
     k = [40 + 2 * i for i in range(1, 7)]
 
@@ -283,7 +342,7 @@ def teste_2():
     betas = np.array([-b/2 for b in k[1:-1]])
 
     print("Sem deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, shift = False)
+    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
 
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
 
@@ -292,7 +351,7 @@ def teste_2():
 
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
 
-    for X0 in [np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]:
+    for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
         Y0 =np.matmul(np.transpose(V), X0)
         # Y(0) = Q^T x X(0)
 
@@ -326,9 +385,85 @@ def teste_2():
         print("\n]")
         # C(t) = [cos(np.sqrt(alphas_k[i]) t) for i in range(5)]^T
         # X(t) = Q x Y(t) = Q x (Y(0) \cdot C(t))
-
+        
         t = 0
         print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}\n")
+
+        time = []
+        
+        solution = [[], [], [], [], []]
+
+        fig, axes = plt.subplots(2, 3)
+        plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
+        fig.set_size_inches(18.5, 10.5)
+        fig.suptitle('Evolução do Sistema no Tempo')
+        fig.subplots_adjust(hspace = 0.4)
+
+        mat0 = axes[0, 0].plot([], [], color = "blue", lw = 1.5)
+        mat1 = axes[0, 1].plot([], [], color = "red", lw = 1.5)
+        mat2 = axes[0, 2].plot([], [], color = "lime", lw = 1.5)
+        mat3 = axes[1, 0].plot([], [], color = "purple", lw = 1.5)
+        mat4 = axes[1, 1].plot([], [], color = "coral", lw = 1.5)
+        axes[1, 2].set_xlim(-10, 50)
+        mat5 = axes[1, 2].plot([], [], 'o')
+
+        patches = list(mat0) + list(mat1) + list(mat2) + list(mat3) + list(mat4) + list(mat5)
+
+        axes[0, 0].set_ylim(-4, 4)
+        axes[0, 1].set_ylim(-4, 4)
+        axes[0, 2].set_ylim(-4, 4)
+        axes[1, 0].set_ylim(-4, 4)
+        axes[1, 1].set_ylim(-4, 4)
+
+        def init():
+            global time
+            global solution
+            time = []
+            solution = [[], [], [], [], []]
+            mat0[0].set_data([], [])
+            mat1[0].set_data([], [])
+            mat2[0].set_data([], [])
+            mat3[0].set_data([], [])
+            mat4[0].set_data([], [])
+            mat5[0].set_data([], [])
+            return patches
+
+        def animate(index):
+            t = index * 0.025
+            time.append(t)
+
+            for i in range(5):
+                solution[i].append(sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]))
+
+            mat0[0].set_data(time, solution[0])
+            mat1[0].set_data(time, solution[1])
+            mat2[0].set_data(time, solution[2])
+            mat3[0].set_data(time, solution[3])
+            mat4[0].set_data(time, solution[4])
+
+            mat0[0].axes.set_xlim(t - 1, t)
+            axes[0, 1].set_xlim(t - 1, t)
+            axes[0, 2].set_xlim(t - 1, t)
+            axes[1, 0].set_xlim(t - 1, t)
+            axes[1, 1].set_xlim(t - 1, t)
+
+            X = np.array([10*i + solution[i][index] for i in range(5)])
+            Y = np.zeros(np.shape(X))
+
+            mat5[0].set_data(X,Y)
+            return patches
+
+        anim = FuncAnimation(fig, animate, init_func=init, frames=100000, interval=20, blit=True, cache_frame_data = False)
+
+        for i, axis in enumerate(axes.flat[:-1]):
+            axis.set_ylabel("Deslocamento (cm)")
+            axis.set_xlabel("Tempo (s)")
+        axes[1,2].set_xlabel("Posição (cm)")
+
+        plt.show()
+        # anim.save('uwu.gif')
+        # fig.savefig(f"fig{find+3}.png", dpi = 300)
+
 
 def teste_3():
     k = [40 + 2 * (-1) ** i for i in range(1, 12)]
@@ -337,7 +472,7 @@ def teste_3():
     betas = np.array([-b/2 for b in k[1:-1]])
 
     print("Sem deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, shift = False)
+    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
 
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
 
@@ -346,7 +481,7 @@ def teste_3():
 
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
 
-    for X0 in [np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]:
+    for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
         Y0 =np.matmul(np.transpose(V), X0)
         # Y(0) = Q^T x X(0)
 
@@ -383,6 +518,49 @@ def teste_3():
 
         t = 0
         print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}\n")
+
+        time = np.linspace(0, 10, int(10 / 0.025))
+        solution = np.array([[sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for t in time] for i in range(10)])
+
+        fig, axes = plt.subplots(2, 3)
+        plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
+        fig.set_size_inches(18.5, 10.5)
+        fig.suptitle('Evolução do Sistema no Tempo')
+        fig.subplots_adjust(hspace = 0.4)
+
+        axes[0, 0].plot(time, solution[0], color = "blue", lw = 1.5)
+        axes[0, 1].plot(time, solution[1], color = "red", lw = 1.5)
+        axes[0, 2].plot(time, solution[2], color = "lime", lw = 1.5)
+        axes[1, 0].plot(time, solution[3], color = "purple", lw = 1.5)
+        axes[1, 1].plot(time, solution[4], color = "coral", lw = 1.5)
+        axes[1, 2].plot(time, solution[5], color = "orange", lw = 1.5)
+
+        for i, axis in enumerate(axes.flat):
+            axis.set_ylabel("Deslocamento (cm)")
+            axis.set_xlabel("Tempo (s)")
+            axis.set_title(f"Mola {i+1}: k = {k[i]}")
+
+        fig.savefig(f"fig{find+6}.png", dpi = 300)
+
+        fig, axes = plt.subplots(2, 3)
+        fig.set_size_inches(18.5, 10.5)
+        fig.subplots_adjust(hspace = 0.4)
+        fig.delaxes(axes[1, 1])
+        fig.delaxes(axes[1, 2])
+
+        axes[0, 0].plot(time, solution[6], color = "magenta", lw = 1.5)
+        axes[0, 1].plot(time, solution[7], color = "pink", lw = 1.5)
+        axes[0, 2].plot(time, solution[8], color = "lavender", lw = 1.5)
+        axes[1, 0].plot(time, solution[9], color = "gold", lw = 1.5)
+
+        for i, axis in enumerate(axes.flat[:-2]):
+            axis.set_ylabel("Deslocamento (cm)")
+            axis.set_xlabel("Tempo (s)")
+            axis.set_title(f"Mola {i + 7}: k = {k[i + 6]}")
+
+        fig.savefig(f"fig{find+9}.png", dpi = 300)    
+
+        plt.show()
 
 import sys
 

@@ -369,6 +369,13 @@ for i, n in enumerate([4, 8, 16, 32]):
 
 O código apresentado itera sobre os casos desejados (matriz de dimensões 4x4, 8x8, 16x16 e 32x32). Nas linhas 2 e 3 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121]. Na linha 5 é feita a execução do Algoritmo QR sem deslocamento espectral e, na linha 7, é feita a execução com deslocamento espectral. -->
 
+\begin{figure}[h]
+    \includegraphics[width = \linewidth]{fig1.png}
+    \centering
+    \caption{Exemplo}
+    \label{fig:aa}
+\end{figure}
+
 ## Teste 2: Sistema Massa-Mola com 5 Massas
 
 ### Implementação do Teste
