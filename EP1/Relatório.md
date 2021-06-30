@@ -81,7 +81,7 @@ Todos os testes em que são envolvidas métricas de tempo / número de iteraçõ
 
 Todo o código está concentrado no arquivo `main.py`, cujos detalhes de execução se encontram em sequência e no arquivo `LEIA-ME.txt`.
 
-Este relatório foi escrito em \LaTeX\.
+Este relatório foi tipografado em \LaTeX\.
 
 ## Execução dos _Scripts_
 
@@ -415,7 +415,7 @@ O código segue a descrição formal apresentada anteriormente. Na linha 7 é cr
 
 ### Implementação do Teste
 
-Na seção 2.3 a) de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência
+Na seção 2.3a de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência
 
 A implementação está no Código \ref{code:teste_1}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
 
@@ -457,17 +457,14 @@ def teste_1():
 \normalsize
 **\label{code:teste_1}Código \ref{code:teste_1}:** Função que implementa o teste de verificação do Algoritmo QR, tanto com deslocamento espectral quanto sem, e imprime os dados relevantes no terminal.
 
-O código apresentado itera sobre os casos desejados (matriz de dimensões 4x4, 8x8, 16x16 e 32x32). Nas linhas 2 e 3 são criados dois vetores, para armazenar as iterações em função do tamanho da matriz. Nas linhas 6 e 7 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121], com os comprimentos adequados ao tamanho da matriz desejado. Na linha 10 é feita a execução do Algoritmo QR com deslocamento espectral e, na linha 17, é feita a execução sem deslocamento espectral. Nas linhas 11 e 18 são adicionados os valores do número de iterações para os vetores apropriados. Nas linhas 23 e 24 são calculados os valores teóricos esperados, cujas fórmulas são definidas em [@MAT3121].
+O código apresentado itera sobre os casos desejados (matriz de dimensões $4\times4$, $8\times8$, $16\times16$ e $32\times32$). Nas linhas 2 e 3 são criados dois vetores, para armazenar as iterações em função do tamanho da matriz. Nas linhas 6 e 7 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121], com os comprimentos adequados ao tamanho da matriz desejado. Na linha 10 é feita a execução do Algoritmo QR com deslocamento espectral e, na linha 17, é feita a execução sem deslocamento espectral. Nas linhas 11 e 18 são adicionados os valores do número de iterações para os vetores apropriados. Nas linhas 23 e 24 são calculados os valores teóricos esperados, cujas fórmulas são definidas em [@MAT3121].
 
-A função auxiliar `qr_1` utilizada nesse código executa o algoritmo QR de mesma maneira que a função em \ref{code:qr_algo}, mas calcula os erros máximo e médio absolutos a cada iteração e os retornam em um `np.array`. Os erros foram definidos como
+A função auxiliar `qr_1` utilizada nesse código executa o algoritmo QR de mesma maneira que a função em \ref{code:qr_algo}, calculando também os erros máximo e médio absolutos a cada iteração e os retornam em um `np.array`. Os erros máximo e médio para a `k`-ésima iteração do algoritmo foram definidos como:
 
-$E^{(k)}_{máx}=máx|\alpha^{(k)}_j-\lambda_j|$
+$$ E_{max}^{(k)}=\max\limits_{j \in [1,n]} |\alpha^{(k)}_j-\lambda_j| $$
+$$ E_{avg}^{(k)}=\frac{1}{n}\sum\limits_{j=1}^n|\alpha^{(k)}_j-\lambda_j| $$
 
-Com $j\in[1,2,3...n]$ e
-
-$E^{(k)}_{avg}=\frac{1}{n}\sum\limits^n_{j=1}|\alpha^{(k)}_j-\lambda_j|$
-
-Sendo $k$ o número da iteração.
+A incorporação destes erros ao algoritmo QR, na função `qr_1` está no código \ref{code:qr_1} abaixo.
 
 \scriptsize
 
@@ -501,6 +498,8 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \normalsize
 **\label{code:qr_1}Código \ref{code:qr_1}:** Função auxiliar para cálculo dos erros médio e máximo absolutos por iteração do algoritmo.
+
+\pagebreak
 
 ## Teste 2: Sistema Massa-Mola com 5 Massas
 
