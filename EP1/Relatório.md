@@ -411,6 +411,8 @@ O código segue a descrição formal apresentada anteriormente. Na linha 7 é cr
 \pagebreak
 # Construção dos Testes {#sec:test}
 
+Os aspectos matemáticos da construção de cada teste serão apresentados na Seção \ref{sec:results} junto aos resultados.
+
 ## Teste 1: Verificação do Algoritmo
 
 ### Implementação do Teste
