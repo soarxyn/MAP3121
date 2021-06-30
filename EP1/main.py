@@ -1,3 +1,4 @@
+from contextlib import suppress
 import numpy as np
 from typing import Tuple
 from math import copysign, cos, sin, pi
@@ -246,7 +247,7 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 def teste_1():
     iters_com = []
     iters_sem = []
-    for n in [4, 8, 16, 32]:
+    for n in [4, 8]:
         print(f"n = {n}")
 
         alphas = np.array(n * [2.0])
@@ -256,6 +257,7 @@ def teste_1():
         (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
         iters_com.append(iterations)
 
+        np.set_printoptions(precision=16, suppress=2)
         print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
         print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
 
@@ -772,7 +774,7 @@ if __name__ == "__main__":
         print("\n\n")
 
     elif teste == 5:
-        teste_3()
+        teste_1()
     else:
         print("\nInválido!\n\n")
 

@@ -462,7 +462,6 @@ def teste_1():
 O código apresentado itera sobre os casos desejados (matriz de dimensões $4\times4$, $8\times8$, $16\times16$ e $32\times32$). Nas linhas 2 e 3 são criados dois vetores, para armazenar as iterações em função do tamanho da matriz. Nas linhas 6 e 7 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121], com os comprimentos adequados ao tamanho da matriz desejado. Na linha 10 é feita a execução do Algoritmo QR com deslocamento espectral e, na linha 17, é feita a execução sem deslocamento espectral. Nas linhas 11 e 18 são adicionados os valores do número de iterações para os vetores apropriados. Nas linhas 23 e 24 são calculados os valores teóricos esperados, cujas fórmulas são definidas em [@MAT3121].
 
 A função auxiliar `qr_1` utilizada nesse código executa o algoritmo QR de mesma maneira que a função em \ref{code:qr_algo}, calculando também os erros máximo e médio absolutos a cada iteração e os retornam em um `np.array`. Os erros máximo e médio para a `k`-ésima iteração do algoritmo foram definidos como:
-
 $$ E_{max}^{(k)}=\max\limits_{j \in [1,n]} |\alpha^{(k)}_j-\lambda_j| $$
 $$ E_{avg}^{(k)}=\frac{1}{n}\sum\limits_{j=1}^n|\alpha^{(k)}_j-\lambda_j| $$
 
@@ -639,6 +638,203 @@ Sua implementação é análoga à do teste 2.
 
 \pagebreak
 # Resultados e Discussão {#sec:results}
+
+## Resultados para o Teste 1
+
+Conforme [@Toep], o problema de autovalores em matrizes tridiagonais simétricas cuja diagonal principal e sobrediagonal são constantes é um caso específico de aplicação da diagonalização de matrizes  Toeplitz reais de segunda ordem, que possuem uma solução analítica para seus autovalores e autovetores.
+
+No caso do problema proposto, se a matriz de interesse $A$ é dada por um par de vetores constantes $\alpha = (2, 2, \cdots, 2)$ e $\beta=(-1, -1, \cdots, -1)$, isto é:
+
+$$A=
+    \begin{bmatrix}
+        2 & -1 & & \\
+        -1 & 2 & \ddots & \\
+        & \ddots & \ddots & -1 \\
+        & & -1 & 2
+    \end{bmatrix}
+$$
+
+então os autovalores de $A$ são gerados por $\lambda_j=2\big( 1- \cos\big( \frac{j\pi}{n+1} \big) \big)$ com $j\in[1,n]$ e os respectivos autovetores são:
+
+$$\symbf{v}_j=\bigg( \sin\bigg( \frac{j\pi}{n+1} \bigg), \sin\bigg( \frac{2j\pi}{n+1} \bigg), \cdots, \sin\bigg( \frac{nj\pi}{n+1} \bigg) \bigg) $$
+
+Podemos utilizar tanto $\{\lambda_j\}_{j=1}^n$ quanto $\{\symbf{v}_j\}_{j=1}^n$ para avaliar se o algoritmo implementado está correto e como o erro médio dos autovalores evolui por iteração. Antes, devemos relembrar um resultado importante, retirado de [@Algelin]: 
+
+Se $\symbf{v}_j$ é autovetor de $A$ associado ao autovalor $\lambda_j$, então seus múltiplos $k\symbf{v}_j$ também são autovetores de $A$ associados ao mesmo autovalor.
+
+### Autovalores e Autovetores para $n = 4$
+
+O _Algoritmo QR_ foi executado, com e sem deslocamento espectral, para uma matriz $A \in \mathbb{R}^{4\times4}$ seguindo a descrição acima com precisão $\epsilon = 10^{-6}$. Os autovalores esperados, isto é, calculados analiticamente, e obtidos pela execução do algoritmo estão dispostos na Tabela \ref{table:1} abaixo.
+
+\setlength{\tabcolsep}{18pt}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Autovalor & Esperado & Obtido \\
+        \hline
+        $\lambda_1$ & $3,618033988749895$ & $3,618033988749896$ \\
+        $\lambda_2$ & $2,618033988749895$ & $2,618033988749895$ \\
+        $\lambda_3$ & $1,381966011250105$ & $1,381966011250106$ \\
+        $\lambda_4$ & $0,381966011250105$ & $0,381966011250105$ \\
+        \hline
+    \end{tabular}
+    \caption{Autovalores esperados e obtidos após a execução do Algoritmo, para $n=4$.}
+    \label{table:1}
+\end{table}
+
+Os autovetores da matriz são apresentados nas matrizes abaixo. A primeira matriz contém os autovetores obtidos pela execução do algoritmo. Já a segunda, os autovetores calculados analiticamente. É conveniente lembrar que cada autovetor $\symbf{v}_j$ é armazenado nas colunas de $V$.
+
+$$
+V =
+\begin{bmatrix}
+     0.371748 &  0.601501 &  0.601501 & 0.371748 \\
+    -0.601501 & -0.371748 &  0.371748 & 0.601501 \\
+     0.601501 & -0.371748 & -0.371748 & 0.601501 \\
+    -0.371748 &  0.601501 & -0.601501 & 0.371748 \\
+\end{bmatrix}
+$$
+
+\begin{center} Matriz dos Autovetores obtidos pelo Algoritmo, para $n=4$. \end{center}
+
+$$
+V =
+\begin{bmatrix}
+     0.587785 &  0.951057 &  0.951057 & 0.587785 \\
+    -0.951057 & -0.587785 &  0.587785 & 0.951057 \\
+     0.951057 & -0.587785 & -0.587785 & 0.951057 \\
+    -0.587785 &  0.951057 & -0.951057 & 0.587785 \\
+\end{bmatrix}
+$$
+
+\begin{center} Matriz dos Autovetores calculados analiticamente, para $n=4$. \end{center}
+
+### Autovalores e Autovetores para $n = 8$
+
+Assim como feito para $n = 4$, executou-se o _Algoritmo QR_ para $A\in\mathbb{R}^{8\times8}$, tridiagonal simétrica de diagonal e subdiagonal constantes com $\alpha_k = 2$ e $\beta_k = -1$, com e sem deslocamento espectral e com precisão $\epsilon=10^{-6}$. Apresentamos os autovalores calculados analiticamente e aqueles obtidos após a execução do método na Tabela \ref{table:2} seguinte.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Autovalor & Esperado & Obtido \\
+        \hline
+        $\lambda_1$ & $3,879385241571817$ & $3,879385241571820$ \\
+        $\lambda_2$ & $3,532088886237956$ & $3,532088886237959$ \\
+        $\lambda_3$ & $2,9999999999999996$ & $2,999999999999889$ \\
+        $\lambda_4$ & $2,3472963553338606$ & $2,347296355333974$ \\
+        $\lambda_5$ & $1,6527036446661392$ & $1,652703644666068$ \\
+        $\lambda_6$ & $0,9999999999999998$ & $1,000000000000071$ \\
+        $\lambda_7$ & $0,4679111137620440$ & $0,467911113762044$ \\
+        $\lambda_8$ & $0,12061475842818314$ & $0,120614758428183$ \\
+        \hline
+    \end{tabular}
+    \caption{Autovalores esperados e obtidos após a execução do Algoritmo, para $n=8$.}
+    \label{table:2}
+\end{table}
+
+As matrizes a seguir exibem os autovetores resultantes da aplicação do algoritmo, assim como os autovetores dados pela forma analítica, respectivamente.$$
+V =
+\begin{bmatrix}
+     0,16123   & 0,303013 &  0,408248 & 0,464243& 0,464243 & 0,408248 & 0,303013 &0,16123 \\
+     0,303013  &-0,464243 & -0,408248 &-0,16123 & 0,16123  & 0,408248 & 0,464243 &0,303013\\
+     0,408248  & 0,408248 &  0,000000 &-0,408248&-0,408248 & 0,000000 & 0,408248 &0,408248\\
+     0,464243  &-0,16123  &  0,408248 & 0,303013&-0,303013 &-0,408248 & 0,16123  &0,464243\\
+     0,464243  &-0,16123  & -0,408248 & 0,303013& 0,303013 &-0,408248 &-0,16123  &0,464243\\
+     0,408248  & 0,408248 &  0,000000 &-0,408248& 0,408248 & 0,000000 &-0,408248 &0,408248\\
+     0,303013  &-0,464243 &  0,408248 &-0,16123 &-0,16123  & 0,408248 &-0,464243 &0,303013\\
+     0,16123   & 0,303013 & -0,408248 & 0,464243&-0,464243 & 0,408248 &-0,303013 &0,16123 \\
+\end{bmatrix}
+$$
+
+\begin{center} Matriz dos Autovetores obtidos pelo Algoritmo, para $n=8$ \end{center}
+
+$$
+V =
+\begin{bmatrix}
+     0,34202 &  0,642788&  0,866025&  0,984808&  0,984808&  0,866025&  0,642788&  0,34202  \\
+    -0,642788& -0,984808& -0,866025& -0,34202 &  0,34202 &  0,866025&  0,984808&  0,642788 \\
+     0,866025&  0,866025&  0,000000& -0,866025& -0,866025&  0,000000&  0,866025&  0,866025 \\
+    -0,984808& -0,34202 &  0,866025&  0,642788& -0,642788& -0,866025&  0,34202 &  0,984808 \\
+     0,984808& -0,34202 & -0,866025&  0,642788&  0,642788& -0,866025& -0,34202 &  0,984808 \\
+    -0,866025&  0,866025&  0,000000& -0,866025&  0,866025&  0,000000& -0,866025&  0,866025 \\
+     0,642788& -0,984808&  0,866025& -0,34202 & -0,34202 &  0,866025& -0,984808&  0,642788 \\
+    -0,34202 &  0,642788& -0,866025&  0,984808& -0,984808&  0,866025& -0,642788&  0,34202 \\
+\end{bmatrix}
+$$
+
+\begin{center} Matriz dos Autovetores calculados analiticamente, para $n=8$ \end{center}
+
+
+### Discussão sobre os Autovalores e Autovetores Encontrados
+
+Inicialmente, podemos comparar os autovalores obtidos. Observamos que tanto para o caso em que $n = 4$ como para $n = 8$, todos os autovalores convergiram e são muito próximos dos valores corretos. O erro médio absoluto entre o autovalor obtido e o autovalor calculado analiticamente é da ordem de $e=10^{-12}$. Julgamos que nossa implementação está concordante com o proposto e a teoria.
+
+O Algoritmo QR é **muito** eficiente em calcular os autovalores, principalmente ao considerarmos que conseguimos atingir erros extremamente pequenos com pouquíssimas iterações: 9 para o caso $4\times4$ e 19 para o $8\times8$. Além disso, chegamos a este resultando com precisão $\epsilon=10^{-6}$ para a convergência dos $\beta_j$. O Algoritmo converge muito rapidamente e com alta precisão.
+
+Ao analisarmos os autovetores, exibidos nas matrizes, pode-se notar que a matriz de autovetores encontrada **não é igual** àquela obtida pela forma de geração. Contudo, isso não deve ser tratado como um erro, devido à propriedade de proporcionalidade, mencionada anteriormente. 
+
+A matriz obtida é, aproximadamente, um múltiplo da matriz calculada analiticamente. Para comparar essas grandezas, definimos uma _matriz de proporcionalidade_ $P_n\in\mathbb{R}^{n\times n}$, de modo que dada a matriz aproximada de autovetores $\tilde{V}$ e a matriz correta de autovetores $V$, definimos:
+$$
+\begin{matrix}
+    p_{i,j}=\frac{v_{i,j}}{\tilde{v}_{i,j}} &i,j=1\dots n
+\end{matrix}
+$$
+
+Tanto em $P_4$ como em $P_8$, todas as entradas da matriz são iguais. Apresentamos, em seguida, os valores dessas matrizes.
+
+\begin{align*}
+P_4 &= \begin{bmatrix}
+    1,58113883 & \cdots & 1,58113883 \\
+    \vdots & \ddots & \vdots \\
+    1,58113883 & \cdots & 1,58113883
+\end{bmatrix}
+&
+P_8 &= \begin{bmatrix}
+    2,12132034 & \cdots & 2,12132034 \\
+    \vdots & \ddots & \vdots \\
+    2,12132034 & \cdots & 2,12132034
+\end{bmatrix}
+\end{align*}
+
+Portanto, concluímos que os autovetores obtidos pela execução do Algoritmo QR, $\{\symbf{\tilde{v}}_j\}_{j=1}^n$, são múltiplos daqueles encontrados pela forma fechada. Geram, portanto, o mesmo espaço, são autovetores da matriz de entrada, bem como estão associados aos mesmos autovalores. O que resta discutir é a constante de proporcionalidade. Para entendê-la, devemos nos lembrar que o Algoritmo QR produz uma **base ortonormal** de autovetores, mas a fórmula dos autovetores **não** é _normalizada_. Na sequência, iremos encontrar a norma desses vetores.[^2]. Sendo: $$\symbf{v}_j=\bigg( \sin\bigg( \frac{j\pi}{n+1} \bigg), \sin\bigg( \frac{2j\pi}{n+1} \bigg), \cdots, \sin\bigg( \frac{nj\pi}{n+1} \bigg) \bigg)$$
+temos: $$\lVert \symbf{v}_j \rVert=\sqrt{\sin^2\bigg( \frac{j\pi}{n+1} \bigg)+\sin^2\bigg( \frac{2j\pi}{n+1} \bigg)+\cdots+\sin^2\bigg( \frac{nj\pi}{n+1} \bigg)}=\sqrt{\sum_{k=1}^n\sin^2\bigg( \frac{kj\pi}{n+1} \bigg)}$$
+
+Iremos utilizar que $\sin^2(x)=\frac{1}{2}(1-\cos(2x))$ para escrever o somatório como: $$\sum_{k=1}^n\sin^2\bigg( \frac{kj\pi}{n+1} \bigg)=\sum_{k=1}^n\frac{1}{2}\bigg(1-\cos\bigg(2\frac{kj\pi}{n+1}\bigg)\bigg)$$
+
+Podemos utilizar a linearidade para passar o fator multiplicativo para fora e separar em dois somatórios, sendo $\sum\limits_{k=1}^n1=n$:$$\sum_{k=1}^n\frac{1}{2}\bigg(1-\cos\bigg(2\frac{kj\pi}{n+1}\bigg)\bigg)=\frac{n}{2}-\frac{1}{2}\sum_{k=1}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg)$$
+
+[^2]: Nos passos que se seguem, $i$ é a unidade imaginária, isto é, $i=\sqrt{-1}$.
+
+Da fórmula de Euler, temos que $e^{i\theta}=\cos(\theta)+i\sin(\theta)$. Conforme [@Unity], este somatório de cossenos é a parte real das raízes $n+1$-ésimas da unidade, com exceção do próprio $1$. Podemos explorar melhor este somatório, fazendo: $$ \sum_{k=1}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg) = \sum_{k=0}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg) - 1$$
+
+e, aplicando a fórmula de Euler: $$\sum_{k=0}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg) = \mathfrak{Re} \bigg\{ \sum_{k=0}^n\exp\bigg(kji\frac{2\pi}{n+1}\bigg) \bigg\} =\mathfrak{Re} \bigg\{ \sum_{k=0}^n\exp\bigg(ji\frac{2\pi}{n+1}\bigg)^k \bigg\} $$
+
+Que é a soma de uma progressão geométrica, cujo resultado é conhecido: $$\mathfrak{Re} \bigg\{ \sum_{k=0}^n\exp\bigg(j\frac{2\pi}{n+1}\bigg)^k \bigg\} = \mathfrak{Re} \Bigg\{ \frac{1-\exp\big(\frac{j2\pi i}{n+1}\big)^{n+1}}{1-\exp\big(\frac{j2\pi i}{n+1}\big)} \Bigg\} = \mathfrak{Re} \Bigg\{ \frac{1-\exp\big(j2\pi i\big)}{1-\exp\big(\frac{j2\pi i}{n+1}\big)} \Bigg\}$$
+
+Como $\exp(j2\pi i) = \cos(j2\pi) + i\sin(j2\pi) = 1$: $$\mathfrak{Re} \Bigg\{ \frac{1-\exp\big(j2\pi i\big)}{1-\exp\big(\frac{j2\pi i}{n+1}\big)} \Bigg\} = \mathfrak{Re}\{0\}=0$$
+
+Portanto, teremos que o somatório original vale: $$ \sum_{k=1}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg) = \sum_{k=0}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg) - 1 = 0 -1 = -1$$
+
+e, desta forma, como queríamos mostrar: $$\sum_{k=1}^n\frac{1}{2}\bigg(1-\cos\bigg(2\frac{kj\pi}{n+1}\bigg)\bigg) = \frac{n}{2}-\frac{1}{2}\sum_{k=1}^n\cos\bigg(kj\frac{2\pi}{n+1}\bigg) = \frac{n}{2}-\frac{1}{2}\times(-1)$$
+
+Logo: $$\sqrt{\sum_{k=1}^n\sin^2\bigg( \frac{kj\pi}{n+1} \bigg)} = \sqrt{\frac{n+1}{2}}$$ Concluímos, então, que: $$\lVert \symbf{v}_j \rVert = \sqrt{\frac{n+1}{2}}$$
+\begin{flushright}
+$\Box$
+\end{flushright}
+
+Voltando ao questionamento inicial, encontramos a origem dos valores encontrados nas matrizes de proporcionalidade. Considerando os casos em que $n = 4$ e $n=8$, devemos ter:
+
+* Para $P_4$, $p_{i,j} = \frac{v_{i,j}}{\tilde{v}_{i,j}} = \lVert \symbf{v}_j \rVert=\sqrt{\frac{5}{2}} \approx1,58113883$. 
+* Para $P_8$, $p_{i,j} = \frac{v_{i,j}}{\tilde{v}_{i,j}} = \lVert \symbf{v}_j \rVert=\sqrt{\frac{9}{2}} \approx2,12132034$. 
+
+Que são exatamente os valores encontrados. Não fizemos a mesma análise _no relatório_ para as demais matrizes, com $n=16$ e $n=32$ pois são muito grandes. Contudo, tais análises foram feitas em código, são obtíveis pela execução da CLI do programa e seguem exatamente a mesma tendência.
+
+### Comparação do Número de Iterações
+
+### Evolução do Erro por Iteração
+
 
 \pagebreak
 # Referências {-}
