@@ -56,11 +56,11 @@ header-includes: |
 
 # Introdução
 
-Matrizes reais simétricas surgem comumente no estudo de aplicações de métodos em engenharia. Além disso seus autovalores e autovetores carregam informações sobre diversos modelos e descrições de muito interesse na análise e projeto de sistemas.
+Matrizes reais simétricas surgem comumente no estudo de aplicações de métodos em engenharia. Além disso, seus autovalores e autovetores carregam informações sobre diversos modelos e descrições de muito interesse na análise e projeto de sistemas.
 
 Neste Exercício Programa, implementamos o _Algoritmo QR_ aplicado a _Matrizes Tridiagonais Simétricas_, embora seu uso seja relevante para matrizes quaisquer. Abordaremos aspectos mais formais da implementação, como a descrição em código, bem como características de desempenho e acertividade. Por fim, o método será aplicado à solução de um Sistema de EDOs Lineares de Segunda Ordem.
 
-Nosso objetivo é, dada uma matriz $A \in \mathbb{R}^{n\times n}$ tridiagonal simétrica, encontrar seus autovalores $\{\lambda_1, \lambda_2, \cdots, \lambda_n\}$ e seus respectivos autovetores $\{\symbf{v}_1, \symbf{v}_2, \cdots, \symbf{v}_n\}$, de forma eficiente e atendendo limites de erro e convergência. Recordamos que, segundo [@Algelin], o Teorema Espectral garante que uma matriz real simétrica é ortogonalmente diagonalizável, todos os seus autovalores são reais e podemos escolher os respectivos autovetores de modo a formar uma base ortonormal do $\mathbb{R}^n$. 
+Nosso objetivo é, dada uma matriz $A \in \mathbb{R}^{n\times n}$ tridiagonal simétrica, encontrar seus autovalores $\{\lambda_1, \lambda_2, \cdots, \lambda_n\}$ e seus respectivos autovetores $\{\symbf{v}_1, \symbf{v}_2, \cdots, \symbf{v}_n\}$, de forma eficiente e atendendo limites de erro e convergência. Recordamos que, segundo [@Algelin], o Teorema Espectral garante que uma matriz real simétrica é ortogonalmente diagonalizável, todos os seus autovalores são reais e podemos escolher os respectivos autovetores de modo a formar uma base ortonormal do $\mathbb{R}^n$.
 
 Na Seção \ref{sec:impl}, detalha-se a implementação do Algoritmo QR em funções. Primeiro, há uma descrição da base matemática que orienta a construção de cada função, acompanhada pelo código e alguns comentários. A execução dos testes propostos é detalhada na Seção \ref{sec:test}, em que se retrata especificamente como foram implementados e o que se espera observar nas variáveis de retorno. Também é descrita a interface de comando (CLI) que acompanha o programa. Ao final, a Seção \ref{sec:results} contém a exibição, análise e discussão dos resultados dos testes, bem como comentários gerais sobre o desempenho do algoritmo.
 
@@ -75,11 +75,11 @@ Foram utilizadas as seguintes ferramentas para construção do código:
 * _IDE_: _Visual Studio Code_
 * Desenvolvimento Paralelo: _Git_
 
-Além das bibliotecas externas, utilizaram-se as bibliotecas nativas `math`, para funções matemáticas básicas, `typing`, para utilizar tipos estáticos em _Python_, e `sys` para personalização da CLI. 
+Além das bibliotecas externas, utilizaram-se as bibliotecas nativas `math`, para funções matemáticas básicas, `typing`, para utilizar tipos estáticos em _Python_, e `sys` para personalização da CLI.
 
-Todos os testes em que são envolvidas métricas de tempo / número de iterações foram executados com base em um AMD Ryzen 5 3600X @ 4.2 GHz, portanto sendo suscetíveis a variações. 
+Todos os testes em que são envolvidas métricas de tempo / número de iterações foram executados com base em um AMD Ryzen 5 3600X @ 4.2 GHz, portanto sendo suscetíveis a variações.
 
-Todo o código está concentrado no arquivo `main.py`, cujos detalhes de execução se encontram em sequência e no arquivo `LEIA-ME.txt`. 
+Todo o código está concentrado no arquivo `main.py`, cujos detalhes de execução se encontram em sequência e no arquivo `LEIA-ME.txt`.
 
 Este relatório foi escrito em \LaTeX\.
 
@@ -113,7 +113,7 @@ A segunda rotina, associada ao teste do sistema de 5 massas e 6 molas, exibe os 
 
 A terceira rotina exibe as mesmas informações que a segunda, porém considerando o sistema de 10 massas e 11 molas. O que varia, de uma execução para outra, é o tamanho das matrizes exibidas, bem como a matriz a ser diagonalizada.
 
-A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simétrica, fornecendo sua diagonal principal e sua sobrediagonal. 
+A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simétrica, fornecendo sua diagonal principal e sua sobrediagonal.
 
 **Nota:** Ao fornecer as entradas, é essencial que o usuário pressione `[ENTER]` entre uma entrada e outra. Logo, o padrão de digitação deve ser, por exemplo `1 [ENTER] 2 [ENTER]` etc, para garantir que todas as entradas sejam lidas corretamente. Um exemplo de execução está na Figura \ref{fig:4} abaixo.
 
@@ -233,7 +233,7 @@ Em conformidade com a discussão de [@MAT3121], o _Algoritmo QR_ determina os au
 
 \begin{algorithm}
     \label{alg:qr}
-    \caption{Algoritmo QR} 
+    \caption{Algoritmo QR}
     \begin{algorithmic}[1]
         \State $A^{(0)}=A$
         \State $V^{(0)}=I_n$
@@ -242,7 +242,7 @@ Em conformidade com a discussão de [@MAT3121], o _Algoritmo QR_ determina os au
             \State $A^{(k+1)}=R^{(k)}Q^{(k)}$
             \State $V^{(k+1)}=V^{(k)}Q^{(k)}$
 		\EndFor
-	\end{algorithmic} 
+	\end{algorithmic}
 \end{algorithm}
 
 Vale notar que $A^{(k+1)}=R^{(k)}Q^{(k)}=(Q^{(k)})^TQ^{(k)}R^{(k)}Q^{(k)}=(Q^{(k)})^TA^{(k)}Q^{(k)}$. Disso podemos dizer que $A^{(k+1)}$ e $A^{(k)}$ são (ortogonalmente) semelhantes. Isso significa que, se $A^{(k)}$ é tridiagonal simétrica, então $A^{(k+1)}$ também o é.
@@ -268,7 +268,7 @@ y_{k,l}=
     \end{cases}\label{eq:2}
 \end{equation}
 
-Logo, computamos $RQ$ iterativamente aplicando a rotação $Q_k^T = Q^T(k, k+1, \theta_k)$ a cada passo em que $\theta_k$ é originado do par `(c_k, s_k)` de cossenos e senos definido previamente pela representação da matriz Q da fatoração de A. 
+Logo, computamos $RQ$ iterativamente aplicando a rotação $Q_k^T = Q^T(k, k+1, \theta_k)$ a cada passo em que $\theta_k$ é originado do par `(c_k, s_k)` de cossenos e senos definido previamente pela representação da matriz Q da fatoração de A.
 
 É válido notar que as parcelas em $R_{k,k+2}$ produzidas pelas rotações de Givens originais não influenciam nos cálculos em \ref{eq:2}, haja vista que as entradas da sobrediagonal $\beta'=(\beta_1', \beta_2', \cdots, \beta_{n-1}')$ são gerados pela subdiagonal, por simetria da matriz, justificando a ausência de um vetor $\gamma=(\gamma_1,\cdots,\gamma_{n-2})$ para as armazenar.
 
@@ -300,7 +300,7 @@ Na linha 4, utilizam-se duas funções da linguagem, `enumerate` e `zip`. A fun�
 
 O mesmo desenvolvimento a respeito da operação $A^{(k+1)}=R^{(k)}Q^{(k)}$ na seção anterior vale para a operação $V^{(k+1)}=V^{(k)}Q^{(k)}$ e, por causa disso, a implementação desta operação é praticamente análoga à primeira. A matriz $Q^{(k)}=(Q_1^TQ_2^T\cdots Q_{n-1}^T)^{(k)}$ aplicada à direita atua como uma série de rotações de Givens sobre as colunas de $V^{(k)}$. Apesar disso, devemos ter em mente que a matriz de autovalores _não é tridiagonal simétrica_. Por conseguinte, devemos operar sobre a matriz $V$ pura, conforme \ref{eq:2}, sem considerar a abstração em `alphas` e `betas` como feito para as demais matrizes.
 
-É com essa constatação que se desenvolveu a função `update_eigenvectors`, cuja implementação está no Código \ref{code:updt_eigen} abaixo, do qual omitimos os comentários que estão no _script_ original. 
+É com essa constatação que se desenvolveu a função `update_eigenvectors`, cuja implementação está no Código \ref{code:updt_eigen} abaixo, do qual omitimos os comentários que estão no _script_ original.
 
 \footnotesize
 ~~~~ {#updateeigen .python .numberLines}
@@ -321,9 +321,9 @@ As entradas da função são as matrizes $V$ e $Q$ da `k`-ésima iteração, est
 
 ### A Heurística de Wilkinson
 
-De acordo com [@MAT3121], a taxa de convergência do Algoritmo QR depende da razão $|\lambda_{j+1}/\lambda_j|$, o que a torna muito lenta caso a razão entre os módulos de autovalores consecutivos esteja próxima de 1. 
+De acordo com [@MAT3121], a taxa de convergência do Algoritmo QR depende da razão $|\lambda_{j+1}/\lambda_j|$, o que a torna muito lenta caso a razão entre os módulos de autovalores consecutivos esteja próxima de 1.
 
-Visando acelerar a convergência do método, podemos subtrair da matriz $A^{(k)}$, em cada iteração, a matriz identidade múltiplicada por uma constante escalar $\mu_k$, denominada _constante de deslocamento espectral_, que esteja próxima a um autovalor. 
+Visando acelerar a convergência do método, podemos subtrair da matriz $A^{(k)}$, em cada iteração, a matriz identidade múltiplicada por uma constante escalar $\mu_k$, denominada _constante de deslocamento espectral_, que esteja próxima a um autovalor.
 
 É importante perceber que $\mu_k$ deve ser recalculado a cada iteração. Seguindo o argumento de [@MAT3121], ao alterarmos o pseudocódigo \ref{alg:qr}, fazendo iterações da forma
 $$A^{(k)}-\mu_kI_n\rightarrow Q^{(k)}R^{(k)}$$
@@ -332,7 +332,7 @@ a taxa de convergência de uma entrada da diagonal principal $\alpha_j^{(k)}$ pa
 
 Para calcular os coeficientes de deslocamento $\mu_k$ de cada iteração, utilizamos a heurística de Wilkinson.
 
-**Heurística de Wilkinson:** Seja $d_k=(\alpha_{n-1}^{(k)}-\alpha_n^{(k)})/2$, definimos $\mu_k=\alpha_n^{(k)}+d_k-sgn(d_k)\sqrt{d_k^2+\big(\beta_{n-1}^{(k)} \big)^2}$, onde $sgn(d)$ é a função _sinal_, isto é: 
+**Heurística de Wilkinson:** Seja $d_k=(\alpha_{n-1}^{(k)}-\alpha_n^{(k)})/2$, definimos $\mu_k=\alpha_n^{(k)}+d_k-sgn(d_k)\sqrt{d_k^2+\big(\beta_{n-1}^{(k)} \big)^2}$, onde $sgn(d)$ é a função _sinal_, isto é:
 
 \begin{equation}
 sgn(d)=
@@ -358,7 +358,7 @@ A função `copysign(x, y)`, da biblioteca `math` retorna um número construído
 
 ### Função de Cálculo dos Coeficientes de Deslocamento
 
-A função exibida no Código \ref{code:wilk} implementa o cálculo dos coeficientes de deslocamento $\mu_k$ a partir da heurística de Wilkinson. 
+A função exibida no Código \ref{code:wilk} implementa o cálculo dos coeficientes de deslocamento $\mu_k$ a partir da heurística de Wilkinson.
 
 \footnotesize
 ~~~~ {#wilk .python .numberLines}
@@ -369,9 +369,9 @@ def wilkinson_h(alphas : np.array, betas : np.array) -> float:
 \normalsize
 **\label{code:wilk}Código \ref{code:wilk}:** Função de cálculo dos coeficientes de deslocamento pela heurística de Wilkinson.
 
-Todas as deduções feitas para o _Algoritmo QR_ sem deslocamento espectral valem. Isto é, todas as matrizes $A^{(k)}$ são ortogonalmente semelhantes a $A$ e, ao introduzir o deslocamento espectral,   as hipóteses realizadas anteriormente para particularização do algoritmo a Matrizes Tridiagonais Simétricas ainda são verificadas. 
+Todas as deduções feitas para o _Algoritmo QR_ sem deslocamento espectral valem. Isto é, todas as matrizes $A^{(k)}$ são ortogonalmente semelhantes a $A$ e, ao introduzir o deslocamento espectral, as hipóteses realizadas anteriormente para particularização do algoritmo a Matrizes Tridiagonais Simétricas ainda são verificadas.
 
-Fixado um $\epsilon$ de tolerância, consideramos a convergência de $\alpha_n^{(k)}$ para $\lambda_n$ quando $|\beta_{n-1}^{(k)}|<\epsilon$. Já determinado o autovalor associado a `n`-ésima posição, continua-se a execução do algoritmo com a submatriz tridiagonal $n-1\times n-1$ obtida pelo _slice_ de $A$. Esta rotina se repete até obtermos todos os autovalores de $A$ mediante a tolerância fornecida. 
+Fixado um $\epsilon$ de tolerância, consideramos a convergência de $\alpha_n^{(k)}$ para $\lambda_n$ quando $|\beta_{n-1}^{(k)}|<\epsilon$. Já determinado o autovalor associado a `n`-ésima posição, continua-se a execução do algoritmo com a submatriz tridiagonal $n-1\times n-1$ obtida pelo _slice_ de $A$. Esta rotina se repete até obtermos todos os autovalores de $A$ mediante a tolerância fornecida.
 
 ### Função de Implementação do Algoritmo
 
@@ -417,36 +417,224 @@ O código segue a descrição formal apresentada anteriormente. Na linha 7 é cr
 
 Na seção 2.3 a) de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência
 
+A implementação está no Código \ref{code:teste_1}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
+
 \footnotesize
 
-<!-- ~~~~ {#teste1 .python .numberLines}
-for i, n in enumerate([4, 8, 16, 32]):
-    alphas = np.array(n * [2.0])
-    betas = np.array((n - 1) * [-1.0])
+~~~~ {#teste1 .python .numberLines}
+def teste_1():
+    iters_com = []
+    iters_sem = []
+    for n in [4, 8, 16, 32]:
+        print(f"n = {n}")
 
-    (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
+        alphas = np.array(n * [2.0])
+        betas = np.array((n - 1) * [-1.0])
 
-    (alphas_k, betas_k, V, iterations_com) = qr_algorithm(alphas, betas, spectralShift = True)
+        print("Com deslocamento espectral")
+        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
+        iters_com.append(iterations)
+
+        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+
+        print("Sem deslocamento espectral")
+        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
+        iters_sem.append(iterations)
+
+        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+
+        eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
+        eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
+
+        print(f"Valores esperados: {eigenvalues}. \nVetores esperados: \n{eigenvectors}\n")
+        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
+        print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
+
+    print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \normalsize
-**\label{code:teste_1}Código \ref{code:teste_1}:** Laço que implementa o teste de verificação do Algoritmo QR, tanto com deslocamento espectral quanto sem.
+**\label{code:teste_1}Código \ref{code:teste_1}:** Função que implementa o teste de verificação do Algoritmo QR, tanto com deslocamento espectral quanto sem, e imprime os dados relevantes no terminal.
 
-O código apresentado itera sobre os casos desejados (matriz de dimensões 4x4, 8x8, 16x16 e 32x32). Nas linhas 2 e 3 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121]. Na linha 5 é feita a execução do Algoritmo QR sem deslocamento espectral e, na linha 7, é feita a execução com deslocamento espectral. -->
+O código apresentado itera sobre os casos desejados (matriz de dimensões 4x4, 8x8, 16x16 e 32x32). Nas linhas 2 e 3 são criados dois vetores, para armazenar as iterações em função do tamanho da matriz. Nas linhas 6 e 7 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121], com os comprimentos adequados ao tamanho da matriz desejado. Na linha 10 é feita a execução do Algoritmo QR com deslocamento espectral e, na linha 17, é feita a execução sem deslocamento espectral. Nas linhas 11 e 18 são adicionados os valores do número de iterações para os vetores apropriados. Nas linhas 23 e 24 são calculados os valores teóricos esperados, cujas fórmulas são definidas em [@MAT3121].
 
-\begin{figure}[h]
-    \includegraphics[width = \linewidth]{fig1.png}
-    \centering
-    \caption{Exemplo}
-    \label{fig:aa}
-\end{figure}
+A função auxiliar `qr_1` utilizada nesse código executa o algoritmo QR de mesma maneira que a função em \ref{code:qr_algo}, mas calcula os erros máximo e médio absolutos a cada iteração e os retornam em um `np.array`. Os erros foram definidos como
+
+$E^{(k)}_{máx}=máx|\alpha^{(k)}_j-\lambda_j|$
+
+Com $j\in[1,2,3...n]$ e
+
+$E^{(k)}_{avg}=\frac{1}{n}\sum\limits^n_{j=1}|\alpha^{(k)}_j-\lambda_j|$
+
+Sendo $k$ o número da iteração.
+
+\scriptsize
+
+~~~~ {#qr1 .python .numberLines}
+def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float = 1e-6) -> Tuple[np.array, np.array, np.array, np.array, int]:
+    alphas_k = alphas.copy()
+    betas_k = betas.copy()
+    V = np.identity(len(alphas_k))
+    mu = 0
+    iterations = 0
+    eigenvalues = [2 * (1 - cos(i * pi / (len(alphas_k) + 1))) for i in range(1, (len(alphas_k) + 1))][::-1]
+    E_max = []
+    E_avg = []
+    for m in reversed(range(1, len(alphas))):
+        while abs(betas_k[m - 1]) >= eps:
+            (c_ks, s_ks, alphas_sub, betas_sub) = qr_factorization(alphas_k[: m + 1] - mu * np.ones(m + 1), betas_k[: m + 1])
+            (alphas_k[: m + 1], betas_k[: m + 1]) = update_matrix(c_ks, s_ks, alphas_sub, betas_sub)
+
+            alphas_k[: m + 1] += mu * np.ones(m + 1)
+
+            V = update_eigenvectors(V, c_ks, s_ks)
+
+            mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if shift else 0
+
+            E_avg.append(np.mean(np.array([abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))])))
+            E_max.append(max(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+
+            iterations += 1
+
+    return (alphas_k, betas_k, V, np.array([np.array(E_avg), np.array(E_max)]), iterations)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:qr_1}Código \ref{code:qr_1}:** Função auxiliar para cálculo dos erros médio e máximo absolutos por iteração do algoritmo.
 
 ## Teste 2: Sistema Massa-Mola com 5 Massas
 
 ### Implementação do Teste
 
+A implementação está no Código \ref{code:teste_2}, abaixo, do qual se retiraram os comentários e a seção de geração dos gráficos, mantidos no arquivo original do _script_.
+
+\scriptsize
+
+~~~~ {#teste2 .python .numberLines}
+def teste_2():
+    k = [40 + 2 * i for i in range(1, 7)]
+
+    alphas = np.array([(a + b) / 2 for (a, b) in zip(k, k[1:])])
+    betas = np.array([-b/2 for b in k[1:-1]])
+
+    print("Sem deslocamento espectral")
+    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+
+    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+
+    print("Com deslocamento espectral")
+    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+
+    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+
+    for X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
+        Y0 = np.matmul(np.transpose(V), X0)
+
+        print(f"X(0) = {X0}\nY(0) = {Y0}")
+
+        print(f"X(t) = [")
+        print(f"\t{V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+        for j in range(1, 5):
+            a = V[0][j] * Y0[j]
+            if abs(a) > 1e-6:
+                if a > 0:
+                    print(" + ", end = "")
+                elif a < 0:
+                    print(" - ", end = "")
+
+                print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
+
+        for i in range(1, 5):
+            print(",")
+            print(f"\t{V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+            for j in range(1, 5):
+                a = V[i][j] * Y0[j]
+                if abs(a) > 1e-6:
+                    if a > 0:
+                        print(" + ", end = "")
+                    elif a < 0:
+                        print(" - ", end = "")
+
+                    print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
+
+        print("\n]")
+
+        t = 0
+        print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}\n")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:teste_2}Código \ref{code:teste_2}:** Função que resolve a EDO equivalente ao sistema de 5 massas e 6 molas, para os três casos pedidos.
+
+O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e autovetores da matriz A da EDO do sistema. Após isso, imprime na tela os valores encontrados e o número de iterações necessárias para a convergência. Por fim, para cada $X(0)$ dado apresenta na tela a solução $X(t)$ encontrada para o sistema e verifica o caso $X(t = 0)$, para fins de verificação.
+
+Na linha 2 são calculados os $k_n$ das molas e, nas linhas 4 e 5 esses valores são utilizados para construir a diagonal principal e a sobrediagonal da matriz $A$. Na linha 8 é executado o Algoritmo QR sem deslocamento espectral e, na linha 13, o algoritmo é executado com deslocamento espectral. Para o cálculo da solução do sistema, é utilizado o resultado da execução do algoritmo com deslocamento espectral.
+
 ## Teste 3: Sistema Massa-Mola com 10 Massas
 
 ### Implementação do Teste
+
+A implementação está no Código \ref{code:teste_3}, abaixo, do qual se retiraram os comentários e a seção de geração dos gráficos, mantidos no arquivo original do _script_.
+
+\tiny
+
+~~~~ {#teste3 .python .numberLines}
+def teste_3():
+    k = [40 + 2 * (-1) ** i for i in range(1, 12)]
+
+    alphas = np.array([(a + b) / 2 for (a, b) in zip(k, k[1:])])
+    betas = np.array([-b/2 for b in k[1:-1]])
+
+    print("Sem deslocamento espectral")
+    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+
+    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+
+    print("Com deslocamento espectral")
+    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+
+    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+
+    for X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
+        Y0 = np.matmul(np.transpose(V), X0)
+
+        print(f"X(0) = {X0}\nY(0) = {Y0}")
+
+        print(f"X(t) = [")
+        print(f"\t{V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+        for j in range(1, 10):
+            a = V[0][j] * Y0[j]
+            if abs(a) > 1e-6:
+                if a > 0:
+                    print(" + ", end = "")
+                elif a < 0:
+                    print(" - ", end = "")
+
+                print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
+
+        for i in range(1, 10):
+            print(",")
+            print(f"\t{V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+            for j in range(1, 10):
+                a = V[i][j] * Y0[j]
+                if abs(a) > 1e-6:
+                    if a > 0:
+                        print(" + ", end = "")
+                    elif a < 0:
+                        print(" - ", end = "")
+
+                    print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
+
+        print("\n]")
+
+        t = 0
+        print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}\n")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\normalsize
+**\label{code:teste_3}Código \ref{code:teste_3}:** Função que resolve a EDO equivalente ao sistema de 10 massas e 11 molas, para os três casos pedidos.
+
+O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e autovetores da matriz A da EDO do sistema. Após isso, imprime na tela os valores encontrados e o número de iterações necessárias para a convergência. Por fim, para cada $X(0)$ dado apresenta na tela a solução $X(t)$ encontrada para o sistema e verifica o caso $X(t = 0)$, para fins de verificação.
+
+Sua implementação é análoga à do teste 2.
 
 \pagebreak
 # Resultados e Discussão {#sec:results}

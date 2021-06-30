@@ -224,7 +224,6 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
     iterations = 0
     eigenvalues = [2 * (1 - cos(i * pi / (len(alphas_k) + 1))) for i in range(1, (len(alphas_k) + 1))][::-1]
     E_max = []
-    E_min = []
     E_avg = []
     for m in reversed(range(1, len(alphas))):
         while abs(betas_k[m - 1]) >= eps:
@@ -237,13 +236,12 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 
             mu = wilkinson_h(alphas_k[: m + 1], betas_k[: m + 1]) if shift else 0
 
-            # E_min.append(min(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
             E_avg.append(np.mean(np.array([abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))])))
-            # E_max.append(max(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
+            E_max.append(max(abs(sorted(alphas_k, reverse = True)[i] - eigenvalues[i]) for i in range(len(alphas_k))))
 
             iterations += 1
 
-    return (alphas_k, betas_k, V, np.array([np.array(E_min), np.array(E_avg), np.array(E_max)]), iterations)
+    return (alphas_k, betas_k, V, np.array([np.array(E_avg), np.array(E_max)]), iterations)
 
 def teste_1():
     iters_com = []
@@ -259,14 +257,14 @@ def teste_1():
         iters_com.append(iterations)
 
         print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-        print(f"Erro mínimo por iteração: {E[0]}\n Erro médio por iteração: {E[1]}\n Erro máximo por iteração: {E[2]}\n")
+        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
 
         print("Sem deslocamento espectral")
         (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
         iters_sem.append(iterations)
 
         print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-        print(f"Erro mínimo por iteração: {E[0]}\n Erro médio por iteração: {E[1]}\n Erro máximo por iteração: {E[2]}\n")
+        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
 
         eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
         eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
@@ -351,7 +349,7 @@ def teste_2():
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
 
     for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
-        Y0 =np.matmul(np.transpose(V), X0)
+        Y0 = np.matmul(np.transpose(V), X0)
         # Y(0) = Q^T x X(0)
 
         print(f"X(0) = {X0}\nY(0) = {Y0}")
@@ -481,7 +479,7 @@ def teste_3():
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
 
     for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
-        Y0 =np.matmul(np.transpose(V), X0)
+        Y0 = np.matmul(np.transpose(V), X0)
         # Y(0) = Q^T x X(0)
 
         print(f"X(0) = {X0}\nY(0) = {Y0}")
