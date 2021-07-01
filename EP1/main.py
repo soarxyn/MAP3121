@@ -301,7 +301,7 @@ def teste_1():
 def teste_2():
     """
         Rotinas de Testes para o Problema 2.
-        Exibe parâmetros, 
+        Exibe parâmetros das massas e molas, frequências e modos de oscilação, bem como as funções que descrevem o sistema.
     """
     print("""
       Você selecionou o teste: Sistema massa-mola com 5 molas.""")
@@ -379,6 +379,10 @@ def teste_2():
             print(f"      X(t = {t:2}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}")
 
 def teste_3():
+    """
+        Rotinas de Testes para o Problema 3.
+        Exibe parâmetros das massas e molas, frequências e modos de oscilação, bem como as funções que descrevem o sistema.
+    """
     print("""
       Você selecionou o teste: Sistema massa-mola com 10 molas.""")
     print("""
@@ -454,6 +458,348 @@ def teste_3():
         for t in [0, 5, 10]:
             print(f"      X(t = {t:2}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}")
 
+def plot_1():
+    """
+        Exibe os gráficos associados ao problema 1.
+    """
+
+    n = int(input("      Forneça o tamanho máximo da matriz (maior que 3) para calcular o número de iterações: "))
+    sys.stdout.write('\x1b[1A')
+    sys.stdout.write('\x1b[2K')
+    print(f"      n máximo: {n}                                     \n")
+
+    dots = 0
+    print("      Preparando os gráficos")
+    print(f"      Calculando o número de iterações com e sem deslocamento. (n = 3/{n})")
+
+    iters_sem = []
+    iters_com = []
+    for i in range(3, n + 1):
+        alphas = np.array(i * [2.0])
+        betas = np.array((i-1) * [-1.0])
+    
+        (_, _, _, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+        iters_sem.append(iterations)
+
+        (_, _, _, iterations) = qr_algorithm(alphas, betas)
+        iters_com.append(iterations)
+
+        sys.stdout.write('\x1b[1A')
+        sys.stdout.write('\x1b[1A')
+
+        if dots == 0: 
+            print("      Preparando os gráficos.")
+            dots += 1
+        elif dots == 1: 
+            print("      Preparando os gráficos..")
+            dots += 1
+        elif dots == 2: 
+            print("      Preparando os gráficos...")
+            dots += 1
+        else: 
+            print("      Preparando os gráficos      ")
+            dots = 0
+        
+        print(f"      Calculando o número de iterações com e sem deslocamento. (n = {i}/{n})")
+
+    fig = plt.figure()
+    fig.set_size_inches(18.5, 10.5)
+    (axis1, axis2) = fig.subplots(1, 2)
+    fig.suptitle("Número de Iterações por Tamanho da Matriz")
+
+    n_space = np.linspace(3, len(iters_com), len(iters_com))
+
+    axis1.plot(n_space, iters_sem, color = "red", lw = 1.5)
+    axis1.set_title("Sem Deslocamento Espectral")
+    axis1.set_xlabel("Tamanho da Matriz")
+    axis1.set_ylabel("Número de Iterações")
+
+    axis2.plot(n_space, iters_com, color = "green", lw = 1.5)
+    axis2.set_title("Com Deslocamento Espectral")
+    axis2.set_xlabel("Tamanho da Matriz")
+    axis2.set_ylabel("Número de Iterações")
+
+    plt.show()
+
+    print("\n      O gráfico a seguir exibirá a evolução do erro médio dos autovalores por iteração. Calcularemos o Algoritmo QR para uma matriz tridiagonal simétrica n = 512, o que pode demorar um pouco!")
+
+    alphas = np.array(512 * [2.0])
+    betas = np.array(511 * [-1.0])
+
+    (_, _, _, E, iterations) = qr_1(alphas, betas)
+    E = E[1]
+
+    fig = plt.figure()
+    fig.set_size_inches(18.5, 10.5)
+
+    ax = fig.add_subplot(111)
+    
+    ax.set_yscale('log')
+
+    n_space = np.linspace(0, iterations, iterations)
+
+    ax.plot(n_space, E, color = "red", lw = 1.5)
+    ax.set_title("Evolução do Erro por Iteração")
+    ax.set_xlabel("Iteração")
+    ax.set_ylabel("Erro Médio dos Autovalores")
+
+    plt.show()
+
+def plot_2():
+    """
+        Exibe os gráficos e animações associados ao problema 2.
+    """
+    print("")
+    k = [40 + 2 * i for i in range(1, 7)]
+
+    alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
+    betas = np.array([-b/2 for b in k[1:-1]])
+
+    (alphas_k, _, V, _) = qr_algorithm(alphas, betas)
+
+    initial_conditions = [np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]
+    mass_positions = [[10 * i for i in range(0, 6)], [20 * i for i in range(0, 6)], [10 * i for i in range(0, 6)]]
+    xlims = [50, 90, 50]
+    ylims = [4, 12, 2]
+
+    for (X0, P0, xlim, ylim) in zip(initial_conditions, mass_positions, xlims, ylims):
+        print(f"      Exibindo gráfico para X(0) = {X0}")
+        Y0 = np.matmul(np.transpose(V), X0)
+        
+        time = np.linspace(0, 10, int(10 / 0.025))
+        solution = np.array([[sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for t in time] for i in range(5)])
+
+        fig, axes = plt.subplots(2, 3)
+        fig.set_size_inches(18.5, 10.5)
+        fig.suptitle('Evolução do Sistema no Tempo')
+        fig.subplots_adjust(hspace = 0.4)
+        fig.delaxes(axes[1, 2])
+
+        plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
+
+        axes[0, 0].plot(time, solution[0], color = "blue", lw = 1.5)
+        axes[0, 1].plot(time, solution[1], color = "red", lw = 1.5)
+        axes[0, 2].plot(time, solution[2], color = "lime", lw = 1.5)
+        axes[1, 0].plot(time, solution[3], color = "purple", lw = 1.5)
+        axes[1, 1].plot(time, solution[4], color = "coral", lw = 1.5)
+
+        for i, axis in enumerate(axes.flat):
+            axis.set_ylabel("Deslocamento (cm)")
+            axis.set_xlabel("Tempo (s)")
+            axis.set_title(f"Massa {i+1}")
+
+        plt.show()  
+
+        option = input("      Deseja visualizar uma animação para este caso? (S/n): ")
+
+        if option != 'n' and option != 'N':
+            print("")
+
+            time = []
+        
+            solution = [[], [], [], [], []]
+
+            fig, axes = plt.subplots(2, 3)
+            plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
+            fig.set_size_inches(18.5, 10.5)
+            fig.suptitle('Evolução do Sistema no Tempo')
+            fig.subplots_adjust(hspace = 0.4)
+
+            mat0 = axes[0, 0].plot([], [], color = "blue", lw = 1.5)
+            mat1 = axes[0, 1].plot([], [], color = "red", lw = 1.5)
+            mat2 = axes[0, 2].plot([], [], color = "lime", lw = 1.5)
+            mat3 = axes[1, 0].plot([], [], color = "purple", lw = 1.5)
+            mat4 = axes[1, 1].plot([], [], color = "coral", lw = 1.5)
+            axes[1, 2].set_xlim(-10, xlim)
+            mat5 = axes[1, 2].plot([], [], 'o')
+
+            patches = list(mat0) + list(mat1) + list(mat2) + list(mat3) + list(mat4) + list(mat5)
+
+            axes[0, 0].set_ylim(-ylim, ylim)
+            axes[0, 1].set_ylim(-ylim, ylim)
+            axes[0, 2].set_ylim(-ylim, ylim)
+            axes[1, 0].set_ylim(-ylim, ylim)
+            axes[1, 1].set_ylim(-ylim, ylim)
+
+            def init():
+                global time
+                global solution
+                time = []
+                solution = [[], [], [], [], []]
+                mat0[0].set_data([], [])
+                mat1[0].set_data([], [])
+                mat2[0].set_data([], [])
+                mat3[0].set_data([], [])
+                mat4[0].set_data([], [])
+                mat5[0].set_data([], [])
+                return patches
+
+            def animate(index):
+                t = index * 0.025
+                time.append(t)
+
+                for i in range(5):
+                    solution[i].append(sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]))
+
+                mat0[0].set_data(time, solution[0])
+                mat1[0].set_data(time, solution[1])
+                mat2[0].set_data(time, solution[2])
+                mat3[0].set_data(time, solution[3])
+                mat4[0].set_data(time, solution[4])
+                mat0[0].axes.set_xlim(t - 1, t)
+                axes[0, 1].set_xlim(t - 1, t)
+                axes[0, 2].set_xlim(t - 1, t)
+                axes[1, 0].set_xlim(t - 1, t)
+                axes[1, 1].set_xlim(t - 1, t)
+
+                X = np.array([P0[i] + solution[i][index] for i in range(5)])
+                Y = np.zeros(np.shape(X))
+
+                mat5[0].set_data(X,Y)
+                return patches
+            
+            for i, axis in enumerate(axes.flat[:-1]):
+                axis.set_ylabel("Deslocamento (cm)")
+                axis.set_title(f"Massa {i+1}")
+                axis.set_xticks([])
+
+            anim = FuncAnimation(fig, animate, init_func=init, frames=1000000, interval=10, blit=True)
+
+            for i, axis in enumerate(axes.flat[:-1]):
+                axis.set_ylabel("Deslocamento (cm)")
+            axes[1, 2].set_xlabel("Posição (cm)")
+            axes[1, 2].set_yticks([])
+            axes[1, 2].set_title("Sistema")
+
+            plt.show()
+
+def plot_3():
+    """
+        Exibe os gráficos e animações associados ao problema 3.
+    """
+    print("")
+    k = [40 + 2 * i for i in range(1, 7)]
+
+    alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
+    betas = np.array([-b/2 for b in k[1:-1]])
+
+    (alphas_k, _, V, _) = qr_algorithm(alphas, betas)
+
+    initial_conditions = [np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]
+    mass_positions = [[10 * i for i in range(0, 6)], [20 * i for i in range(0, 6)], [10 * i for i in range(0, 6)]]
+    xlims = [50, 90, 50]
+    ylims = [4, 12, 2]
+
+    for (X0, P0, xlim, ylim) in zip(initial_conditions, mass_positions, xlims, ylims):
+        print(f"      Exibindo gráfico para X(0) = {X0}")
+        Y0 = np.matmul(np.transpose(V), X0)
+        
+        time = np.linspace(0, 10, int(10 / 0.025))
+        solution = np.array([[sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for t in time] for i in range(5)])
+
+        fig, axes = plt.subplots(2, 3)
+        fig.set_size_inches(18.5, 10.5)
+        fig.suptitle('Evolução do Sistema no Tempo')
+        fig.subplots_adjust(hspace = 0.4)
+        fig.delaxes(axes[1, 2])
+
+        plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
+
+        axes[0, 0].plot(time, solution[0], color = "blue", lw = 1.5)
+        axes[0, 1].plot(time, solution[1], color = "red", lw = 1.5)
+        axes[0, 2].plot(time, solution[2], color = "lime", lw = 1.5)
+        axes[1, 0].plot(time, solution[3], color = "purple", lw = 1.5)
+        axes[1, 1].plot(time, solution[4], color = "coral", lw = 1.5)
+
+        for i, axis in enumerate(axes.flat):
+            axis.set_ylabel("Deslocamento (cm)")
+            axis.set_xlabel("Tempo (s)")
+            axis.set_title(f"Massa {i+1}")
+
+        plt.show()  
+
+        option = input("      Deseja visualizar uma animação para este caso? (S/n): ")
+
+        if option != 'n' and option != 'N':
+            print("")
+
+            time = []
+        
+            solution = [[], [], [], [], []]
+
+            fig, axes = plt.subplots(2, 3)
+            plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
+            fig.set_size_inches(18.5, 10.5)
+            fig.suptitle('Evolução do Sistema no Tempo')
+            fig.subplots_adjust(hspace = 0.4)
+
+            mat0 = axes[0, 0].plot([], [], color = "blue", lw = 1.5)
+            mat1 = axes[0, 1].plot([], [], color = "red", lw = 1.5)
+            mat2 = axes[0, 2].plot([], [], color = "lime", lw = 1.5)
+            mat3 = axes[1, 0].plot([], [], color = "purple", lw = 1.5)
+            mat4 = axes[1, 1].plot([], [], color = "coral", lw = 1.5)
+            axes[1, 2].set_xlim(-10, xlim)
+            mat5 = axes[1, 2].plot([], [], 'o')
+
+            patches = list(mat0) + list(mat1) + list(mat2) + list(mat3) + list(mat4) + list(mat5)
+
+            axes[0, 0].set_ylim(-ylim, ylim)
+            axes[0, 1].set_ylim(-ylim, ylim)
+            axes[0, 2].set_ylim(-ylim, ylim)
+            axes[1, 0].set_ylim(-ylim, ylim)
+            axes[1, 1].set_ylim(-ylim, ylim)
+
+            def init():
+                global time
+                global solution
+                time = []
+                solution = [[], [], [], [], []]
+                mat0[0].set_data([], [])
+                mat1[0].set_data([], [])
+                mat2[0].set_data([], [])
+                mat3[0].set_data([], [])
+                mat4[0].set_data([], [])
+                mat5[0].set_data([], [])
+                return patches
+
+            def animate(index):
+                t = index * 0.025
+                time.append(t)
+
+                for i in range(5):
+                    solution[i].append(sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]))
+
+                mat0[0].set_data(time, solution[0])
+                mat1[0].set_data(time, solution[1])
+                mat2[0].set_data(time, solution[2])
+                mat3[0].set_data(time, solution[3])
+                mat4[0].set_data(time, solution[4])
+                mat0[0].axes.set_xlim(t - 1, t)
+                axes[0, 1].set_xlim(t - 1, t)
+                axes[0, 2].set_xlim(t - 1, t)
+                axes[1, 0].set_xlim(t - 1, t)
+                axes[1, 1].set_xlim(t - 1, t)
+
+                X = np.array([P0[i] + solution[i][index] for i in range(5)])
+                Y = np.zeros(np.shape(X))
+
+                mat5[0].set_data(X,Y)
+                return patches
+            
+            for i, axis in enumerate(axes.flat[:-1]):
+                axis.set_ylabel("Deslocamento (cm)")
+                axis.set_title(f"Massa {i+1}")
+                axis.set_xticks([])
+
+            anim = FuncAnimation(fig, animate, init_func=init, frames=1000000, interval=10, blit=True)
+
+            for i, axis in enumerate(axes.flat[:-1]):
+                axis.set_ylabel("Deslocamento (cm)")
+            axes[1, 2].set_xlabel("Posição (cm)")
+            axes[1, 2].set_yticks([])
+            axes[1, 2].set_title("Sistema")
+
+            plt.show()
 
 import sys
 
@@ -567,15 +913,15 @@ if __name__ == "__main__":
       Digite um número (1 - 3): """))
 
         if grafico == 1:
-            teste_1()
+            plot_1()
         elif grafico == 2:
-            teste_2()
+            plot_2()
         elif grafico == 3:
-            teste_3()
+            plot_3()
         else:
             print("\nInválido\n\n")
     else:
         print("\nInválido!\n\n")
 
 
-    print("Rotinas de teste concluídas! Obrigado pela execução!")
+    print("      Rotinas de teste concluídas! Obrigado pela execução!")
