@@ -705,6 +705,145 @@ O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e aut
 Sua implementação é análoga à do teste 2.
 
 \pagebreak
+
+## Função Principal
+
+A função principal do programa segue uma interface simples, com opções numeradas que o usuário pode selecionar.
+
+\scriptsize
+
+~~~~ {#principal .python .numberLines}
+if __name__ == "__main__":
+    np.set_printoptions(precision = 12, linewidth = 200, suppress = True, sign = ' ')
+
+    teste = int(input("""
+         _____ ____  _       __  __    _    ____ _____ _ ____  _
+        | ____|  _ \/ |     |  \/  |  / \  |  _ \___ // |___ \/ |
+        |  _| | |_) | |_____| |\/| | / _ \ | |_) ||_ \| | __) | |
+        | |___|  __/| |_____| |  | |/ ___ \|  __/___) | |/ __/| |
+        |_____|_|   |_|     |_|  |_/_/   \_\_|  |____/|_|_____|_|
+            [ Exercício Programa # 1 - Métodos Numéricos ]
+
+      Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
+      =============================================================
+
+      Gabriel Macias de Oliveira - NUSP: 11260811
+      Rodrigo Ryuji Ikegami      - NUSP: 10297265
+
+      Por favor, escolha uma das seguintes rotinas de teste para proseguir:
+
+      (1) Matriz com diagonal principal e subdiagonal constantes.
+      (2) Sistema massa-mola com 5 molas.
+      (3) Sistema massa-mola com 10 molas.
+      (4) Matriz arbitrária.
+      (5) Gráficos
+
+      Digite um número (1 - 5): """))
+
+    if teste == 1:
+        teste_1()
+    elif teste == 2:
+        teste_2()
+    elif teste == 3:
+        teste_3()
+    elif teste == 4:
+        print("""
+      Você selecionou o teste: Matriz arbitrária.""")
+
+        n = int(input("""
+      Entre com o tamanho da matriz tridiagonal simétrica a ser diagonalizado: """))
+
+        alphas = []
+        betas = []
+
+        print("""
+      OBSERVAÇÃO: Ao inserir dados nos campos a seguir, entre com um por vez, pressionando [ENTER] entre cada entrada.""")
+        print("""
+      Insira as entradas da diagonal principal da matriz: """, end = '')
+
+        alphas.append(int(input("""[""")))
+        for i in range(1, n):
+            sys.stdout.write('\x1b[1A')
+            print("""      Insira as entradas da diagonal principal da matriz: [""", end = "")
+            for elem in alphas:
+                print(f"{elem}, ", end = "")
+            alphas.append(int(input("")))
+        sys.stdout.write('\x1b[1A')
+        print(f"""      Diagonal principal: {alphas}                                      """)
+
+        print("""
+      Insira as entradas da sobrediagonal da matriz: """, end = '')
+
+        betas.append(int(input("""[""")))
+        for i in range(1, n - 1):
+            sys.stdout.write('\x1b[1A')
+            print("""      Insira as entradas da sobrediagonal da matriz: [""", end = "")
+            for elem in betas:
+                print(f"{elem}, ", end = "")
+            betas.append(int(input("")))
+        sys.stdout.write('\x1b[1A')
+        print(f"""      Sobrediagonal: {betas}                                      """)
+
+        spectralShift = True
+
+        if input("""
+      Utilizar deslocamento espectral? (S/n): """) == 'n':
+            spectralShift = False
+
+        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas, spectralShift)
+
+        print("""
+      Matriz a ser diagonalizada:
+        """)
+        print("     ", np.array2string(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1), prefix = "      "))
+
+        print(f"""
+      Concluído em {iterations_w} iterações.
+        """)
+
+        print(f"""
+      Autovalores: {alphas_k}
+        """)
+
+        print("""
+      Autovetores:
+        """)
+        print("     ", np.array2string(V, prefix = "      "))
+
+        print("\n\n")
+
+    elif teste == 5:
+        grafico = int(input("""
+      Selecione o caso para o qual devem ser gerados os gráficos:
+
+      (1) Matriz com diagonal principal e subdiagonal constantes.
+      (2) Sistema massa-mola com 5 molas.
+      (3) Sistema massa-mola com 10 molas.
+
+      Digite um número (1 - 3): """))
+
+        if grafico == 1:
+            plot_1()
+        elif grafico == 2:
+            plot_2()
+        elif grafico == 3:
+            plot_3()
+        else:
+            print("\nInválido\n\n")
+    else:
+        print("\nInválido!\n\n")
+
+
+    print("      Rotinas de teste concluídas! Obrigado pela execução!")
+~~~~
+\normalsize
+**\label{code:main}Código \ref{code:main}:** Função principal de execução. Implementa a CLI.
+
+Nas linhas 4 a 26 do código, é impressa a tela principal da CLI, com o pedido da entrada de um número de 1 a 5 pelo usuário. Dependendo do valor inserido, o programa inicia uma rotina específica. As entradas 1 a 3 chamam as funções de teste descritas anteriormente. A rotina 4 é implementada na própria função principal, e seu funcionamento foi descrito na introdução. A 5ª rotina dá a opção de geração de gráficos para cada um dos 3 testes propostos em [@MAT3121].
+
+Para o teste 1, é impresso o gráfico do número de iterações do Algoritmo QR, com e sem deslocamento espectral, pelo tamanho $n$ da matriz, variando de 3 a 64. Além disso, é mostrado um gráfico da evolução do erro médio absoluto por iteração, definido anteriormente, também para $n=3,4,5...64$. Para os testes 2 e 3, são mostrados gráficos dos deslocamentos nos primeiros 10 segundos para todas as massas. Adicionalmente, pode-se optar por visualizar uma animação das massas e molas do sistema, conforme o tempo avança. Para o teste 2, são animados simultaneamente os deslocamentos das massas ao longo do tempo. Para o teste 3, para evitar poluição visual, decidiu-se não animar os deslocamentos, apenas as massas e molas.
+
+\pagebreak
 # Resultados e Discussão {#sec:results}
 
 ## Resultados para o Teste 1
