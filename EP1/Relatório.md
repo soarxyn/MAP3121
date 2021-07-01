@@ -852,9 +852,9 @@ Executamos o Algoritmo QR, com e sem deslocamento espectral, para os casos em qu
     \label{table:3}
 \end{table}
 
-[RODRIGO COMENTE AQUI]
+Para os valores tabelados, é possível observar uma correlação numérica entre o valor de $n$ e o número de iterações necessárias para convergência. Para o uso de deslocamento espectral, todos os valores apresentados se aproximam de $2n$, com erro absoluto de 3, no máximo. Para a execução do algoritmo sem deslocamento espectral, todos os valores apresentados estão entre $1,5n^2$ e $3n^2$.
 
-[coloque um conector bonito aqui], executou-se o Algoritmo QR para $n$ variando de $3$ a $128$, com e sem deslocamento espectral, e coletamos o número de iterações para cada teste. Com tais valores, foi possível produzir os gráficos da Figura \ref{fig:t1} abaixo.
+A fim de desenvolver uma análise mais profunda a respeito dessa correlação, executamos o Algoritmo QR para $n$ variando de $3$ a $128$, com e sem deslocamento espectral, e coletamos o número de iterações para cada teste. Com tais valores, foi possível produzir os gráficos da Figura \ref{fig:t1} abaixo.
 
 \begin{figure}[h]
     \centering
@@ -919,11 +919,11 @@ Portanto, devemos resolver EDOs da forma $y''_j(t)=-\lambda_jy_j(t)$. Sua soluç
 \end{matrix}
 $$
 
-Notamos que, ao associar à solução-geral do sistema um conjunto de condições inicias (c.i.s), a solução fica unicamente definida para o problema em questão. Por exemplo, pode-se tomar $X(0)$ e $X'(0)$. Nota-se que condições iniciais em $X$ não são diretamente operáveis em $Y$ e devem passar pela transformação original.
+Vale ressaltar que, ao associar à solução-geral do sistema um conjunto de condições inicias (c.i.s), a solução fica unicamente definida para o problema em questão. Por exemplo, pode-se tomar $X(0)$ e $X'(0)$. Nota-se que condições iniciais em $X$ não são diretamente operáveis em $Y$ e devem passar pela transformação original.
 
-Em ambos os sistemas massa-mola a se resolver, temos que $X'(0)=0$.  $Q$ é inversível, logo $Q$ é bijetora. Portanto, $0_X\mapsto 0_Y$. Assim $Y'(0)=0$. $Y'(t)$ é dada por suas componentes $y'_j(t)=-a_j\omega_j\sin(\omega_j t)+b_j\omega_j\cos(\omega_j t)$. Como $Y'(0)=0$, $y'_j(0)=-a_j\omega_j\sin(0)+b_j\omega_j\cos(0)=b_j\omega_j=0\iff b_j=0$. Com isso, resta apenas o termo cossenoidal nas funções de $Y$, isto é, $y_j(t)=a_j\cos(\omega_j t)$. 
+Em ambos os sistemas massa-mola a se resolver, temos que $X'(0)=0$.  $Q$ é inversível, logo $Q$ é bijetora. Portanto, $0_X\mapsto 0_Y$ e, consequentemente, $Y'(0)=0$. $Y'(t)$ é dada por suas componentes $y'_j(t)=-a_j\omega_j\sin(\omega_j t)+b_j\omega_j\cos(\omega_j t)$. Como $Y'(0)=0$, $y'_j(0)=-a_j\omega_j\sin(0)+b_j\omega_j\cos(0)=b_j\omega_j=0\iff b_j=0$. Com isso, resta apenas o termo cossenoidal nas funções de $Y$, isto é, $y_j(t)=a_j\cos(\omega_j t)$. 
 
-Para encontrar $Y(0)$, devemos fazer $Y(0)=Q^TX(0)$. Sendo $Y(0)=(a_1, a_2, \dots, a_n)^T$, portanto: $(a_1, a_2, \dots, a_n)^T =  QX(0)$. Definido $Y(t)$ pelo problema de c.i.s, podemos reconstruir $X(t)$ fazendo $X(t)=QY(t)$.
+Para encontrar $Y(0)$, devemos fazer $Y(0)=Q^TX(0)$, sendo $Y(0)=(a_1, a_2, \dots, a_n)^T$ e, portanto: $(a_1, a_2, \dots, a_n)^T = Q^TX(0)$. Definido $Y(t)$ pelo problema de c.i.s, podemos reconstruir $X(t)$ fazendo $X(t)=QY(t)$.
 
 ### Solução para o Teste 2
 
@@ -937,7 +937,7 @@ Para o teste 2, desejamos solucionar o sistema mecânico composto por $5$ massas
     \end{bmatrix}
 $$
 
-Executando o Algoritmo QR com deslocamento espectral sobre $A$, encontramos seus autovalores, que podem ser transformados nas frequências do sistema. Os autovalores de $A$, bem como sua conversão em frequência estão na Tabela \ref{table:4}.
+Executando o Algoritmo QR com deslocamento espectral sobre $A$, encontramos seus autovalores, que podem ser transformados nas frequências do sistema. Os autovalores de $A$, bem como sua conversão em frequência, estão na Tabela \ref{table:4}.
 
 \begin{table}[h!]
     \centering
@@ -1011,7 +1011,7 @@ O deslocamento resultante de cada mola é a superposição de componentes cossen
      4.095209\cos(2,503866 t) \\
 \end{bmatrix}$$
 
-Assim encontramos a solução $X(t)$ por $X(t)=QY(t)$, resultando: $$\begin{bmatrix}
+Assim, encontramos a solução $X(t)$ por $X(t)=QY(t)$, resultando em: $$\begin{bmatrix}
      x_1(t) \\ x_2(t) \\ x_3(t) \\ x_4(t) \\ x_5(t)
 \end{bmatrix}=\begin{bmatrix}
 -1.609797 & - 1.884524 &  0.604447 &  2.618370 &  1.271504 \\
@@ -1033,9 +1033,9 @@ Apresentamos a evolução do sistema abaixo na Figura \ref{fig:t4}
     \label{fig:t4}
 \end{figure}
 
-Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletido pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação. Por fim, notamos que as massas conectadas a molas de maiores constantes elásticas.
+Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletida pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação. Por fim, notamos que as massas conectadas a molas de maiores constantes elásticas.
 
-**Terceiro Conjunto de Condições Iniciais**  Deve-se utilizar como c.i. o autovetor associado ao autovalor de maior frequência. Portanto, $X(0)=( 0.189335, -0.391105,  0.557661, -0.588202, 0.392711)^T$, temos portanto $Y(0)=Q^TX(0)=(1, 0, 0, 0, 0)^T$. Logo $Y(t)$ é o vetor $$Y(t)=\begin{bmatrix}
+**Terceiro Conjunto de Condições Iniciais**  Deve-se utilizar como c.i. o autovetor associado ao autovalor de maior frequência. Portanto, $X(0)=( 0.189335, -0.391105,  0.557661, -0.588202, 0.392711)^T$. Temos portanto $Y(0)=Q^TX(0)=(1, 0, 0, 0, 0)^T$. Logo, $Y(t)$ é o vetor $$Y(t)=\begin{bmatrix}
  0.189335 \cos(9.404520 t) \\
 -0.391105 \cos(9.404520 t) \\
 0.557661 \cos(9.404520 t) \\
@@ -1058,7 +1058,7 @@ Como o vetor de deslocamento inicial é um autovetor da matriz de coeficientes d
 
 ### Solução para o Teste 3
 
-Neste teste, soluciona-se um sistema de $10$ massas e $11$ molas. Igualmente, as massas têm $2$ kg e as constantes são dadas por $k_i=(40+2(-1)^i)$ N/m, $i=1,\dots,11$\. A matriz de coeficientes é: $$A =
+Neste teste, soluciona-se um sistema de $10$ massas e $11$ molas. Igualmente, as massas têm $2$ kg, mas as constantes são dadas por $k_i=(40+2(-1)^i)$ N/m, $i=1,\dots,11$\. A matriz de coeficientes é: $$A =
     \begin{bmatrix}
   40& -21&   0&   0&   0&   0&   0&   0&   0&   0\\
  -21&  40& -19&   0&   0&   0&   0&   0&   0&   0\\
@@ -1140,7 +1140,7 @@ Pode-se reconstruir $X(t)$ utilizando $X(t)=QY(t)$. Por brevidade, omitiremos a 
     \label{fig:t6}
 \end{figure}
 
-Como anteriormente, as soluções do sistema são superposições de cossenos. Observamos que existem pares de massas com oscilações similares. Por exemplo, as massas 5 e 6 têm mesmo formato, bem como 3 e 8. Além disso, massas em posições centrais tendem a oscilar menos que aquelas nas pontas, apesar de possuírem amplitude maior. A componente espectral de menor frequência é a mais relevante para a oscilação, pois tem a maior das amplitudes, o que é muito perceptível. [COMPLETA AQUI POR FAVOR]
+Como anteriormente, as soluções do sistema são superposições de cossenos. Observamos que existem pares de massas com oscilações similares. Por exemplo, os deslocamentos das massas 5 e 6 têm formatos muito parecidos, bem como os de 3 e 8. Além disso, massas em posições centrais tendem a oscilar mais regularmente que aquelas nas pontas, apesar de possuírem amplitude maior. A componente espectral de menor frequência é a mais relevante para a oscilação, pois tem a maior das amplitudes, o que é muito perceptível. Dada a pequena diferença entre os coeficientes das molas utilizadas, é possível notar uma diminuição na variação das amplitudes dos deslocamentos das massas, se comparadas às do teste 2. Todas as massas possuem deslocamento absoluto em torno de 2 a 4 centímetros.
 
 **Segundo Conjunto de Condições Iniciais**  Para este conjunto de condições iniciais, temos $X(0)=(1, 10, -4, 3, -2, 1, 10, -4, 3, -2)^T$, gerando $Y(0)=Q^TX(0)=(  0.209968,-12.936835, -1.543527,  2.183659,$ $-2.489729,  0.853680,  6.979812,  2.364570,  0.810496,  4.852832)^T$. A função em $Y$ se torna: $$Y(t)=\begin{bmatrix}
   0.209968\cos(8.854307 t) \\
@@ -1165,13 +1165,13 @@ A partir das c.i.s e dos autovalores do sistema, encontramos a solução $X(t)$ 
     \label{fig:t7}
 \end{figure}
 
-Comparando com a solução anterior, observamos que a amplitude das oscilações é muito maior, o que se reflete as condições iniciais. Também observamos que existem pares de massas com funções-deslocamento similares. As massas centrais e da bordam oscilam muito, ao passo que naquelas de posições intermediárias predominam componentes de baixa frequência, embora a amplitude de oscilação seja maior. [COMPLETA AQUI POR FAVOR]
+Comparando com a solução anterior, observamos que a amplitude das oscilações é muito maior, o que reflete as condições iniciais. Também observamos que existem pares de massas com funções-deslocamento similares. As massas centrais e da bordam oscilam muito, ao passo que naquelas de posições intermediárias predominam componentes de baixa frequência, embora a amplitude de oscilação seja maior. Os formatos dos deslocamentos das massas são muito mais similares a cossenos puros, ao passo que, na solução anterior, há um perfil similar ao de um batimento.
 
 \pagebreak
 
-**Terceiro Conjunto de Condições Iniciais** Utilizaremos para o tempo $t=0$ o autovetor associado à oscilação de maior frequência, i.e., cujo autovalor tem maior módulo. Portanto, utilizaremos como c.i. o autovetor associado ao autovalor de maior frequência. 
+**Terceiro Conjunto de Condições Iniciais** Utilizaremos, para o tempo $t=0$, o autovetor associado à oscilação de maior frequência, i.e., cujo autovalor tem maior módulo.
 
-Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,  0.229012, -0.125245)^T$, o qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. $Y(t)$ é, composto por um único cosseno, cuja frequência é o autovalor de maior módulo, e as amplitudes são iguais à condição inicial: $$Y(t)=\begin{bmatrix}
+Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,  0.229012, -0.125245)^T$, a partir do qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. Cada $y_j(t)$ é composto por um único cosseno, cuja frequência é o autovalor de maior módulo, com amplitudes iguais à condição inicial: $$Y(t)=\begin{bmatrix}
          0.125245 \cos(8.854307 t) \\
         -0.229012 \cos(8.854307 t) \\
          0.324402 \cos(8.854307 t) \\
@@ -1184,11 +1184,11 @@ Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.4214
         -0.125245 \cos(8.854307 t)
 \end{bmatrix}$$
 
-Como $X(0)$ é autovetor, $X(t)=Y(t)$. Foram construídos os gráficos do deslocamento para cada massa por 10 segundos, exibidos na Figura \ref{fig:t8} abaixo.
+Como $X(0)$ é autovetor, $X(t)=X(0)\circ Y(t)$. Foram construídos os gráficos do deslocamento para cada massa por 10 segundos, exibidos na Figura \ref{fig:t8} abaixo.
 
-Tal qual esperado, as massas oscilam todas sob mesma frequência e com amplitude igual ao deslocamento inicial. [COMPLETA AQUI POR FAVOR]
+Tal qual esperado, as massas oscilam todas sob mesma frequência e com amplitude igual ao deslocamento inicial. Pode-se notar um padrão alternante entre os valores iniciais dos cossenos. Para cada massa de índice ímpar, seu deslocamento inicial é positivo e, para massas com índice par, o deslocamento inicial é negativo. Além disso, há uma tendência de aumento da amplitude conforme a massa se afasta dos anteparos.
 
-Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, utilizamos os coeficientes desassociados de suas funções. Ou seja, definimos um vetor de cossenos $C(t)$, de modo que $X(t)=Q(Y(0)^T\circ C(t))$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
+Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, utilizamos os coeficientes dissociados de suas funções. Ou seja, definimos um vetor de cossenos $C(t)$, de modo que $X(t)=QY(0)^T\circ C(t)$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
 
 \begin{figure}[H]
     \centering
@@ -1198,7 +1198,7 @@ Na implementação destes problemas, como não é possível trabalhar simbolicam
     \label{fig:t8}
 \end{figure}
 
-Todos os testes envolvendo molas, para diferentes condições iniciais podem ser vistos **com animação** pela execução da rotina 5 na CLI. A animação exibe os gráficos, atualizados tempo a tempo, e as massas oscilando com o tempo. A posição inicial de cada massa (a qual se aplica o deslocamento) foi escolhida para corresponder a melhor visualização, pois não interfere na solução. 
+Todos os testes envolvendo molas, para diferentes condições iniciais, podem ser vistos **com animação** pela execução da rotina 5 na CLI. A animação exibe os gráficos, atualizados tempo a tempo, e as massas oscilando com o tempo. A posição inicial de cada massa (à qual se aplica o deslocamento) foi escolhida para corresponder à melhor visualização, pois não interfere na solução. 
 
 \pagebreak
 # Referências {-}

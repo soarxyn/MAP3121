@@ -591,7 +591,7 @@ if __name__ == "__main__":
       Gabriel Macias de Oliveira - NUSP: 11260811
       Rodrigo Ryuji Ikegami      - NUSP: 10297265
 
-      Por favor, escolha uma das seguintes rotinas de teste para proseeguir:
+      Por favor, escolha uma das seguintes rotinas de teste para proseguir:
 
       (1) Matriz com diagonal principal e subdiagonal constantes.
       (2) Sistema massa-mola com 5 molas.
@@ -787,7 +787,23 @@ if __name__ == "__main__":
         print("\n\n")
 
     elif teste == 5:
-        teste_3()
+        grafico = int(input("""
+      Selecione o caso para o qual devem ser gerados os gráficos:
+
+      (1) Matriz com diagonal principal e subdiagonal constantes.
+      (2) Sistema massa-mola com 5 molas.
+      (3) Sistema massa-mola com 10 molas.
+
+      Digite um número (1 - 3): """))
+
+        if grafico == 1:
+            teste_1()
+        elif grafico == 2:
+            teste_2()
+        elif grafico == 3:
+            teste_3()
+        else:
+            print("\nInválido\n\n")
     else:
         print("\nInválido!\n\n")
 
