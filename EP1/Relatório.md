@@ -37,8 +37,8 @@ header-includes: |
 
         \vspace{1cm}
         \Large
-        Gabriel Macias de Oliveira, NUSP 11260811 \\
-        Rodrigo Ryuji Ikegami, NUSP 10297265
+        Gabriel Macias de Oliveira, NUSP 11260811, Eng. Elétrica \\
+        Rodrigo Ryuji Ikegami, NUSP 10297265, Eng. Elétrica
 
         \vfill
 
@@ -438,10 +438,6 @@ Na seção 2.3a de [@MAT3121], é apresentada uma família de matrizes cujos aut
 
 ~~~~ {#teste1 .python .numberLines}
 def teste_1():
-    """
-        Rotinas de Testes para o Problema 1.
-        Exibe autovalores e autovetores das matrizes propostas, bem como o número de iterações para convergência com e sem deslocamento espectral.
-    """
     print("""
       Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
 
@@ -535,8 +531,6 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 \normalsize
 **\label{code:qr_1}Código \ref{code:qr_1}:** Função auxiliar para cálculo dos erros médio e máximo absolutos por iteração do algoritmo. -->
 
-\pagebreak
-
 ## Teste 2: Sistema Massa-Mola com 5 Massas
 
 ### Implementação do Teste
@@ -547,10 +541,6 @@ A implementação está no Código \ref{code:teste_2}, abaixo, do qual se retira
 
 ~~~~ {#teste2 .python .numberLines}
 def teste_2():
-    """
-        Rotinas de Testes para o Problema 2.
-        Exibe parâmetros, 
-    """
     print("""
       Você selecionou o teste: Sistema massa-mola com 5 molas.""")
     print("""
@@ -719,8 +709,6 @@ O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e aut
 
 Sua implementação é análoga à do teste 2.
 
-\pagebreak
-
 ## Função Principal
 
 A função principal do programa segue uma interface simples, com opções numeradas que o usuário pode selecionar.
@@ -855,6 +843,10 @@ if __name__ == "__main__":
 **\label{code:main}Código \ref{code:main}:** Função principal de execução. Implementa a CLI.
 
 Nas linhas 4 a 26 do código, é impressa a tela principal da CLI, com o pedido da entrada de um número de 1 a 5 pelo usuário. Dependendo do valor inserido, o programa inicia uma rotina específica. As entradas 1 a 3 chamam as funções de teste descritas anteriormente. A rotina 4 é implementada na própria função principal, e seu funcionamento foi descrito na introdução. A 5ª rotina dá a opção de geração de gráficos para cada um dos 3 testes propostos em [@MAT3121]. Seu funcionamento também está descrito na introdução.
+
+### Funções de Exibição de Gráficos
+
+Há 4 funções criadas para produção de gráficos: `plot_1`, `plot_2`, `plot_3` e `plot_spring`. Todas foram utilizadas para produção das imagens deste relatório e são invocadas ao selecionar a rotina de exibição de gráficos da função principal. A implementação das 3 primeiras consiste basicamente na execução das funções e manipulação de dados utilizando o `matplotlib`. Além disso, são produzidas animações das simulações associadas aos problemas de molas. A função `plot_spring` é uma função auxiliar cuja implementação foi baseada na de [@Molinha]. Ela desenha, no contexto do `matplotlib`, uma mola dadas suas coordenadas, o que é bastante útil para a simulação do sistema de EDOs.
 
 \pagebreak
 # Resultados e Discussão {#sec:results}
@@ -1106,8 +1098,6 @@ Na Figura, podemos observar duas importantes características do algoritmo. Prim
 
 ## Resultados para os Testes 2 e 3
 
-### Introdução ao Problema
-
 Desejamos solucionar o sistema mecânico composto por $m$ massas e $m+1$ molas. Todas as massas têm $2$ kg e as constantes elásticas das molas são dadas por $k_i$ N/m, $i=1,\dots,n+1$\. O deslocamento de cada massa em relação ao equilíbrio é dado por $x_i(t)$ para um determinado instante $t$. As massas se movimentam sem quaisquer perdas sobre uma superfície plana sem amortecimento, estando o sistema anexo a dois anteparos. Desta forma, considerando a dinâmica do sistema, podemos descrevê-lo pelo sistema de equações diferenciais $$X''(t)+AX(t)=0$$ Sendo $X(t)=(x_1(t),\dots,x_n(t))^T$ e $A$, que chamaremos de _matriz dos coeficientes_, a matriz: $$A = \frac{1}{m}
     \begin{bmatrix}
         k_1+k_2 & -k_2 & & \\
@@ -1253,7 +1243,7 @@ Apresentamos a evolução do sistema abaixo na Figura \ref{fig:t4}
 
 Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletida pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação. Por fim, notamos que as massas conectadas a molas de maiores constantes elásticas tem comportamento oscilatório mais acentuado, bem como maior aceleração.
 
-**Terceiro Conjunto de Condições Iniciais**  Deve-se utilizar como c.i. o autovetor associado ao autovalor de maior frequência. Portanto, $X(0)=( 0.189335, -0.391105,  0.557661, -0.588202, 0.392711)^T$. Temos portanto $Y(0)=Q^TX(0)=(1, 0, 0, 0, 0)^T$. Logo, $Y(t)$ é o vetor $$Y(t)=\begin{bmatrix}
+**Terceiro Conjunto de Condições Iniciais**  Deve-se utilizar como c.i. o autovetor associado ao autovalor de maior frequência. Portanto, $X(0)=( 0.189335, -0.391105,  0.557661, -0.588202, 0.392711)^T$. Temos portanto $Y(0)=Q^TX(0)=(1, 0, 0, 0, 0)^T$. Logo, $X(t)$ é o vetor $$X(t)=\begin{bmatrix}
  0.189335 \cos(9.404520 t) \\
 -0.391105 \cos(9.404520 t) \\
 0.557661 \cos(9.404520 t) \\
@@ -1389,7 +1379,7 @@ Comparando com a solução anterior, observamos que a amplitude das oscilações
 
 **Terceiro Conjunto de Condições Iniciais** Utilizaremos, para o tempo $t=0$, o autovetor associado à oscilação de maior frequência, i.e., cujo autovalor tem maior módulo.
 
-Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,$ $0.229012, -0.125245)^T$, a partir do qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. Cada $y_j(t)$ é composto por um único cosseno, cuja frequência é o autovalor de maior módulo, com amplitudes iguais à condição inicial: $$Y(t)=\begin{bmatrix}
+Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,$ $0.229012, -0.125245)^T$, a partir do qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. Cada $y_j(t)$ é composto por um único cosseno, cuja frequência é o autovalor de maior módulo: $$X(t)=\begin{bmatrix}
          0.125245 \cos(8.854307 t) \\
         -0.229012 \cos(8.854307 t) \\
          0.324402 \cos(8.854307 t) \\
@@ -1402,7 +1392,7 @@ Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.4214
         -0.125245 \cos(8.854307 t)
 \end{bmatrix}$$
 
-Como $X(0)$ é autovetor, $X(t)=X(0)\circ Y(t)$. Foram construídos os gráficos do deslocamento para cada massa por 10 segundos, exibidos na Figura \ref{fig:t8} abaixo.
+Como $X(0)$ é autovetor, apenas um termo de $Y(t)$ não é nulo. Foram construídos os gráficos do deslocamento para cada massa por 10 segundos, exibidos na Figura \ref{fig:t8} abaixo.
 
 Tal qual esperado, as massas oscilam todas sob mesma frequência e com amplitude igual ao deslocamento inicial. Pode-se notar um padrão alternante entre os valores iniciais dos cossenos. Para cada massa de índice ímpar, seu deslocamento inicial é positivo e, para massas com índice par, o deslocamento inicial é negativo. Além disso, há uma tendência de aumento da amplitude conforme a massa se afasta dos anteparos.
 

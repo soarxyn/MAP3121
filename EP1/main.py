@@ -1,4 +1,12 @@
-from contextlib import suppress
+"""
+Exercício Programa 1 - MAP3121
+Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
+
+Gabriel Macias de Oliveira, NUSP 11260811, Eng. Elétrica
+Rodrigo Ryuji Ikegami, NUSP 10297265, Eng. Elétrica
+
+Jul. 2021.
+"""
 import numpy as np
 from typing import Tuple
 from math import copysign, cos, sin, pi
@@ -218,6 +226,43 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
     return (alphas_k, betas_k, V, iterations)
 
 def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float = 1e-6) -> Tuple[np.array, np.array, np.array, np.array, int]:
+    """"
+        QR Algorithm Modificado
+        -------------------------------
+
+        Parâmetros
+        ----------
+
+        alphas  :   np.array
+            Vetor da diagonal principal da matriz A.
+
+        betas   :   np.array
+            Vetor da sobrediagonal da matriz A.
+
+        shift : bool
+            Se for True, a função executa o algoritmo com deslocamento espectral. Se for False, executa o algoritmo
+            sem deslocamento espectral.
+
+        eps : float
+            Valor utilizado para determinar convergência dos valores calculados. Quanto menor for, menor será o erro
+            do valor final calculado em relação ao ideal.
+
+        Retorna
+        -------
+
+        (alphas, betas)   :   Tuple[np.array, np.array]
+            Dupla que retorna os vetores `alphas` e `betas`, que retornam a representação da matriz
+            tridiagonal simétrica dos auto-valores, através de sua diagonal principal e sua sobrediagonal.
+
+        V : np.array
+            Matriz com os auto-vetores da matriz A.
+
+        E : np.array
+            Vetor que armazena os erros por iteração do algoritmo.
+
+        iterations : int
+            Número de iterações executadas pelo algoritmo.
+    """
     alphas_k = alphas.copy()
     betas_k = betas.copy()
     V = np.identity(len(alphas_k))
@@ -246,8 +291,10 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 
 def teste_1():
     """
-        Rotinas de Testes para o Problema 1.
-        Exibe autovalores e autovetores das matrizes propostas, bem como o número de iterações para convergência com e sem deslocamento espectral.
+        Rotinas de Teste 1
+        ------------------
+
+        Implementa a exibição de parâmetros relevantes para o primeiro teste. Sem argumentos e sem retorno.
     """
     print("""
       Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
@@ -255,7 +302,7 @@ def teste_1():
     text = ["Primeira", "Segunda", "Terceira", "Quarta"]
     for i, n in enumerate([4, 8, 16, 32]):
         print(f"""
-    [=== {text[i]} Rotina: n = {n} ===]
+      [=== {text[i]} Rotina: n = {n} ===]
     """)
 
         alphas = np.array(n * [2.0])
@@ -300,8 +347,10 @@ def teste_1():
 
 def teste_2():
     """
-        Rotinas de Testes para o Problema 2.
-        Exibe parâmetros das massas e molas, frequências e modos de oscilação, bem como as funções que descrevem o sistema.
+        Rotinas de Teste 2
+        ------------------
+
+        Implementa a exibição de parâmetros relevantes para o segundo teste. Sem argumentos e sem retorno.
     """
     print("""
       Você selecionou o teste: Sistema massa-mola com 5 molas.""")
@@ -380,8 +429,10 @@ def teste_2():
 
 def teste_3():
     """
-        Rotinas de Testes para o Problema 3.
-        Exibe parâmetros das massas e molas, frequências e modos de oscilação, bem como as funções que descrevem o sistema.
+        Rotinas de Teste 3
+        ------------------
+
+        Implementa a exibição de parâmetros relevantes para o terceiro teste. Sem argumentos e sem retorno.
     """
     print("""
       Você selecionou o teste: Sistema massa-mola com 10 molas.""")
@@ -460,7 +511,10 @@ def teste_3():
 
 def plot_1():
     """
-        Exibe os gráficos associados ao problema 1.
+        Rotinas de Gráficos 1
+        ------------------
+
+        Implementa gráficos  para o teste 1. Sem argumentos e sem retorno.
     """
 
     n = int(input("      Forneça o tamanho máximo da matriz (maior que 3) para calcular o número de iterações: "))
@@ -565,7 +619,10 @@ def plot_spring(x0, x, ax):
 
 def plot_2():
     """
-        Exibe os gráficos e animações associados ao problema 2.
+        Rotinas de Gráficos 2
+        ------------------
+
+        Implementa gráficos e animações para o teste 2. Sem argumentos e sem retorno.
     """
     print("")
     k = [40 + 2 * i for i in range(1, 7)]
@@ -716,7 +773,10 @@ def plot_2():
 
 def plot_3():
     """
-        Exibe os gráficos e animações associados ao problema 3.
+        Rotinas de Gráficos 3
+        ------------------
+
+        Implementa gráficos e animações para o teste 3. Sem argumentos e sem retorno.
     """
     print("")
     k = [40 + 2 * (-1) ** i for i in range(1, 12)]
@@ -872,8 +932,8 @@ if __name__ == "__main__":
       Autovalores e Autovetores de Matrizes Tridiagonais Simétricas
       =============================================================
 
-      Gabriel Macias de Oliveira - NUSP: 11260811
-      Rodrigo Ryuji Ikegami      - NUSP: 10297265
+      Gabriel Macias de Oliveira - NUSP: 11260811   - Eng. Elétrica
+      Rodrigo Ryuji Ikegami      - NUSP: 10297265   - Eng. Elétrica
 
       Por favor, escolha uma das seguintes rotinas de teste para proseguir:
 
