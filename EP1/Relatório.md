@@ -419,49 +419,69 @@ Os aspectos matemáticos da construção de cada teste serão apresentados na Se
 
 Na seção 2.3a de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência
 
-A implementação está no Código \ref{code:teste_1}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
-
 \scriptsize
 
 ~~~~ {#teste1 .python .numberLines}
 def teste_1():
-    iters_com = []
-    iters_sem = []
-    for n in [4, 8, 16, 32]:
-        print(f"n = {n}")
+    """
+        Rotinas de Testes para o Problema 1.
+        Exibe autovalores e autovetores das matrizes propostas, bem como o número de iterações para convergência com e sem deslocamento espectral.
+    """
+    print("""
+      Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
+
+    text = ["Primeira", "Segunda", "Terceira", "Quarta"]
+    for i, n in enumerate([4, 8, 16, 32]):
+        print(f"""
+    [=== {text[i]} Rotina: n = {n} ===]
+    """)
 
         alphas = np.array(n * [2.0])
         betas = np.array((n - 1) * [-1.0])
 
-        print("Com deslocamento espectral")
-        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
-        iters_com.append(iterations)
+        print("""      Matriz original:""")
+        print("     ", np.array2string(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas), prefix = "      "))
 
-        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+        (alphas_k, _, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
 
-        print("Sem deslocamento espectral")
-        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
-        iters_sem.append(iterations)
+        print("""\n      > Procedimentos sem deslocamento espectral <
+        """)
+        print(f"""      Concluído em {iterations_sem} iterações.
+        """)
+        print(f"""      Autovalores Encontrados: {alphas_k}\n""")
 
-        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+        print("""      Matriz dos Autovetores:
+        """)
+        print("     ", np.array2string(V, prefix = "      "))
 
-        eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
+        (alphas_k, _, V, iterations_com) = qr_algorithm(alphas, betas)
+
+        print("""\n      > Procedimentos com deslocamento espectral <
+        """)
+        print(f"""      Concluído em {iterations_com} iterações. Diferença com/sem deslocamento: {iterations_sem - iterations_com} iterações.
+        """)
+        print(f"""      Autovalores Encontrados: {alphas_k}\n""")
+
+        print("""      Matriz dos Autovetores:
+        """)
+        print("     ", np.array2string(V, prefix = "      "))
+
         eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
 
-        print(f"Valores esperados: {eigenvalues}. \nVetores esperados: \n{eigenvectors}\n")
-        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
-        print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
+        (_, _, V, _) = qr_algorithm(alphas, betas)
+        print(f"      Razão de proporcionalidade: {np.divide(eigenvectors, V)[0,0]}")
 
-    print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
+        input("\n     Pressione [ENTER] para continuar para a próxima rotina.")
+        sys.stdout.write('\x1b[1A')
+        sys.stdout.write('\x1b[2K')
+        print("\n")
 ~~~~
 \normalsize
 **\label{code:teste_1}Código \ref{code:teste_1}:** Função que implementa o teste de verificação do Algoritmo QR, tanto com deslocamento espectral quanto sem, e imprime os dados relevantes no terminal.
 
-O código apresentado itera sobre os casos desejados (matriz de dimensões $4\times4$, $8\times8$, $16\times16$ e $32\times32$). Nas linhas 2 e 3 são criados dois vetores, para armazenar as iterações em função do tamanho da matriz. Nas linhas 6 e 7 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121], com os comprimentos adequados ao tamanho da matriz desejado. Na linha 10 é feita a execução do Algoritmo QR com deslocamento espectral e, na linha 17, é feita a execução sem deslocamento espectral. Nas linhas 11 e 18 são adicionados os valores do número de iterações para os vetores apropriados. Nas linhas 23 e 24 são calculados os valores teóricos esperados, cujas fórmulas são definidas em [@MAT3121].
+O código apresentado itera sobre os casos desejados (matriz de dimensões $4\times4$, $8\times8$, $16\times16$ e $32\times32$). Nas linhas 15 e 16 são criadas a diagonal principal e a sobrediagonal de acordo com o especificado em [@MAT3121], com os comprimentos adequados ao tamanho da matriz desejado. Na linha 21 é feita a execução do Algoritmo QR sem deslocamento espectral e, na linha 33, é feita a execução sem deslocamento espectral. Nas linhas 11 e 18 são adicionados os valores do número de iterações para os vetores apropriados. Na linha 45 são calculados os valores teóricos esperados dos autovetores, cujas fórmulas são definidas em [@MAT3121].
 
-A função auxiliar `qr_1` utilizada nesse código executa o algoritmo QR de mesma maneira que a função em \ref{code:qr_algo}, calculando também os erros máximo e médio absolutos a cada iteração e os retornam em um `np.array`. Os erros máximo e médio para a `k`-ésima iteração do algoritmo foram definidos como:
+<!-- A função auxiliar `qr_1` utilizada nesse código executa o algoritmo QR de mesma maneira que a função em \ref{code:qr_algo}, calculando também os erros máximo e médio absolutos a cada iteração e os retornam em um `np.array`. Os erros máximo e médio para a `k`-ésima iteração do algoritmo foram definidos como:
 $$ E_{max}^{(k)}=\max\limits_{j \in [1,n]} |\alpha^{(k)}_j-\lambda_j| $$
 $$ E_{avg}^{(k)}=\frac{1}{n}\sum\limits_{j=1}^n|\alpha^{(k)}_j-\lambda_j| $$
 
@@ -498,7 +518,7 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
     return (alphas_k, betas_k, V, np.array([np.array(E_avg), np.array(E_max)]), iterations)
 ~~~~
 \normalsize
-**\label{code:qr_1}Código \ref{code:qr_1}:** Função auxiliar para cálculo dos erros médio e máximo absolutos por iteração do algoritmo.
+**\label{code:qr_1}Código \ref{code:qr_1}:** Função auxiliar para cálculo dos erros médio e máximo absolutos por iteração do algoritmo. -->
 
 \pagebreak
 
@@ -506,34 +526,60 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
 
 ### Implementação do Teste
 
-A implementação está no Código \ref{code:teste_2}, abaixo, do qual se retiraram os comentários e a seção de geração dos gráficos, mantidos no arquivo original do _script_.
+A implementação está no Código \ref{code:teste_2}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
 
 \scriptsize
 
 ~~~~ {#teste2 .python .numberLines}
 def teste_2():
+    """
+        Rotinas de Testes para o Problema 2.
+        Exibe parâmetros, 
+    """
+    print("""
+      Você selecionou o teste: Sistema massa-mola com 5 molas.""")
+    print("""
+      =====================
+      Massa das Molas: 2 kg.
+      Constantes elásticas:""")
+
     k = [40 + 2 * i for i in range(1, 7)]
 
-    alphas = np.array([(a + b) / 2 for (a, b) in zip(k, k[1:])])
+    for i, j in enumerate(k):
+        print(f"        k{i + 1} = {j} N/m.")
+    print("      =====================")
+
+    alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
     betas = np.array([-b/2 for b in k[1:-1]])
 
-    print("Sem deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+    print("""
+      Matriz A dos Coeficientes da EDO:
+      """)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("     ", np.array2string(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1), prefix = "      "))
 
-    print("Com deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+    (alphas_k, _, V, iterations_w) = qr_algorithm(alphas, betas)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("\n      > Solução da EDO <")
+    print(f"""
+      Número de iterações necessárias: {iterations_w}
+      
+      Autovalores: {alphas_k}\n
+      Frequências de vibração das massas: {np.sqrt(alphas_k)}
 
-    for X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
+      Modos de vibração:
+      """)
+    print("     ", np.array2string(V, prefix = "      "))
+
+    for X0 in [np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]:
+        print(f"\n      # Condições Iniciais: X(0) = {X0}")
+
         Y0 = np.matmul(np.transpose(V), X0)
 
-        print(f"X(0) = {X0}\nY(0) = {Y0}")
+        print(f"      Y(0) = {Y0}")
 
-        print(f"X(t) = [")
-        print(f"\t{V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+        print(f"      X(t) = [")
+        print(f"\t {V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
         for j in range(1, 5):
             a = V[0][j] * Y0[j]
             if abs(a) > 1e-6:
@@ -546,7 +592,7 @@ def teste_2():
 
         for i in range(1, 5):
             print(",")
-            print(f"\t{V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+            print(f"\t {V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
             for j in range(1, 5):
                 a = V[i][j] * Y0[j]
                 if abs(a) > 1e-6:
@@ -557,17 +603,17 @@ def teste_2():
 
                     print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
 
-        print("\n]")
-
-        t = 0
-        print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}\n")
+        print("\n      ]\n")
+        
+        for t in [0, 5, 10]:
+            print(f"      X(t = {t:2}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}")
 ~~~~
 \normalsize
 **\label{code:teste_2}Código \ref{code:teste_2}:** Função que resolve a EDO equivalente ao sistema de 5 massas e 6 molas, para os três casos pedidos.
 
-O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e autovetores da matriz A da EDO do sistema. Após isso, imprime na tela os valores encontrados e o número de iterações necessárias para a convergência. Por fim, para cada $X(0)$ dado apresenta na tela a solução $X(t)$ encontrada para o sistema e verifica o caso $X(t = 0)$, para fins de verificação.
+O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e autovetores da matriz A da EDO do sistema. Após isso, imprime na tela os valores encontrados e o número de iterações necessárias para a convergência. Por fim, para cada $X(0)$ dado, apresenta na tela a solução $X(t)$ encontrada para o sistema e a verifica para $t=0,5,10$.
 
-Na linha 2 são calculados os $k_n$ das molas e, nas linhas 4 e 5 esses valores são utilizados para construir a diagonal principal e a sobrediagonal da matriz $A$. Na linha 8 é executado o Algoritmo QR sem deslocamento espectral e, na linha 13, o algoritmo é executado com deslocamento espectral. Para o cálculo da solução do sistema, é utilizado o resultado da execução do algoritmo com deslocamento espectral.
+Na linha 13 são calculados os $k_n$ das molas e, nas linhas 19 e 20, esses valores são utilizados para construir a diagonal principal e a sobrediagonal da matriz $A$. Na linha 28 é executado o Algoritmo QR com deslocamento espectral.
 
 ## Teste 3: Sistema Massa-Mola com 10 Massas
 
@@ -579,28 +625,50 @@ A implementação está no Código \ref{code:teste_3}, abaixo, do qual se retira
 
 ~~~~ {#teste3 .python .numberLines}
 def teste_3():
+    print("""
+      Você selecionou o teste: Sistema massa-mola com 10 molas.""")
+    print("""
+      =====================
+      Massa das Molas: 2 kg.
+      Constantes elásticas:""")
+
     k = [40 + 2 * (-1) ** i for i in range(1, 12)]
 
-    alphas = np.array([(a + b) / 2 for (a, b) in zip(k, k[1:])])
+    for i, j in enumerate(k):
+            print(f"        k{i + 1} = {j} N/m.")
+    print("      =====================")
+
+    alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
     betas = np.array([-b/2 for b in k[1:-1]])
 
-    print("Sem deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+    print("""
+      Matriz A dos Coeficientes da EDO:
+      """)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("     ", np.array2string(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1), prefix = "      "))
 
-    print("Com deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+    (alphas_k, _, V, iterations_w) = qr_algorithm(alphas, betas)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("\n      > Solução da EDO <")
+    print(f"""
+      Número de iterações necessárias: {iterations_w}
+      
+      Autovalores: {alphas_k}\n
+      Frequências de vibração das massas: {np.sqrt(alphas_k)}
 
-    for X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
+      Modos de vibração:
+      """)
+    print("     ", np.array2string(V, prefix = "      "))
+
+    for X0 in [np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]:
+        print(f"\n      # Condições Iniciais: X(0) = {X0}")
+
         Y0 = np.matmul(np.transpose(V), X0)
 
-        print(f"X(0) = {X0}\nY(0) = {Y0}")
+        print(f"      Y(0) = {Y0}")
 
-        print(f"X(t) = [")
-        print(f"\t{V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+        print(f"      X(t) = [")
+        print(f"\t {V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
         for j in range(1, 10):
             a = V[0][j] * Y0[j]
             if abs(a) > 1e-6:
@@ -613,7 +681,7 @@ def teste_3():
 
         for i in range(1, 10):
             print(",")
-            print(f"\t{V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+            print(f"\t {V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
             for j in range(1, 10):
                 a = V[i][j] * Y0[j]
                 if abs(a) > 1e-6:
@@ -624,15 +692,15 @@ def teste_3():
 
                     print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
 
-        print("\n]")
-
-        t = 0
-        print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}\n")
+        print("\n      ]\n")
+        
+        for t in [0, 5, 10]:
+            print(f"      X(t = {t:2}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}")
 ~~~~
 \normalsize
 **\label{code:teste_3}Código \ref{code:teste_3}:** Função que resolve a EDO equivalente ao sistema de 10 massas e 11 molas, para os três casos pedidos.
 
-O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e autovetores da matriz A da EDO do sistema. Após isso, imprime na tela os valores encontrados e o número de iterações necessárias para a convergência. Por fim, para cada $X(0)$ dado apresenta na tela a solução $X(t)$ encontrada para o sistema e verifica o caso $X(t = 0)$, para fins de verificação.
+O código apresentado utiliza o Algoritmo QR para encontrar os autovalores e autovetores da matriz A da EDO do sistema. Após isso, imprime na tela os valores encontrados e o número de iterações necessárias para a convergência. Por fim, para cada $X(0)$ dado, apresenta na tela a solução $X(t)$ encontrada para o sistema e a verifica para $t=0,5,10$.
 
 Sua implementação é análoga à do teste 2.
 
