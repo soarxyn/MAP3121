@@ -219,7 +219,7 @@ def qr_factorization(alphas : np.array, betas : np.array) -> Tuple[np.array, np.
         (alphas[k + 1], betas[k]) = (s_ks[k] * betas[k] + c_ks[k] * alphas[k + 1], c_ks[k] * betas[k] - s_ks[k] * alphas[k + 1])
 
     return (c_ks, s_ks, alphas, betas)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:qr_fact}Código \ref{code:qr_fact}:** Função que implementa a Fatoração QR de uma matriz dada por seus vetores `alphas` e `betas`.
 
@@ -288,7 +288,7 @@ def update_matrix(c_ks : np.array, s_ks : np.array, alphas : np.array, betas : n
         (alphas[i], betas[i], alphas[i + 1]) = (c * alphas[i] - s * betas[i], -s * alphas[i + 1], c * alphas[i + 1])
 
     return (alphas, betas)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:updt_matrix}Código \ref{code:updt_matrix}:** Função que implementa a reconstrução de uma matriz fatorada, dada pelos vetores `alphas` e `betas` da matriz R e pelos vetores `c_ks` e `s_ks`, que representam os senos e cossenos que compõem a matriz Q.
 
@@ -311,7 +311,7 @@ def update_eigenvectors(V : np.array, c_ks : np.array, s_ks : np.array) -> np.ar
         (V_k[:, i], V_k[:, i + 1]) = (c * V_k[:, i] - s * V_k[:, i + 1], s * V_k[:, i] + c * V_k[:, i + 1])
 
     return V_k
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:updt_eigen}Código \ref{code:updt_eigen}:** Função que implementa a atualização dos autovetores de $A$, armazenando-os nas colunas de $V$.
 
@@ -350,7 +350,7 @@ A implementação em código da função `sgn` é imediata, como se observa no c
 ~~~~ {#sgn .python .numberLines}
 def sgn(x):
     return copysign(1, x)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:sgn}Código \ref{code:sgn}:** Função _sinal_ da heurística de Wilkinson.
 
@@ -365,7 +365,7 @@ A função exibida no Código \ref{code:wilk} implementa o cálculo dos coeficie
 def wilkinson_h(alphas : np.array, betas : np.array) -> float:
     d_k = (alphas[len(alphas) - 1]  - alphas[len(alphas) - 2]) / 2
     return alphas[len(alphas) - 1] + d_k - sgn(d_k) * np.sqrt(d_k**2 + betas[len(alphas) - 2]**2)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:wilk}Código \ref{code:wilk}:** Função de cálculo dos coeficientes de deslocamento pela heurística de Wilkinson.
 
@@ -402,7 +402,7 @@ def qr_algorithm(alphas : np.array, betas : np.array, spectralShift : bool = Tru
             iterations += 1
 
     return (alphas_k, betas_k, V, iterations)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:qr_algo}Código \ref{code:qr_algo}:** Função que implementa o Algoritmo QR, com ou sem deslocamento espectral, a partir de uma matriz dada por seus vetores `alphas` e `betas`, até atingir um certo erro `epsilon`.
 
@@ -455,7 +455,7 @@ def teste_1():
         print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
 
     print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:teste_1}Código \ref{code:teste_1}:** Função que implementa o teste de verificação do Algoritmo QR, tanto com deslocamento espectral quanto sem, e imprime os dados relevantes no terminal.
 
@@ -496,7 +496,7 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
             iterations += 1
 
     return (alphas_k, betas_k, V, np.array([np.array(E_avg), np.array(E_max)]), iterations)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:qr_1}Código \ref{code:qr_1}:** Função auxiliar para cálculo dos erros médio e máximo absolutos por iteração do algoritmo.
 
@@ -561,7 +561,7 @@ def teste_2():
 
         t = 0
         print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}\n")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:teste_2}Código \ref{code:teste_2}:** Função que resolve a EDO equivalente ao sistema de 5 massas e 6 molas, para os três casos pedidos.
 
@@ -628,7 +628,7 @@ def teste_3():
 
         t = 0
         print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}\n")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
 \normalsize
 **\label{code:teste_3}Código \ref{code:teste_3}:** Função que resolve a EDO equivalente ao sistema de 10 massas e 11 molas, para os três casos pedidos.
 
@@ -1188,7 +1188,7 @@ Como $X(0)$ é autovetor, $X(t)=X(0)\circ Y(t)$. Foram construídos os gráficos
 
 Tal qual esperado, as massas oscilam todas sob mesma frequência e com amplitude igual ao deslocamento inicial. Pode-se notar um padrão alternante entre os valores iniciais dos cossenos. Para cada massa de índice ímpar, seu deslocamento inicial é positivo e, para massas com índice par, o deslocamento inicial é negativo. Além disso, há uma tendência de aumento da amplitude conforme a massa se afasta dos anteparos.
 
-Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, utilizamos os coeficientes dissociados de suas funções. Ou seja, definimos um vetor de cossenos $C(t)$, de modo que $X(t)=QY(0)^T\circ C(t)$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
+Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, utilizamos os coeficientes dissociados de suas funções. Ou seja, definimos um vetor de cossenos $C(t)$, de modo que $X(t)=QY(0)\circ C(t)$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
 
 \begin{figure}[H]
     \centering
