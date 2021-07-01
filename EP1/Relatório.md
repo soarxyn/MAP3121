@@ -833,8 +833,207 @@ Que são exatamente os valores encontrados. Não fizemos a mesma análise _no re
 
 ### Comparação do Número de Iterações
 
+Executamos o Algoritmo QR, com e sem deslocamento espectral, para os casos em que $n=4,8,16$ e $32$, coletando o número de iterações necessárias para convergência. Sumarizamos os dados na Tabela \ref{table:3} abaixo.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \multicolumn{2}{|c|}{Número de Iterações} \\
+        $n$ & \multicolumn{1}{c}{Com Deslocamento} & \multicolumn{1}{c|}{Sem Deslocamento}\\
+        \hline
+        4  & 9 & 45 \\
+        8  & 19 & 143 \\
+        16 & 35 & 473 \\
+        32 & 66 & 1600 \\
+        \hline
+    \end{tabular}
+    \caption{Número de iterações para diferentes tamanhos de matriz, com e sem deslocamento espectral.}
+    \label{table:3}
+\end{table}
+
+[RODRIGO COMENTE AQUI]
+
+[coloque um conector bonito aqui], executou-se o Algoritmo QR para $n$ variando de $3$ a $128$, com e sem deslocamento espectral, e coletamos o número de iterações para cada teste. Com tais valores, foi possível produzir os gráficos da Figura \ref{fig:t1} abaixo.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{fig1}
+    \caption{Gráficos do Número de Iterações necessárias para convergência com relação ao tamanho da matriz de entrada para o Algoritmo QR com e sem deslocamento espectral.}
+    \label{fig:t1}
+\end{figure}
+
+Observamos, primeiramente, que, para todos os valores, o número de iterações quando utilizado deslocamento espectral é muito menor quando comparado ao caso sem utilização. A aceleração provida pelo deslocamento espectral, em particular quando feita pela heurística de Wilkinson, torna a convergência muito mais rápida. Se compararmos os valores encontrados, temos que, para $n = 128$, com deslocamento, o número de iterações é muito menor que 1000, ao passo que, sem deslocamento, são necessárias quase 20000 iterações para convergência. Nota-se o salto vertiginoso.
+
+Constata-se que o número de iterações para o caso com deslocamento espectral cresce aproximadamente linear com o tamanho da matriz. De acordo com [@On], este comportamento é esperado pois o número de iterações é proporcional ao número de autovalores da matriz. Como o número de autovalores é igual ao tamanho da matriz, para o problema com que lidamos, observamos a tendência de $O(n)$ iterações com deslocamento espectral.
+
+A convergência para o caso sem deslocamento espectral é muito mais lenta, sendo comparável a $O(n^2)$ ou $O(n^3)$ iterações. Sobre os aspectos gerais do Algoritmo QR, [@Tiozao] menciona que o algoritmo é estável, converge cubicamente para a maioria dos casos (quadraticamente, caso contrário), e tem um custo computacional de $O(n^3)$.
+
 ### Evolução do Erro por Iteração
 
+Utilizando a definição de erro médio por iteração $E_{avg}^{(k)}$, definida anteriormente como: $$E_{avg}^{(k)}=\frac{1}{n}\sum\limits_{j=1}^n|\alpha^{(k)}_j-\lambda_j|$$
+
+Executamos o Algoritmo QR com deslocamento espectral para $n = 512$, calculando, a cada iteração, o erro por autovalor, dado que temos o valor correto dos autovalores. A partir dos pontos obtidos, foi criada a Figura \ref{fig:t2}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{fig2}
+    \caption{Evolução do Erro Médio dos Autovalores por Iteração.}
+    \label{fig:t2}
+\end{figure}
+
+Na Figura, podemos observar duas importantes características do algoritmo. Primeiramente, devemos dar especial atenção às últimas iterações, pois delas podemos melhor analisar a convergência de todos os autovalores, uma vez que converge-se primeiro $\alpha_j$ para, após disso, convergir $\alpha_{j-1}$. Assim, na maior parte das iterações o erro médio está na ordem de $10^{-4}$, indo rapidamente para $10^{-12}$ conforme as submatrizes ficam menores. Além disso, observamos que a convergência para cada autovalor é muito ágil, bastando poucas iterações por autovalor para convergir, o que sustenta o que se desenvolveu anteriormente sobre a complexidade do número de iterações.
+
+\pagebreak
+
+## Resultados para os Testes 2 e 3
+
+### Introdução ao Problema
+
+Desejamos solucionar o sistema mecânico composto por $m$ massas e $m+1$ molas. Todas as massas têm $2$ kg e as constantes elásticas das molas são dadas por $k_i$ N/m, $i=1,\dots,n+1$\. O deslocamento de cada massa em relação ao equilíbrio é dado por $x_i(t)$ para um determinado instante $t$. As massas se movimentam sem quaisquer perdas sobre uma superfície plana sem amortecimento, estando o sistema anexo a dois anteparos. Desta forma, considerando a dinâmica do sistema, podemos descrevê-lo pelo sistema de equações diferenciais $$X''(t)+AX(t)=0$$ Sendo $X(t)=(x_1(t),\dots,x_n(t))^T$ e $A$, que chamaremos de _matriz dos coeficientes_, a matriz: $$A = \frac{1}{m}
+    \begin{bmatrix}
+        k_1+k_2 & -k_2 & & \\
+        -k_2 & k_2+k_3 & \ddots & \\
+        & \ddots & \ddots & -k_n \\
+        & & -k_n & k_n+k_{n+1}
+    \end{bmatrix}
+$$
+
+que é real e tridiagonal simétrica. Vamos considerar a decomposição de $A$ em sua matriz de autovetores e matriz diagonal de autovalores, isto é, iremos fatorar $A=Q\Lambda Q^T$, sendo $Q$ a matriz ortogonal cujas colunas são autovetores de $A$ e $\Lambda$ a matriz diagonal cujas entradas são autovalores de $A$. Podemos, portanto, reescrever o sistema de equações diferenciais como: $$X''(t)+Q\Lambda Q^T X(t)=0$$ Multiplicando o sistema por $Q^T$ e fazendo a substituição $Y(t)=Q^T X(t)$, temos: $$Y''(t)+\Lambda Y(t)=0$$ O sistema acima é mais interessante que o primeiro em relação a sua solução, pois é composto por `n` equações diferenciais desacopladas cuja solução é conhecida e intrinsicamente relacionada aos autovalores de $A$. O sistema é do tipo: $$
+\begin{bmatrix}
+    y''_1(t) \\ y''_2(t) \\ \vdots \\ y''_n(t)
+\end{bmatrix} + 
+\begin{bmatrix}
+    \lambda_1 & & &\\
+    & \lambda_2 & &\\
+    & & \ddots &\\
+    & & & \lambda_n\\
+\end{bmatrix}\begin{bmatrix}
+    y_1(t) \\ y_2(t) \\ \vdots \\ y_n(t)
+\end{bmatrix} =0
+$$
+
+Portanto, devemos resolver EDOs da forma $y''_j(t)=-\lambda_jy_j(t)$. Sua solução é conhecida e dada por:$$
+\begin{matrix}
+    y_j(t)=a_j\cos(\omega_j t)+b_j\sin(\omega_j t) & \omega_j=\sqrt{\lambda_j}
+\end{matrix}
+$$
+
+Notamos que, ao associar à solução-geral do sistema um conjunto de condições inicias (c.i.s), a solução fica unicamente definida para o problema em questão. Por exemplo, pode-se tomar $X(0)$ e $X'(0)$. Nota-se que condições iniciais em $X$ não são diretamente operáveis em $Y$ e devem passar pela transformação original.
+
+Em ambos os sistemas massa-mola a se resolver, temos que $X'(0)=0$.  $Q$ é inversível, logo $Q$ é bijetora. Portanto, $0_X\mapsto 0_Y$. Assim $Y'(0)=0$. $Y'(t)$ é dada por suas componentes $y'_j(t)=-a_j\omega_j\sin(\omega_j t)+b_j\omega_j\cos(\omega_j t)$. Como $Y'(0)=0$, $y'_j(0)=-a_j\omega_j\sin(0)+b_j\omega_j\cos(0)=b_j\omega_j=0\iff b_j=0$. Com isso, resta apenas o termo cossenoidal nas funções de $Y$, isto é, $y_j(t)=a_j\cos(\omega_j t)$. 
+
+Para encontrar $Y(0)$, devemos fazer $Y(0)=Q^TX(0)$. Sendo $Y(0)=(a_1, a_2, \dots, a_n)^T$, portanto: $(a_1, a_2, \dots, a_n)^T =  QX(0)$. Definido $Y(t)$ pelo problema de c.i.s, podemos reconstruir $X(t)$ fazendo $X(t)=QY(t)$.
+
+### Solução para o Teste 2
+
+Para o teste 2, desejamos solucionar o sistema mecânico composto por $5$ massas e $6$ molas. Todas as massas têm $2$ kg e as constantes elásticas das molas são dadas por $k_i=(40+2i)$ N/m, $i=1,\dots,6$\. Sua matriz $A$ é, portanto: $$A =
+    \begin{bmatrix}
+        43 & -22 &   0 &   0 &   0 \\
+        -22 &  45 & -23 &   0 &   0 \\
+        0 & -23 &  47 & -24 &   0 \\
+        0 &   0 & -24 &  49 & -25 \\
+        0 &   0 &   0 & -25 &  51 \\
+    \end{bmatrix}
+$$
+
+Executando o Algoritmo QR com deslocamento espectral sobre $A$, encontramos seus autovalores, que podem ser transformados nas frequências do sistema. Os autovalores de $A$, bem como sua conversão em frequência estão na Tabela \ref{table:4}.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $j$ & $\lambda_j$ & $\omega_j$ \\
+        \hline
+            $1$ & $88,445006$ & $9,404520$ \\
+            $2$ & $70,113831$ & $8,373400$ \\
+            $3$ & $46,773186$ & $6,839093$ \\
+            $4$ & $23,398633$ & $4,837213$ \\
+            $5$ & $6,269344$  & $2,503866$ \\
+        \hline
+    \end{tabular}
+    \caption{Autovalores para a matriz do teste 2.}
+    \label{table:4}
+\end{table}
+
+Os autovetores de $A$ compõem os _modos naturais de vibração_ do sistema. Isto é, quando o deslocamento inicial é paralelo a um dos autovetores de $A$, todas as massas entram em ressonância, vibrando com a **mesma frequência**! A matriz abaixo exibe os autovetores para este teste.
+
+$$
+Q =
+\begin{bmatrix}
+     0,189335 &  0,474976 &  0,598822 &  0,532504 & 0,310486 \\
+     0,391105 & -0,585383 & -0,102703 &  0,474446 & 0,518379 \\
+     0,557661 &  0,184858 & -0,564869 & -0,063757 & 0,575934 \\
+     0,588202 &  0,38296  &  0,093085 & -0,517375 & 0,480644 \\
+     0,392711 & -0,500893 &  0,550565 & -0,468614 & 0,268632 \\
+\end{bmatrix}
+$$ \begin{center} Matriz dos Autovetores para o problema do Teste 2 \end{center}
+
+**Primeiro Conjunto de Condições Iniciais**  Ao utilizar as condições iniciais $X(0)=(−2,−3,−1,−3,−1)^T$, teremos $Y(0)=Q^TX(0)=(1.608881, -0.026647, -1.154489, -0.403849, -4.462606)^T$. Como $Y(0)=(a_1, a_2, a_3, a_4, a_5)^T$, as funções ficam definidas como: $$Y(t)=\begin{bmatrix}
+     1.608881  \cos (9,404520 t) \\
+     -0.026647 \cos(8,373400 t) \\
+     -1.154489 \cos(6,839093 t) \\
+     -0.403849 \cos(4,837213 t) \\
+     -4.462606 \cos(2,503866 t) \\
+\end{bmatrix}$$
+
+Desta forma, recuperamos $X(t)$ por $X(t)=QY(t)$, do qual obtemos: $$\begin{bmatrix}
+     x_1(t) \\ x_2(t) \\ x_3(t) \\ x_4(t) \\ x_5(t)
+\end{bmatrix}=\begin{bmatrix}
+ 0.304617 & - 0.012657 & - 0.691334 & - 0.215051 & - 1.385575 \\
+-0.629242 & 0.015599 & 0.118570 & - 0.191604 & - 2.313322 \\
+ 0.897210 & - 0.004926 & 0.652134 & 0.025748 & - 2.570167 \\
+-0.946347 & - 0.010205 & - 0.107466 & 0.208941 & - 2.144924 \\
+ 0.631824 &  0.013347 & - 0.635621 & 0.189249 & - 1.198800 \\
+\end{bmatrix}\begin{bmatrix}
+     \cos(9.404520 t) \\ \cos(8.373400 t) \\ \cos(6.839093 t) \\ \cos(4.837213 t) \\ \cos(2.503866 t) 
+\end{bmatrix}
+$$
+
+A Figura \ref{fig:t3} exibe a evolução da solução, com o deslocamento de cada massa por 10 segundos.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{fig3}
+    \caption{Evolução da Solução para o primeiro conjunto de $X(0)$.}
+    \label{fig:t3}
+\end{figure}
+
+O deslocamento resultante de cada mola é a superposição de componentes cossenodais de diferentes frequências. Observamos um evidente comportamento vinculado entre as oscilações de cada massa, além de percebermos nas oscilações que o harmônico de menor frequência é o mais relevante, de maior amplitude, sendo notável sua contribuição para o formato do sinal. Para as massas conectadas a molas de maior coeficiente elástico, percebe-se maior tendência na mudança de sentido do movimento. A massa do meio é aquela com maior amplitude de deslocamento.
+
+\pagebreak
+
+**Segundo Conjunto de Condições Iniciais**  Neste caso, as condições iniciais das EDOs são $X(0)=(1, 10, -4, 3, -2)^T$, assim $Y(0)=Q^TX(0)=(-8.502389, -3.967618,  1.009392,  4.917091,  4.095209)^T$. Teremos que o vetor de funções fica $$Y(t)=\begin{bmatrix}
+     -8.50238\cos (9,404520 t) \\
+     -3.967618\cos(8,373400 t) \\
+     1.009392\cos(6,839093 t) \\
+     4.917091\cos(4,837213 t) \\
+     4.095209\cos(2,503866 t) \\
+\end{bmatrix}$$
+
+Assim encontramos a solução $X(t)$ por $X(t)=QY(t)$, resultando: $$\begin{bmatrix}
+     x_1(t) \\ x_2(t) \\ x_3(t) \\ x_4(t) \\ x_5(t)
+\end{bmatrix}=\begin{bmatrix}
+-1.609797 & - 1.884524 &  0.604447 &  2.618370 &  1.271504 \\
+3.325329 &  2.322575 & - 0.103668 &  2.332893 &  2.122871 \\
+-4.741452 & - 0.733445 & - 0.570174 & - 0.313499 &  2.358570 \\
+5.001122 & - 1.519437 &  0.093960 & - 2.543981 &  1.968336 \\
+-3.338978 &  1.987353 &  0.555736 & - 2.304216 &  1.100105 \\
+\end{bmatrix}\begin{bmatrix}
+     \cos(9.404520 t) \\ \cos(8.373400 t) \\ \cos(6.839093 t) \\ \cos(4.837213 t) \\ \cos(2.503866 t) 
+\end{bmatrix}
+$$
+
+Apresentamos a evolução do sistema abaixo na Figura \ref{fig:t4}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{fig4}
+    \caption{Evolução da Solução para o segundo conjunto de $X(0)$.}
+    \label{fig:t4}
+\end{figure}
+
+Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletido pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação
 
 \pagebreak
 # Referências {-}

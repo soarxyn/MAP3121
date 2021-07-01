@@ -245,37 +245,49 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
     return (alphas_k, betas_k, V, np.array([np.array(E_avg), np.array(E_max)]), iterations)
 
 def teste_1():
-    iters_com = []
-    iters_sem = []
-    for n in [4, 8]:
-        print(f"n = {n}")
+    iters = []
 
+    for n in range(3, 180):
         alphas = np.array(n * [2.0])
         betas = np.array((n - 1) * [-1.0])
+        (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+        iters.append(iterations)
+        print(n, iterations)
 
-        print("Com deslocamento espectral")
-        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
-        iters_com.append(iterations)
+    plt.plot(np.linspace(0, len(iters), len(iters)), iters)
+    plt.show()
 
-        np.set_printoptions(precision=16, suppress=2)
-        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+    # iters_com = []
+    # iters_sem = []
+    # for n in [4, 8]:
+    #     print(f"n = {n}")
 
-        print("Sem deslocamento espectral")
-        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
-        iters_sem.append(iterations)
+    #     alphas = np.array(n * [2.0])
+    #     betas = np.array((n - 1) * [-1.0])
 
-        print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-        print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+    #     print("Com deslocamento espectral")
+    #     (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
+    #     iters_com.append(iterations)
 
-        eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
-        eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
+    #     np.set_printoptions(precision=16, suppress=2)
+    #     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    #     print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
 
-        print(f"Valores esperados: {eigenvalues}. \nVetores esperados: \n{eigenvectors}\n")
-        (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
-        print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
+    #     print("Sem deslocamento espectral")
+    #     (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
+    #     iters_sem.append(iterations)
 
-    print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
+    #     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    #     print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+
+    #     eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
+    #     eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
+
+    #     print(f"Valores esperados: {eigenvalues}. \nVetores esperados: \n{eigenvectors}\n")
+    #     (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
+    #     print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
+
+    # print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
 
     # iters_sem = []
     # iters_com = []
@@ -349,6 +361,7 @@ def teste_2():
     (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
 
     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print([np.sqrt(x) for x in alphas_k])
 
     for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
         Y0 = np.matmul(np.transpose(V), X0)
@@ -774,7 +787,7 @@ if __name__ == "__main__":
         print("\n\n")
 
     elif teste == 5:
-        teste_1()
+        teste_2()
     else:
         print("\nInválido!\n\n")
 
