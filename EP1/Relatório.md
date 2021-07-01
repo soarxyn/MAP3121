@@ -884,8 +884,6 @@ Executamos o Algoritmo QR com deslocamento espectral para $n = 512$, calculando,
 
 Na Figura, podemos observar duas importantes características do algoritmo. Primeiramente, devemos dar especial atenção às últimas iterações, pois delas podemos melhor analisar a convergência de todos os autovalores, uma vez que converge-se primeiro $\alpha_j$ para, após disso, convergir $\alpha_{j-1}$. Assim, na maior parte das iterações o erro médio está na ordem de $10^{-4}$, indo rapidamente para $10^{-12}$ conforme as submatrizes ficam menores. Além disso, observamos que a convergência para cada autovalor é muito ágil, bastando poucas iterações por autovalor para convergir, o que sustenta o que se desenvolveu anteriormente sobre a complexidade do número de iterações.
 
-\pagebreak
-
 ## Resultados para os Testes 2 e 3
 
 ### Introdução ao Problema
@@ -1033,7 +1031,7 @@ Apresentamos a evolução do sistema abaixo na Figura \ref{fig:t4}
     \label{fig:t4}
 \end{figure}
 
-Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletida pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação. Por fim, notamos que as massas conectadas a molas de maiores constantes elásticas.
+Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletida pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação. Por fim, notamos que as massas conectadas a molas de maiores constantes elásticas tem comportamento oscilatório mais acentuado, bem como maior aceleração.
 
 **Terceiro Conjunto de Condições Iniciais**  Deve-se utilizar como c.i. o autovetor associado ao autovalor de maior frequência. Portanto, $X(0)=( 0.189335, -0.391105,  0.557661, -0.588202, 0.392711)^T$. Temos portanto $Y(0)=Q^TX(0)=(1, 0, 0, 0, 0)^T$. Logo, $Y(t)$ é o vetor $$Y(t)=\begin{bmatrix}
  0.189335 \cos(9.404520 t) \\
@@ -1171,7 +1169,7 @@ Comparando com a solução anterior, observamos que a amplitude das oscilações
 
 **Terceiro Conjunto de Condições Iniciais** Utilizaremos, para o tempo $t=0$, o autovetor associado à oscilação de maior frequência, i.e., cujo autovalor tem maior módulo.
 
-Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,  0.229012, -0.125245)^T$, a partir do qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. Cada $y_j(t)$ é composto por um único cosseno, cuja frequência é o autovalor de maior módulo, com amplitudes iguais à condição inicial: $$Y(t)=\begin{bmatrix}
+Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,$ $0.229012, -0.125245)^T$, a partir do qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. Cada $y_j(t)$ é composto por um único cosseno, cuja frequência é o autovalor de maior módulo, com amplitudes iguais à condição inicial: $$Y(t)=\begin{bmatrix}
          0.125245 \cos(8.854307 t) \\
         -0.229012 \cos(8.854307 t) \\
          0.324402 \cos(8.854307 t) \\
@@ -1188,7 +1186,7 @@ Como $X(0)$ é autovetor, $X(t)=X(0)\circ Y(t)$. Foram construídos os gráficos
 
 Tal qual esperado, as massas oscilam todas sob mesma frequência e com amplitude igual ao deslocamento inicial. Pode-se notar um padrão alternante entre os valores iniciais dos cossenos. Para cada massa de índice ímpar, seu deslocamento inicial é positivo e, para massas com índice par, o deslocamento inicial é negativo. Além disso, há uma tendência de aumento da amplitude conforme a massa se afasta dos anteparos.
 
-Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, utilizamos os coeficientes dissociados de suas funções. Ou seja, definimos um vetor de cossenos $C(t)$, de modo que $X(t)=QY(0)\circ C(t)$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
+Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, armazenamos as frequências de oscilação na forma de autovalores. Quando necessária o cálculo de $X(t)$ para um determinado $t$, tomamos as frequências, calculando a raiz, termo a termo, do vetor de autovalores, compondo seu produto com o tempo aos cossenos. Assim, construímos um vetor $C(t)$ dado por $c_j=cos(\sqrt{\lambda_j} t)$, que é aplicado na forma $X(t)=QY(0)\circ C(t)$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
 
 \begin{figure}[H]
     \centering

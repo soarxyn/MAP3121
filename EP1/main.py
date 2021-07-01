@@ -245,132 +245,109 @@ def qr_1(alphas : np.array, betas : np.array, shift : bool = True, eps : float =
     return (alphas_k, betas_k, V, np.array([np.array(E_avg), np.array(E_max)]), iterations)
 
 def teste_1():
-    iters = []
+    """
+        Rotinas de Testes para o Problema 1.
+        Exibe autovalores e autovetores das matrizes propostas, bem como o número de iterações para convergência com e sem deslocamento espectral.
+    """
+    print("""
+      Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
 
-    for n in range(3, 180):
+    text = ["Primeira", "Segunda", "Terceira", "Quarta"]
+    for i, n in enumerate([4, 8, 16, 32]):
+        print(f"""
+    [=== {text[i]} Rotina: n = {n} ===]
+    """)
+
         alphas = np.array(n * [2.0])
         betas = np.array((n - 1) * [-1.0])
-        (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
-        iters.append(iterations)
-        print(n, iterations)
 
-    plt.plot(np.linspace(0, len(iters), len(iters)), iters)
-    plt.show()
+        print("""      Matriz original:""")
+        print("     ", np.array2string(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas), prefix = "      "))
 
-    # iters_com = []
-    # iters_sem = []
-    # for n in [4, 8]:
-    #     print(f"n = {n}")
+        (alphas_k, _, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
 
-    #     alphas = np.array(n * [2.0])
-    #     betas = np.array((n - 1) * [-1.0])
+        print("""\n      > Procedimentos sem deslocamento espectral <
+        """)
+        print(f"""      Concluído em {iterations_sem} iterações.
+        """)
+        print(f"""      Autovalores Encontrados: {alphas_k}\n""")
 
-    #     print("Com deslocamento espectral")
-    #     (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
-    #     iters_com.append(iterations)
+        print("""      Matriz dos Autovetores:
+        """)
+        print("     ", np.array2string(V, prefix = "      "))
 
-    #     np.set_printoptions(precision=16, suppress=2)
-    #     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-    #     print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+        (alphas_k, _, V, iterations_com) = qr_algorithm(alphas, betas)
 
-    #     print("Sem deslocamento espectral")
-    #     (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas, shift = False)
-    #     iters_sem.append(iterations)
+        print("""\n      > Procedimentos com deslocamento espectral <
+        """)
+        print(f"""      Concluído em {iterations_com} iterações. Diferença com/sem deslocamento: {iterations_sem - iterations_com} iterações.
+        """)
+        print(f"""      Autovalores Encontrados: {alphas_k}\n""")
 
-    #     print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-    #     print(f"Erro médio por iteração: {E[0]}\n Erro máximo por iteração: {E[1]}\n")
+        print("""      Matriz dos Autovetores:
+        """)
+        print("     ", np.array2string(V, prefix = "      "))
 
-    #     eigenvalues = [2 * (1 - cos(i * pi / (n + 1))) for i in range(1, n + 1)][::-1]
-    #     eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
+        eigenvectors = np.array([[sin(i * j * pi/ (n + 1)) for j in range(1, (n + 1))][::-1] for i in range(1, (n + 1))])
 
-    #     print(f"Valores esperados: {eigenvalues}. \nVetores esperados: \n{eigenvectors}\n")
-    #     (alphas_k, betas_k, V, E, iterations) = qr_1(alphas, betas)
-    #     print(f"Razão de proporcionalidade: \n{np.divide(eigenvectors, V)}\n")
+        (_, _, V, _) = qr_algorithm(alphas, betas)
+        print(f"      Razão de proporcionalidade: {np.divide(eigenvectors, V)[0,0]}")
 
-    # print(f"Iterações por n (com deslocamento): {iters_com}\n Iterações por n (sem deslocamento): {iters_sem}")
-
-    # iters_sem = []
-    # iters_com = []
-
-    # for i in range(3, 129):
-    #     alphas = np.array(i * [2.0])
-    #     betas = np.array((i-1) * [-1.0])
-
-    
-    #     (_, _, _, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
-    #     iters_sem.append(iterations)
-
-    #     (_, _, _, iterations) = qr_algorithm(alphas, betas)
-    #     iters_com.append(iterations)
-
-    # fig = plt.figure()
-    # fig.set_figwidth(6)
-    # (axis1, axis2) = fig.subplots(1, 2)
-    # fig.suptitle("Número de Iterações por Tamanho da Matriz")
-
-    # n_space = np.linspace(3, 128, len(iters_com))
-
-    # axis1.plot(n_space, iters_sem, color = "red", lw = 1.5)
-    # axis1.set_title("Sem Deslocamento Espectral")
-    # axis1.set_xlabel("Tamanho da Matriz")
-    # axis1.set_ylabel("Número de Iterações")
-
-    # axis2.plot(n_space, iters_com, color = "green", lw = 1.5)
-    # axis2.set_title("Com Deslocamento Espectral")
-    # axis2.set_xlabel("Tamanho da Matriz")
-    # axis2.set_ylabel("Número de Iterações")
-
-    # plt.show()
-    # fig.savefig("fig1.png", dpi = 300)
-
-    # alphas = np.array(512 * [2.0])
-    # betas = np.array(511 * [-1.0])
-
-    # (_, _, _, E, iterations) = qr_1(alphas, betas)
-    # E = E[1]
-
-    # fig = plt.figure()
-    # fig.set_figwidth(6)
-
-    # ax = fig.add_subplot(111)
-    
-    # ax.set_yscale('log')
-
-    # n_space = np.linspace(0, iterations, iterations)
-
-    # ax.plot(n_space, E, color = "red", lw = 1.5)
-    # ax.set_title("Evolução do Erro por Iteração")
-    # ax.set_xlabel("Iteração")
-    # ax.set_ylabel("Erro Médio dos Autovalores")
-
-    # plt.show()
-    # fig.savefig("fig2.png", dpi = 300)
+        input("\n     Pressione [ENTER] para continuar para a próxima rotina.")
+        sys.stdout.write('\x1b[1A')
+        sys.stdout.write('\x1b[2K')
+        print("\n")
 
 def teste_2():
+    """
+        Rotinas de Testes para o Problema 2.
+        Exibe parâmetros, 
+    """
+    print("""
+      Você selecionou o teste: Sistema massa-mola com 5 molas.""")
+    print("""
+      =====================
+      Massa das Molas: 2 kg.
+      Constantes elásticas:""")
+
     k = [40 + 2 * i for i in range(1, 7)]
 
-    alphas = np.array([(a + b) / 2 for (a, b) in zip(k, k[1:])])
+    for i, j in enumerate(k):
+        print(f"        k{i + 1} = {j} N/m.")
+    print("      =====================")
+
+    alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
     betas = np.array([-b/2 for b in k[1:-1]])
 
-    print("Sem deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+    print("""
+      Matriz A dos Coeficientes da EDO:
+      """)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("     ", np.array2string(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1), prefix = "      "))
 
-    print("Com deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+    (alphas_k, _, V, iterations_w) = qr_algorithm(alphas, betas)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
-    print([np.sqrt(x) for x in alphas_k])
+    print("\n      > Solução da EDO <")
+    print(f"""
+      Número de iterações necessárias: {iterations_w}
+      
+      Autovalores: {alphas_k}\n
+      Frequências de vibração das massas: {np.sqrt(alphas_k)}
 
-    for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
+      Modos de vibração:
+      """)
+    print("     ", np.array2string(V, prefix = "      "))
+
+    for X0 in [np.array([-2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]:
+        print(f"\n      # Condições Iniciais: X(0) = {X0}")
+
         Y0 = np.matmul(np.transpose(V), X0)
         # Y(0) = Q^T x X(0)
 
-        print(f"X(0) = {X0}\nY(0) = {Y0}")
+        print(f"      Y(0) = {Y0}")
 
-        print(f"X(t) = [")
-        print(f"\t{V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+        print(f"      X(t) = [")
+        print(f"\t {V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
         for j in range(1, 5):
             a = V[0][j] * Y0[j]
             if abs(a) > 1e-6:
@@ -383,7 +360,7 @@ def teste_2():
 
         for i in range(1, 5):
             print(",")
-            print(f"\t{V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+            print(f"\t {V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
             for j in range(1, 5):
                 a = V[i][j] * Y0[j]
                 if abs(a) > 1e-6:
@@ -394,113 +371,59 @@ def teste_2():
 
                     print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
 
-        print("\n]")
+        print("\n      ]\n")
         # C(t) = [cos(np.sqrt(alphas_k[i]) t) for i in range(5)]^T
         # X(t) = Q x Y(t) = Q x (Y(0) \cdot C(t))
         
-        t = 0
-        print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}\n")
-
-        time = []
-        
-        solution = [[], [], [], [], []]
-
-        fig, axes = plt.subplots(2, 3)
-        plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
-        fig.set_size_inches(18.5, 10.5)
-        fig.suptitle('Evolução do Sistema no Tempo')
-        fig.subplots_adjust(hspace = 0.4)
-
-        mat0 = axes[0, 0].plot([], [], color = "blue", lw = 1.5)
-        mat1 = axes[0, 1].plot([], [], color = "red", lw = 1.5)
-        mat2 = axes[0, 2].plot([], [], color = "lime", lw = 1.5)
-        mat3 = axes[1, 0].plot([], [], color = "purple", lw = 1.5)
-        mat4 = axes[1, 1].plot([], [], color = "coral", lw = 1.5)
-        axes[1, 2].set_xlim(-10, 50)
-        mat5 = axes[1, 2].plot([], [], 'o')
-
-        patches = list(mat0) + list(mat1) + list(mat2) + list(mat3) + list(mat4) + list(mat5)
-
-        axes[0, 0].set_ylim(-4, 4)
-        axes[0, 1].set_ylim(-4, 4)
-        axes[0, 2].set_ylim(-4, 4)
-        axes[1, 0].set_ylim(-4, 4)
-        axes[1, 1].set_ylim(-4, 4)
-
-        def init():
-            global time
-            global solution
-            time = []
-            solution = [[], [], [], [], []]
-            mat0[0].set_data([], [])
-            mat1[0].set_data([], [])
-            mat2[0].set_data([], [])
-            mat3[0].set_data([], [])
-            mat4[0].set_data([], [])
-            mat5[0].set_data([], [])
-            return patches
-
-        def animate(index):
-            t = index * 0.025
-            time.append(t)
-
-            for i in range(5):
-                solution[i].append(sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]))
-
-            mat0[0].set_data(time, solution[0])
-            mat1[0].set_data(time, solution[1])
-            mat2[0].set_data(time, solution[2])
-            mat3[0].set_data(time, solution[3])
-            mat4[0].set_data(time, solution[4])
-
-            mat0[0].axes.set_xlim(t - 1, t)
-            axes[0, 1].set_xlim(t - 1, t)
-            axes[0, 2].set_xlim(t - 1, t)
-            axes[1, 0].set_xlim(t - 1, t)
-            axes[1, 1].set_xlim(t - 1, t)
-
-            X = np.array([10*i + solution[i][index] for i in range(5)])
-            Y = np.zeros(np.shape(X))
-
-            mat5[0].set_data(X,Y)
-            return patches
-
-        anim = FuncAnimation(fig, animate, init_func=init, frames=100000, interval=20, blit=True, cache_frame_data = False)
-
-        for i, axis in enumerate(axes.flat[:-1]):
-            axis.set_ylabel("Deslocamento (cm)")
-            axis.set_xlabel("Tempo (s)")
-        axes[1,2].set_xlabel("Posição (cm)")
-
-        plt.show()
-        # anim.save('uwu.gif')
-        # fig.savefig(f"fig{find+3}.png", dpi = 300)
-
+        for t in [0, 5, 10]:
+            print(f"      X(t = {t:2}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(5)]) for i in range(5)])}")
 
 def teste_3():
+    print("""
+      Você selecionou o teste: Sistema massa-mola com 10 molas.""")
+    print("""
+      =====================
+      Massa das Molas: 2 kg.
+      Constantes elásticas:""")
+
     k = [40 + 2 * (-1) ** i for i in range(1, 12)]
 
-    alphas = np.array([(a + b) / 2 for (a, b) in zip(k, k[1:])])
+    for i, j in enumerate(k):
+            print(f"        k{i + 1} = {j} N/m.")
+    print("      =====================")
+
+    alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
     betas = np.array([-b/2 for b in k[1:-1]])
 
-    print("Sem deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas, spectralShift = False)
+    print("""
+      Matriz A dos Coeficientes da EDO:
+      """)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("     ", np.array2string(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1), prefix = "      "))
 
-    print("Com deslocamento espectral")
-    (alphas_k, betas_k, V, iterations) = qr_algorithm(alphas, betas)
+    (alphas_k, _, V, iterations_w) = qr_algorithm(alphas, betas)
 
-    print(f"{iterations} iterações. Autovalores: {alphas_k}\n Autovetores: \n{V}\n")
+    print("\n      > Solução da EDO <")
+    print(f"""
+      Número de iterações necessárias: {iterations_w}
+      
+      Autovalores: {alphas_k}\n
+      Frequências de vibração das massas: {np.sqrt(alphas_k)}
 
-    for find, X0 in enumerate([np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]):
+      Modos de vibração:
+      """)
+    print("     ", np.array2string(V, prefix = "      "))
+
+    for X0 in [np.array([-2.0, -3.0, -1.0, -3.0, -1.0, -2.0, -3.0, -1.0, -3.0, -1.0]), np.array([1.0, 10.0, -4.0, 3.0, -2.0, 1.0, 10.0, -4.0, 3.0, -2.0]), V[:, 0]]:
+        print(f"\n      # Condições Iniciais: X(0) = {X0}")
+
         Y0 = np.matmul(np.transpose(V), X0)
         # Y(0) = Q^T x X(0)
 
-        print(f"X(0) = {X0}\nY(0) = {Y0}")
+        print(f"      Y(0) = {Y0}")
 
-        print(f"X(t) = [")
-        print(f"\t{V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+        print(f"      X(t) = [")
+        print(f"\t {V[0][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
         for j in range(1, 10):
             a = V[0][j] * Y0[j]
             if abs(a) > 1e-6:
@@ -513,7 +436,7 @@ def teste_3():
 
         for i in range(1, 10):
             print(",")
-            print(f"\t{V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
+            print(f"\t {V[i][0] * Y0[0]:9.6f} cos({np.sqrt(alphas_k[0]):8.6f} t)", end = "")
             for j in range(1, 10):
                 a = V[i][j] * Y0[j]
                 if abs(a) > 1e-6:
@@ -524,59 +447,19 @@ def teste_3():
 
                     print(f"{abs(a):8.6f} cos({np.sqrt(alphas_k[j]):8.6f} t)", end = "")
 
-        print("\n]")
-        # C(t) = [cos(np.sqrt(alphas_k[i]) t) for i in range(10)]^T
+        print("\n      ]\n")
+        # C(t) = [cos(np.sqrt(alphas_k[i]) t) for i in range(5)]^T
         # X(t) = Q x Y(t) = Q x (Y(0) \cdot C(t))
+        
+        for t in [0, 5, 10]:
+            print(f"      X(t = {t:2}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}")
 
-        t = 0
-        print(f"X(t = {t}) = {np.array([sum([V[i][j] * Y0[j] * cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for i in range(10)])}\n")
-
-        time = np.linspace(0, 10, int(10 / 0.025))
-        solution = np.array([[sum([V[i][j] * Y0[j] * np.cos(np.sqrt(alphas_k[j]) * t) for j in range(10)]) for t in time] for i in range(10)])
-
-        fig, axes = plt.subplots(2, 3)
-        plt.figtext(0.5, .94, 'Deslocamento da Mola em relação ao Equilíbrio', fontsize = 10, ha = "center")
-        fig.set_size_inches(18.5, 10.5)
-        fig.suptitle('Evolução do Sistema no Tempo')
-        fig.subplots_adjust(hspace = 0.4)
-
-        axes[0, 0].plot(time, solution[0], color = "blue", lw = 1.5)
-        axes[0, 1].plot(time, solution[1], color = "red", lw = 1.5)
-        axes[0, 2].plot(time, solution[2], color = "lime", lw = 1.5)
-        axes[1, 0].plot(time, solution[3], color = "purple", lw = 1.5)
-        axes[1, 1].plot(time, solution[4], color = "coral", lw = 1.5)
-        axes[1, 2].plot(time, solution[5], color = "orange", lw = 1.5)
-
-        for i, axis in enumerate(axes.flat):
-            axis.set_ylabel("Deslocamento (cm)")
-            axis.set_xlabel("Tempo (s)")
-            axis.set_title(f"Mola {i+1}: k = {k[i]}")
-
-        fig.savefig(f"fig{find+6}.png", dpi = 300)
-
-        fig, axes = plt.subplots(2, 3)
-        fig.set_size_inches(18.5, 10.5)
-        fig.subplots_adjust(hspace = 0.4)
-        fig.delaxes(axes[1, 1])
-        fig.delaxes(axes[1, 2])
-
-        axes[0, 0].plot(time, solution[6], color = "magenta", lw = 1.5)
-        axes[0, 1].plot(time, solution[7], color = "pink", lw = 1.5)
-        axes[0, 2].plot(time, solution[8], color = "lavender", lw = 1.5)
-        axes[1, 0].plot(time, solution[9], color = "gold", lw = 1.5)
-
-        for i, axis in enumerate(axes.flat[:-2]):
-            axis.set_ylabel("Deslocamento (cm)")
-            axis.set_xlabel("Tempo (s)")
-            axis.set_title(f"Mola {i + 7}: k = {k[i + 6]}")
-
-        fig.savefig(f"fig{find+9}.png", dpi = 300)    
-
-        plt.show()
 
 import sys
 
 if __name__ == "__main__":
+    np.set_printoptions(precision = 12, linewidth = 200, suppress = True, sign = ' ')
+
     teste = int(input("""
          _____ ____  _       __  __    _    ____ _____ _ ____  _
         | ____|  _ \/ |     |  \/  |  / \  |  _ \___ // |___ \/ |
@@ -601,124 +484,12 @@ if __name__ == "__main__":
 
       Digite um número (1 - 5): """))
 
-    np.set_printoptions(precision = 6)
     if teste == 1:
-        print("""
-      Você selecionou o teste: Matriz com diagonal principal e subdiagonal constantes.""")
-
-        text = ["Primeira", "Segunda", "Terceira", "Quarta"]
-        for i, n in enumerate([4, 8, 16, 32]):
-            print(f"""
-      [=== {text[i]} Rotina: n = {n} ===]
-      """)
-
-            alphas = np.array(n * [2.0])
-            betas = np.array((n - 1) * [-1.0])
-
-            print("""      Matriz original:
-            """)
-            print(np.diag(betas, k = 1) + np.diag(betas, k = -1) + np.diag(alphas))
-
-            (alphas_k, betas_k, V, iterations_sem) = qr_algorithm(alphas, betas, spectralShift = False)
-
-            print("""\n      > Procedimentos sem deslocamento espectral <
-            """)
-            print(f"""      Concluído em {iterations_sem} iterações.
-            """)
-            print(f"""      Autovalores Encontrados: {alphas_k}\n""")
-
-            print("""      Matriz dos Autovetores:
-            """)
-            print(V)
-
-            (alphas_k, betas_k, V, iterations_com) = qr_algorithm(alphas, betas, spectralShift = True)
-
-            print("""\n      > Procedimentos com deslocamento espectral <
-            """)
-            print(f"""      Concluído em {iterations_com} iterações. Diferença com/sem deslocamento: {iterations_sem - iterations_com} iterações.
-            """)
-            print(f"""      Autovalores Encontrados: {alphas_k}\n""")
-
-            print("""      Matriz dos Autovetores:
-            """)
-            print(V)
-
-            input("\n     Pressione [ENTER] para continuar para a próxima rotina.")
-            sys.stdout.write('\x1b[1A')
-            sys.stdout.write('\x1b[2K')
-            print("\n")
-
+        teste_1()
     elif teste == 2:
-        print("""
-      Você selecionou o teste: Sistema massa-mola com 5 molas.""")
-        print("""
-      =====================
-      Massa das Molas: 2 kg.
-      Constantes elásticas:""")
-
-        k = [40 + 2 * i for i in range(1, 7)]
-
-        for i, j in enumerate(k):
-            print(f"        k{i + 1} = {j} N/m.")
-        print("      =====================")
-
-        alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
-        betas = np.array([-b/2 for b in k[1:-1]])
-
-        print("""
-      Matriz A dos Coeficientes da EDO:
-      """)
-
-        print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
-
-        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
-
-        print(f"""
-      Número de iterações necessárias: {iterations_w}
-
-      Frequências de vibração das massas: {np.sqrt(alphas_k)}
-
-      Modos de vibração:
-      """)
-        print(V)
-        print("\n\n")
-
+        teste_2()
     elif teste == 3:
-        print("""
-      Você selecionou o teste: Sistema massa-mola com 10 molas.""")
-        print("""
-      =====================
-      Massa das Molas: 2 kg.
-      Constantes elásticas:""")
-
-        k = [40 + 2 * (-1) ** i for i in range(1, 12)]
-
-        for i, j in enumerate(k):
-                print(f"        k{i + 1} = {j} N/m.")
-        print("      =====================")
-
-
-        alphas = np.array([(a + b)/2 for (a, b) in zip(k, k[1:])])
-        betas = np.array([-b/2 for b in k[1:-1]])
-
-        print("""
-      Matriz A dos Coeficientes da EDO:
-      """)
-
-        print(np.diag(alphas) + np.diag(betas, k = 1) + np.diag(betas, k = -1))
-
-        (alphas_k, betas_k, V, iterations_w) = qr_algorithm(alphas, betas)
-
-        print(f"""
-      Número de iterações necessárias: {iterations_w}
-
-      Frequências de vibração das massas: {np.sqrt(alphas_k)}
-
-      Modos de vibração:
-      """)
-        print(V)
-        print("\n\n")
-
+        teste_3()
     elif teste == 4:
         print("""
       Você selecionou o teste: Matriz arbitrária.""")
@@ -768,21 +539,20 @@ if __name__ == "__main__":
         print("""
       Matriz a ser diagonalizada:
         """)
-        print(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1))
+        print("     ", np.array2string(np.diag(alphas) + np.diag(betas, k = -1) + np.diag(betas, k = 1), prefix = "      "))
 
         print(f"""
       Concluído em {iterations_w} iterações.
         """)
 
-        print("""
-      Autovalores:
+        print(f"""
+      Autovalores: {alphas_k}
         """)
-        print(alphas_k)
 
         print("""
       Autovetores:
         """)
-        print(V)
+        print("     ", np.array2string(V, prefix = "      "))
 
         print("\n\n")
 
