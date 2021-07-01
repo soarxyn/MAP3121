@@ -124,12 +124,18 @@ A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simé
     \label{fig:4}
 \end{figure}
 
-apsodfpoksadfapsodkaspodopkdsakpoasdkpoaskop
+A quinta rotina gera gráficos relevantes aos testes propostos no enunciado em [@MAT3121]. Ao selecioná-la, será pedido um número ao usuário, correspondente ao teste para o qual se deseja gerar os gráficos.
+
+Para o teste 1, são mostrados gráficos do número de iterações até a convergência, para a execução do Algoritmo QR sem e com deslocamento espectral, e da evolução do erro médio, todos em função de $n$, o comprimento da diagonal de $A$.
+
+Para os testes 2 e 3, são mostrados gráficos dos deslocamentos durante os primeiros 10 segundos para todas as massas. É possível também visualizar uma animação das massas e molas, com o desenvolvimento do sistema físico ao longo do tempo.
+
+Apenas para o teste 2, pode-se visualizar também as formas de onda dos deslocamentos avançando no tempo. A fim de evitar poluição visual, essa opção não foi inclusa para o teste 3, dada a grande quantidade de gráficos.
 
 \begin{figure}[H]
     \includegraphics[height = 10cm]{fig_term5.png}
     \centering
-    \caption{Exemplo de execução ao selecionar a quarta rotina.}
+    \caption{Exemplo de execução ao selecionar a quinta rotina.}
     \label{fig:5}
 \end{figure}
 
@@ -848,9 +854,7 @@ if __name__ == "__main__":
 \normalsize
 **\label{code:main}Código \ref{code:main}:** Função principal de execução. Implementa a CLI.
 
-Nas linhas 4 a 26 do código, é impressa a tela principal da CLI, com o pedido da entrada de um número de 1 a 5 pelo usuário. Dependendo do valor inserido, o programa inicia uma rotina específica. As entradas 1 a 3 chamam as funções de teste descritas anteriormente. A rotina 4 é implementada na própria função principal, e seu funcionamento foi descrito na introdução. A 5ª rotina dá a opção de geração de gráficos para cada um dos 3 testes propostos em [@MAT3121].
-
-Para o teste 1, é impresso o gráfico do número de iterações do Algoritmo QR, com e sem deslocamento espectral, pelo tamanho $n$ da matriz, variando de 3 a 64. Além disso, é mostrado um gráfico da evolução do erro médio absoluto por iteração, definido anteriormente, também para $n=3,4,5...64$. Para os testes 2 e 3, são mostrados gráficos dos deslocamentos nos primeiros 10 segundos para todas as massas. Adicionalmente, pode-se optar por visualizar uma animação das massas e molas do sistema, conforme o tempo avança. Para o teste 2, são animados simultaneamente os deslocamentos das massas ao longo do tempo. Para o teste 3, para evitar poluição visual, decidiu-se não animar os deslocamentos, apenas as massas e molas.
+Nas linhas 4 a 26 do código, é impressa a tela principal da CLI, com o pedido da entrada de um número de 1 a 5 pelo usuário. Dependendo do valor inserido, o programa inicia uma rotina específica. As entradas 1 a 3 chamam as funções de teste descritas anteriormente. A rotina 4 é implementada na própria função principal, e seu funcionamento foi descrito na introdução. A 5ª rotina dá a opção de geração de gráficos para cada um dos 3 testes propostos em [@MAT3121]. Seu funcionamento também está descrito na introdução.
 
 \pagebreak
 # Resultados e Discussão {#sec:results}
