@@ -124,6 +124,15 @@ A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simé
     \label{fig:4}
 \end{figure}
 
+apsodfpoksadfapsodkaspodopkdsakpoasdkpoaskop
+
+\begin{figure}[H]
+    \includegraphics[height = 10cm]{fig_term5.png}
+    \centering
+    \caption{Exemplo de execução ao selecionar a quarta rotina.}
+    \label{fig:5}
+\end{figure}
+
 \newpage
 
 # Implementação {#sec:impl}
