@@ -117,7 +117,7 @@ A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simé
 
 **Nota:** Ao fornecer as entradas, é essencial que o usuário pressione `[ENTER]` entre uma entrada e outra. Logo, o padrão de digitação deve ser, por exemplo `1 [ENTER] 2 [ENTER]` etc, para garantir que todas as entradas sejam lidas corretamente. Um exemplo de execução está na Figura \ref{fig:4} abaixo.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[height = 10cm]{fig_term4.png}
     \centering
     \caption{Exemplo de execução ao selecionar a quarta rotina.}
@@ -411,9 +411,9 @@ O código segue a descrição formal apresentada anteriormente. Na linha 7 é cr
 \pagebreak
 # Construção dos Testes {#sec:test}
 
-Os aspectos matemáticos da construção de cada teste serão apresentados na Seção \ref{sec:results} junto aos resultados.
+Os aspectos matemáticos da construção de cada teste serão apresentados na Seção \ref{sec:results} junto aos resultados. Nesta seção, deseja-se detalhar a implementação _em código_ de tais testes.
 
-## Teste 1: Verificação do Algoritmo
+## Teste 1: Matriz Tridiagonal Simétrica a valores Constantes
 
 ### Implementação do Teste
 
@@ -421,7 +421,7 @@ Na seção 2.3a de [@MAT3121], é apresentada uma família de matrizes cujos aut
 
 A implementação está no Código \ref{code:teste_1}, abaixo, do qual se retiraram os comentários, mantidos no arquivo original do _script_.
 
-\footnotesize
+\scriptsize
 
 ~~~~ {#teste1 .python .numberLines}
 def teste_1():
@@ -1033,7 +1033,173 @@ Apresentamos a evolução do sistema abaixo na Figura \ref{fig:t4}
     \label{fig:t4}
 \end{figure}
 
-Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletido pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação
+Podemos comparar estas condições iniciais com as do primeiro conjunto. Notamos que diferentes c.i.s. implicam uma evolução do sistema consideravelmente distinta. A alta amplitude do deslocamento inicial produz oscilações proporcionalmente vigorosas e relativamente rápidas. Essa consideração de rapidez é refletido pelo fato de a componente espectral de maior amplitude ser aquela de maior frequência. A massa central tem o padrão mais comportado de oscilação. Por fim, notamos que as massas conectadas a molas de maiores constantes elásticas.
+
+**Terceiro Conjunto de Condições Iniciais**  Deve-se utilizar como c.i. o autovetor associado ao autovalor de maior frequência. Portanto, $X(0)=( 0.189335, -0.391105,  0.557661, -0.588202, 0.392711)^T$, temos portanto $Y(0)=Q^TX(0)=(1, 0, 0, 0, 0)^T$. Logo $Y(t)$ é o vetor $$Y(t)=\begin{bmatrix}
+ 0.189335 \cos(9.404520 t) \\
+-0.391105 \cos(9.404520 t) \\
+0.557661 \cos(9.404520 t) \\
+-0.588202 \cos(9.404520 t) \\
+0.392711 \cos(9.404520 t) \\
+\end{bmatrix}$$
+
+O gráfico do deslocamento das massas no tempo está na Figura \ref{fig:t5} abaixo.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{fig5}
+    \caption{Evolução da Solução para o terceiro conjunto de $X(0)$.}
+    \label{fig:t5}
+\end{figure}
+
+Como o vetor de deslocamento inicial é um autovetor da matriz de coeficientes do sistema, temos que as massas entram em ressonância e vibram à mesma frequência. Isso ocorre pois, nesta situação, $X(0)$ é um modo natural de vibração do sistema e a amplitude das demais componentes cossenodais é nula. O valor encontrado para $Y(0)$ é o vetor $X(0)$ na base de autovetores de $A$, sendo, nesta situação, paralelo a um dos vetores que formam a base.
+
+\pagebreak
+
+### Solução para o Teste 3
+
+Neste teste, soluciona-se um sistema de $10$ massas e $11$ molas. Igualmente, as massas têm $2$ kg e as constantes são dadas por $k_i=(40+2(-1)^i)$ N/m, $i=1,\dots,11$\. A matriz de coeficientes é: $$A =
+    \begin{bmatrix}
+  40& -21&   0&   0&   0&   0&   0&   0&   0&   0\\
+ -21&  40& -19&   0&   0&   0&   0&   0&   0&   0\\
+   0& -19&  40& -21&   0&   0&   0&   0&   0&   0\\
+   0&   0& -21&  40& -19&   0&   0&   0&   0&   0\\
+   0&   0&   0& -19&  40& -21&   0&   0&   0&   0\\
+   0&   0&   0&   0& -21&  40& -19&   0&   0&   0\\
+   0&   0&   0&   0&   0& -19&  40& -21&   0&   0\\
+   0&   0&   0&   0&   0&   0& -21&  40& -19&   0\\
+   0&   0&   0&   0&   0&   0&   0& -19&  40& -21\\
+   0&   0&   0&   0&   0&   0&   0&   0& -21&  40\\
+    \end{bmatrix}
+$$
+
+A aplicação dos Algoritmo QR em $A$ retorna seus autovalores, cujas raízes são as frequências de vibração do sistema massa-mola. Os autovalores e as respectivas frequências são exibidos na Tabela \ref{table:5} abaixo.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $j$ & $\lambda_j$ & $\omega_j$ \\
+        \hline
+            $1$ & $78.398748$ &  $8.854307$ \\
+            $2$ & $73.729928$ &  $8.586613$ \\
+            $3$ & $66.393758$ &  $8.148237$ \\
+            $4$ & $57.063951$ &  $7.554068$ \\
+            $5$ & $47.001372$  & $6.855755$ \\
+            $6$ & $32.998628$  & $5.744443$ \\
+            $7$ & $22.936049$  & $4.789160$ \\
+            $8$ & $13.606242$  & $3.688664$ \\
+            $9$ & $ 6.270072$  & $2.504011$ \\
+            $10$& $ 1.601252$  & $1.265406$ \\
+        \hline
+    \end{tabular}
+    \caption{Autovalores para a matriz do teste 2.}
+    \label{table:5}
+\end{table}
+
+\pagebreak
+Os modos naturais de vibração do sistema são constituídos pelos autovetores de $A$. A matriz de autovetores para o teste atual está abaixo, estando armazenados em suas colunas.
+
+$$
+Q =
+\begin{bmatrix}
+ 0.125245 &  0.240074 &  0.334551 & \cdots &  0.398212 & 0.334551  & 0.240074  & 0.125245 \\
+-0.229012 & -0.385603 & -0.420479 & \cdots &  0.323575 & 0.420479  & 0.385603  & 0.229012 \\
+ 0.324402 &  0.419201 &  0.214339 & \cdots & -0.149526 & 0.214339  & 0.419201  & 0.324402 \\
+-0.385971 & -0.324437 &  0.111042 & \cdots & -0.414258 & -0.111042 &  0.324436 &  0.385971 \\
+ 0.421493 &  0.112631 & -0.391154 & \cdots & -0.206781 & -0.391154 &  0.112631 &  0.421493 \\
+-0.421493 &  0.112631 &  0.391154 & \cdots &  0.206781 & -0.391154 & -0.112631 &  0.421493 \\
+ 0.385971 & -0.324437 & -0.111042 & \cdots &  0.414258 & -0.111042 & -0.324437 &  0.385971 \\
+-0.324402 &  0.419201 & -0.214339 & \cdots &  0.149526 & 0.214339  &-0.419201  & 0.324402 \\
+ 0.229012 & -0.385603 &  0.420479 & \cdots & -0.323575 & 0.420479  &-0.385603  & 0.229012 \\
+-0.125245 &  0.240074 & -0.334551 & \cdots & -0.398212 & 0.334551  &-0.240074  & 0.125245 \\
+\end{bmatrix}
+$$ \begin{center} Matriz dos Autovetores para o problema do Teste 3 \end{center}
+
+
+**Primeiro Conjunto de Condições Iniciais**  Ao utilizar as condições iniciais $X(0)=(−2,−3,−1,−3,−1,$ $−2,−3,−1,−3,−1)^T$, teremos $Y(0)=Q^TX(0)=(0.296248  ,2.363722 ,-0.725705 ,-0.819342 ,-0.05771,$ $-0.720211,-0.604993, -2.11549  , -0.127443 , -5.978921)^T$. Utilizando as condições iniciais dadas, teremos: $$Y(t)=\begin{bmatrix}
+0.2962480\cos(8.854307 t) \\  
+2.3637220\cos(8.586613 t) \\ 
+-0.725705\cos(8.148237 t) \\ 
+-0.819342\cos(7.554068 t) \\ 
+-0.057710\cos(6.855755 t) \\  
+-0.720211\cos(5.744443 t) \\ 
+-0.604993\cos(4.789160 t) \\
+-2.115490\cos(3.688664 t) \\  
+-0.127443\cos(2.504011 t) \\ 
+-5.978921\cos(1.265406 t) \\
+\end{bmatrix}$$
+
+Pode-se reconstruir $X(t)$ utilizando $X(t)=QY(t)$. Por brevidade, omitiremos a matriz, que pode ser vista na execução da CLI. A Figura \ref{fig:t6} exibe a evolução da solução para 10 massas, com o deslocamento de cada uma, por 10 segundos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \linewidth]{fig6}
+    \includegraphics[width = \linewidth]{fig9}
+    \caption{Evolução da Solução para o primeiro conjunto de $X(0)$.}
+    \label{fig:t6}
+\end{figure}
+
+Como anteriormente, as soluções do sistema são superposições de cossenos. Observamos que existem pares de massas com oscilações similares. Por exemplo, as massas 5 e 6 têm mesmo formato, bem como 3 e 8. Além disso, massas em posições centrais tendem a oscilar menos que aquelas nas pontas, apesar de possuírem amplitude maior. A componente espectral de menor frequência é a mais relevante para a oscilação, pois tem a maior das amplitudes, o que é muito perceptível. [COMPLETA AQUI POR FAVOR]
+
+**Segundo Conjunto de Condições Iniciais**  Para este conjunto de condições iniciais, temos $X(0)=(1, 10, -4, 3, -2, 1, 10, -4, 3, -2)^T$, gerando $Y(0)=Q^TX(0)=(  0.209968,-12.936835, -1.543527,  2.183659,$ $-2.489729,  0.853680,  6.979812,  2.364570,  0.810496,  4.852832)^T$. A função em $Y$ se torna: $$Y(t)=\begin{bmatrix}
+  0.209968\cos(8.854307 t) \\
+-12.936835\cos(8.586613 t) \\
+ -1.543527\cos(8.148237 t) \\
+  2.183659\cos(7.554068 t) \\
+ -2.489729\cos(6.855755 t) \\
+  0.853680\cos(5.744443 t) \\
+  6.979812\cos(4.789160 t) \\
+  2.364570\cos(3.688664 t) \\
+  0.810496\cos(2.504011 t) \\
+  4.852832\cos(1.265406 t) \\
+\end{bmatrix}$$
+
+A partir das c.i.s e dos autovalores do sistema, encontramos a solução $X(t)$ por $X(t)=QY(t)$. Dela, pode-se analisar a oscilação das massas e a evolução do sistema. Traçaram-se gráficos para essa solução, que se encontram na Figura \ref{fig:t7} abaixo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \linewidth]{fig7}
+    \includegraphics[width = \linewidth]{fig10}
+    \caption{Evolução da Solução para o segundo conjunto de $X(0)$.}
+    \label{fig:t7}
+\end{figure}
+
+Comparando com a solução anterior, observamos que a amplitude das oscilações é muito maior, o que se reflete as condições iniciais. Também observamos que existem pares de massas com funções-deslocamento similares. As massas centrais e da bordam oscilam muito, ao passo que naquelas de posições intermediárias predominam componentes de baixa frequência, embora a amplitude de oscilação seja maior. [COMPLETA AQUI POR FAVOR]
+
+\pagebreak
+
+**Terceiro Conjunto de Condições Iniciais** Utilizaremos para o tempo $t=0$ o autovetor associado à oscilação de maior frequência, i.e., cujo autovalor tem maior módulo. Portanto, utilizaremos como c.i. o autovetor associado ao autovalor de maior frequência. 
+
+Encontramos $X(0)=(0.125245, -0.229012,  0.324402, -0.385971,  0.421493, -0.421493,  0.385971, -0.324402,  0.229012, -0.125245)^T$, o qual, por ser autovetor de $A$, na base ortonormal dos autovetores de $A$, obtemos $Y(0)=Q^TX(0)=(1, 0, \cdots, 0, 0)^T$. $Y(t)$ é, composto por um único cosseno, cuja frequência é o autovalor de maior módulo, e as amplitudes são iguais à condição inicial: $$Y(t)=\begin{bmatrix}
+         0.125245 \cos(8.854307 t) \\
+        -0.229012 \cos(8.854307 t) \\
+         0.324402 \cos(8.854307 t) \\
+        -0.385971 \cos(8.854307 t) \\
+         0.421493 \cos(8.854307 t) \\
+        -0.421493 \cos(8.854307 t) \\
+         0.385971 \cos(8.854307 t) \\
+        -0.324402 \cos(8.854307 t) \\
+         0.229012 \cos(8.854307 t) \\
+        -0.125245 \cos(8.854307 t)
+\end{bmatrix}$$
+
+Como $X(0)$ é autovetor, $X(t)=Y(t)$. Foram construídos os gráficos do deslocamento para cada massa por 10 segundos, exibidos na Figura \ref{fig:t8} abaixo.
+
+Tal qual esperado, as massas oscilam todas sob mesma frequência e com amplitude igual ao deslocamento inicial. [COMPLETA AQUI POR FAVOR]
+
+Na implementação destes problemas, como não é possível trabalhar simbolicamente com os cossenos, utilizamos os coeficientes desassociados de suas funções. Ou seja, definimos um vetor de cossenos $C(t)$, de modo que $X(t)=Q(Y(0)^T\circ C(t))$, em que $\circ:\mathbb{R}^{n\times n}\times\mathbb{R}^{n\times n}\rightarrow\mathbb{R}^{n\times n}$ é o produto de Hadamard.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \linewidth]{fig8}
+    \includegraphics[width = \linewidth]{fig11}
+    \caption{Evolução da Solução para o terceiro conjunto de $X(0)$.}
+    \label{fig:t8}
+\end{figure}
+
+Todos os testes envolvendo molas, para diferentes condições iniciais podem ser vistos **com animação** pela execução da rotina 5 na CLI. A animação exibe os gráficos, atualizados tempo a tempo, e as massas oscilando com o tempo. A posição inicial de cada massa (a qual se aplica o deslocamento) foi escolhida para corresponder a melhor visualização, pois não interfere na solução. 
 
 \pagebreak
 # Referências {-}
+\setstretch{1}

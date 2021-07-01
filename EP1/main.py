@@ -787,7 +787,7 @@ if __name__ == "__main__":
         print("\n\n")
 
     elif teste == 5:
-        teste_2()
+        teste_3()
     else:
         print("\nInválido!\n\n")
 
