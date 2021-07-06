@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Tuple
-from math import copysign
+from math import copysign, cos, pi
 
 def sgn(x):
     """
@@ -249,14 +249,35 @@ def tridiagonalization(A : np.array) -> Tuple[np.array, np.array, np.array]:
 
     return (np.array(alphas), np.array(betas), H)
 
-if __name__ == "__main__":
+def teste_1():
     A = np.array([[2.0, 4.0, 1.0, 1.0], [4.0, 2.0, 1.0, 1.0], [1.0, 1.0, 1.0, 2.0], [1.0, 1.0, 2.0, 1.0]])
     Lambda, _, V, _ = qr_algorithm(*tridiagonalization(A))
     np.set_printoptions(precision = 4, suppress = True)
-    print(f"Autovalores: \n\tEsperados: {np.array([7.0, 2.0, -1.0, -2.0])}\n\tObtidos:   {np.array(sorted(Lambda, reverse = True))}\nAutovetores:\n{V}\n")
+    print(f"Autovalores:\n\tEsperados: {np.array([7.0, 2.0, -1.0, -2.0])}\n\tObtidos:   {np.array(sorted(Lambda, reverse = True))}\nAutovetores:\n{V}\n")
     for i in range(4):
         result = np.matmul(A, V[:, i])
         ratio = lambda a, b: np.array([Lambda[i] if a[j] < 1e-6 else a[j] / b[j] for j in range(len(a))])
-        print(f"AV[{i}]: {result}\nProporção:\n\tEsperada: {Lambda[i]:.4f}\n\tObtida:   {ratio(result, V[:, i])}")
+        print(f"AV[{i}]: {result}\nProporção:\n\tEsperada: {Lambda[i]:.4f}\n\tObtida:   {ratio(result, V[:, i])}\n")
 
-    print(f"Teste de ortogonalidade: VVt = \n{np.matmul(V, np.transpose(V))}")
+    print(f"Teste de ortogonalidade: VVt =\n{np.matmul(V, np.transpose(V))}\n")
+
+def teste_2():
+    n = 20
+    A = np.diag([float(n - i) for i in range(n)])
+    for i in range(1, n):
+        A += np.diag([float(n - j) for j in range(i, n)], i)
+        A += np.diag([float(n - j) for j in range(i, n)], - i)
+
+    Lambda, _, V, _ = qr_algorithm(*tridiagonalization(A))
+    eigenvalues = np.array([1.0 / (2 * (1 - cos((2 * i + 1) * pi / (2 * n + 1)))) for i in range(n)])
+    np.set_printoptions(precision = 3, suppress = True, linewidth = 500)
+    print(f"Autovalores:\n\tEsperados: {eigenvalues}\n\tObtidos:   {np.array(sorted(Lambda, reverse = True))}\nAutovetores:\n{V}\n")
+    for i in range(n):
+        result = np.matmul(A, V[:, i])
+        ratio = lambda a, b: np.array([Lambda[i] if a[j] < 1e-6 else a[j] / b[j] for j in range(len(a))])
+        print(f"AV[{i}]: {result}\nProporção:\n\tEsperada: {Lambda[i]:.3f}\n\tObtida:   {ratio(result, V[:, i])}\n")
+
+    print(f"Teste de ortogonalidade: VVt =\n{np.matmul(V, np.transpose(V))}\n")
+
+if __name__ == "__main__":
+    teste_2()
