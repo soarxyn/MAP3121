@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Tuple
-from math import copysign, cos, pi
+from math import copysign, cos, pi, sin
 
 def sgn(x):
     """
@@ -279,5 +279,72 @@ def teste_2():
 
     print(f"Teste de ortogonalidade: VVt =\n{np.matmul(V, np.transpose(V))}\n")
 
+def aplicacao():
+    K = np.zeros((24, 24), float)
+    m = np.zeros(12, float)
+    def addK(i : int, j : int, L : float, c : float, s : float):
+        m[i] += 3.9e2 * (2.0 + np.sqrt(2.0)) * L
+        sub = 2e10 / L * np.array([[c**2, c * s], [c * s, s**2]])
+        K[2 * i : 2 * i + 2, 2 * i : 2 * i + 2] = sub.copy()
+        if j < 12:
+            m[j] += 3.9e2 * (2.0 + np.sqrt(2.0)) * L
+            K[2 * i : 2 * i + 2, 2 * j : 2 * j + 2] = -sub.copy()
+            K[2 * j : 2 * j + 2, 2 * i : 2 * i + 2] = -sub.copy()
+            K[2 * j : 2 * j + 2, 2 * j : 2 * j + 2] = sub.copy()
+
+    addK(0, 1, 10.0, -1.0, 0.0)
+    addK(0, 3, 10.0, 0.0, -1.0)
+    addK(0, 4, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(1, 3, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(1, 4, 10.0, 0.0, -1.0)
+    addK(2, 3, 10.0, -1.0, 0.0)
+    addK(2, 6, 10.0, 0.0, -1.0)
+    addK(2, 7, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(3, 4, 10.0, -1.0, 0.0)
+    addK(3, 7, 10.0, 0.0, -1.0)
+    addK(3, 8, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(4, 5, 10.0, -1.0, 0.0)
+    addK(4, 7, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(4, 8, 10.0, 0.0, -1.0)
+    addK(5, 8, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(5, 9, 10.0, 0.0, -1.0)
+    addK(6, 7, 10.0, -1.0, 0.0)
+    addK(7, 8, 10.0, -1.0, 0.0)
+    addK(7, 10, 10.0, 0.0, -1.0)
+    addK(7, 11, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(8, 9, 10.0, -1.0, 0.0)
+    addK(8, 10, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
+    addK(8, 11, 10.0, 0.0, -1.0)
+    addK(10, 11, 10.0, -1.0, 0.0)
+    addK(10, 12, 10.0, 2.0 / np.sqrt(5.0), -1.0 / np.sqrt(5.0))
+    addK(10, 13, 10.0, -3.0 / np.sqrt(13.0), -2.0 / np.sqrt(13.0))
+    addK(11, 12, 10.0, 3.0 / np.sqrt(13.0), -2.0 / np.sqrt(13.0))
+    addK(11, 13, 10.0, -2.0 / np.sqrt(5.0), -1.0 / np.sqrt(5.0))
+
+    K_til = K.copy()
+    for i in range(24):
+        for j in range(24):
+            if i == j:
+                K_til[i, j] /= m[int(i / 2)]
+            else:
+                K_til[i, j] /= np.sqrt(m[int(i / 2)] * m[int(j / 2)])
+
+    Lambda, _, V, _ = qr_algorithm(*tridiagonalization(K_til))
+
+    np.set_printoptions(precision = 3, suppress = True, linewidth = 500)
+    print(f"Autovalores obtidos:\n{Lambda}\nAutovetores obtidos:\n{V}\n")
+    freq = np.sqrt(abs(Lambda))
+    vib = V.copy()
+    for i in range(24):
+        vib[i] /= np.sqrt(m[int(i / 2)])
+
+    print(f"Frequências:\n{freq}\nModos de vibração:\n{vib}\n")
+    print(f"x(t) = [\n\t{vib[:, 0]}exp({freq[0]:7.3f} it)", end = "")
+    for i in range(1, 24):
+        print(f",\n\t{vib[:, i]}exp({freq[i]:7.3f} it)", end = "")
+
+    print("\n]")
+
+
 if __name__ == "__main__":
-    teste_2()
+    aplicacao()
