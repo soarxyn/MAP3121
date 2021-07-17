@@ -1,6 +1,9 @@
 import numpy as np
 from typing import Tuple
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 from math import copysign, cos, pi, sin
+from functools import reduce
 
 def sgn(x):
     """
@@ -279,72 +282,140 @@ def teste_2():
 
     print(f"Teste de ortogonalidade: VVt =\n{np.matmul(V, np.transpose(V))}\n")
 
+def addBar(i: int, j: int, L: float, c: float, s: float, E: float, p: float, A: float, M: np.array, K: np.array):
+    mass_contribution = 0.5 * p * A * L
+    M[i] += mass_contribution
+
+    local_stiffness = (A * E) / L * np.array([[c**2, c*s], [c*s, s**2]])
+    K[2*i:2*i+2, 2*i:2*i+2] += local_stiffness
+    
+    if j in range(len(M)):
+        M[j] += mass_contribution
+        K[2*i:2*i+2, 2*j:2*j+2] += - local_stiffness
+        K[2*j:2*j+2, 2*i:2*i+2] += - local_stiffness
+        K[2*j:2*j+2, 2*j:2*j+2] += local_stiffness
+
 def aplicacao():
     K = np.zeros((24, 24), float)
-    m = np.zeros(12, float)
-    def addK(i : int, j : int, L : float, c : float, s : float):
-        m[i] += 3.9e2 * (2.0 + np.sqrt(2.0)) * L
-        sub = 2e10 / L * np.array([[c**2, c * s], [c * s, s**2]])
-        K[2 * i : 2 * i + 2, 2 * i : 2 * i + 2] = sub.copy()
-        if j < 12:
-            m[j] += 3.9e2 * (2.0 + np.sqrt(2.0)) * L
-            K[2 * i : 2 * i + 2, 2 * j : 2 * j + 2] = -sub.copy()
-            K[2 * j : 2 * j + 2, 2 * i : 2 * i + 2] = -sub.copy()
-            K[2 * j : 2 * j + 2, 2 * j : 2 * j + 2] = sub.copy()
+    M = np.zeros(12, float)
 
-    addK(0, 1, 10.0, -1.0, 0.0)
-    addK(0, 3, 10.0, 0.0, -1.0)
-    addK(0, 4, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(1, 3, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(1, 4, 10.0, 0.0, -1.0)
-    addK(2, 3, 10.0, -1.0, 0.0)
-    addK(2, 6, 10.0, 0.0, -1.0)
-    addK(2, 7, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(3, 4, 10.0, -1.0, 0.0)
-    addK(3, 7, 10.0, 0.0, -1.0)
-    addK(3, 8, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(4, 5, 10.0, -1.0, 0.0)
-    addK(4, 7, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(4, 8, 10.0, 0.0, -1.0)
-    addK(5, 8, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(5, 9, 10.0, 0.0, -1.0)
-    addK(6, 7, 10.0, -1.0, 0.0)
-    addK(7, 8, 10.0, -1.0, 0.0)
-    addK(7, 10, 10.0, 0.0, -1.0)
-    addK(7, 11, 10.0 * np.sqrt(2.0), -np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(8, 9, 10.0, -1.0, 0.0)
-    addK(8, 10, 10.0 * np.sqrt(2.0), np.sqrt(2.0) / 2.0, -np.sqrt(2.0) / 2.0)
-    addK(8, 11, 10.0, 0.0, -1.0)
-    addK(10, 11, 10.0, -1.0, 0.0)
-    addK(10, 12, 10.0, 2.0 / np.sqrt(5.0), -1.0 / np.sqrt(5.0))
-    addK(10, 13, 10.0, -3.0 / np.sqrt(13.0), -2.0 / np.sqrt(13.0))
-    addK(11, 12, 10.0, 3.0 / np.sqrt(13.0), -2.0 / np.sqrt(13.0))
-    addK(11, 13, 10.0, -2.0 / np.sqrt(5.0), -1.0 / np.sqrt(5.0))
+    L = 10
+    E = 200e9
+    p = 7.8e3
+    A = 1e-1
 
-    K_til = K.copy()
-    for i in range(24):
-        for j in range(24):
-            if i == j:
-                K_til[i, j] /= m[int(i / 2)]
-            else:
-                K_til[i, j] /= np.sqrt(m[int(i / 2)] * m[int(j / 2)])
+    bars = [
+        (1,  2,   0,                    10),
+        (1,  4,   90,                   10),
+        (1,  5,   45,                   14.14213562373095),
+        (2,  5,   90,                   10),
+        (2,  4,   135,                  14.14213562373095),
+        (3,  4,   0,                    10),
+        (3,  7,   90,                   10),
+        (3,  8,   45,                   14.14213562373095),
+        (4,  5,   0,                    10),
+        (4,  8,   90,                   10),
+        (4,  9,   45,                   14.14213562373095),
+        (5,  6,   0,                    10),
+        (5,  9,   90,                   10),
+        (5,  8,   135,                  14.14213562373095),
+        (6,  9,   135,                  14.14213562373095),
+        (6,  10,  90,                   10),
+        (7,  8,   0,                    10),
+        (8,  9,   0,                    10),
+        (8,  11,  90,                   10),
+        (8,  12,  45,                   14.14213562373095),
+        (9,  10,  0,                    10),
+        (9,  11,  135,                  14.14213562373095),
+        (9,  12,  90,                   10),
+        (11, 12,  0,                    10),
+        (11, 13,  116.5650511770780,    11.18033988749895),
+        (11, 14,  33.69006752597979,    18.02775637731995),
+        (12, 13,  146.3099324740202,    18.02775637731995),
+        (12, 14,  63.43494882292201,    11.18033988749895)
+    ]
 
-    Lambda, _, V, _ = qr_algorithm(*tridiagonalization(K_til))
+    for bar in bars:
+        (i, j, theta, L) = bar
+        theta = theta * pi / 180
+        addBar(i - 1, j - 1, L, np.cos(theta), np.sin(theta),  E, p, A, M, K)
+    
 
-    np.set_printoptions(precision = 3, suppress = True, linewidth = 500)
-    print(f"Autovalores obtidos:\n{Lambda}\nAutovetores obtidos:\n{V}\n")
-    freq = np.sqrt(abs(Lambda))
-    vib = V.copy()
-    for i in range(24):
-        vib[i] /= np.sqrt(m[int(i / 2)])
+    M = 1. / np.sqrt(M)
+    
+    for i in range(2 * len(M)): 
+        for j in range(2 * len(M)):
+            K[i, j] *= M[i // 2] * M[j // 2]
 
-    print(f"Frequências:\n{freq}\nModos de vibração:\n{vib}\n")
-    print(f"x(t) = [\n\t{vib[:, 0]}exp({freq[0]:7.3f} it)", end = "")
-    for i in range(1, 24):
-        print(f",\n\t{vib[:, i]}exp({freq[i]:7.3f} it)", end = "")
+    # print(f"M = {M}")
+    # print(f"{K}")
 
-    print("\n]")
+    T = tridiagonalization(K)
+    Lambda, _, V, _ = qr_algorithm(*T)
+
+    eigenval = sorted(Lambda)[0]
+    mode = 100 * V[:][Lambda.tolist().index(eigenval)]
+    
+    for i in range(len(mode)):
+        mode[i] *= M[i//2]
+
+    freq = np.sqrt(eigenval)
+
+    time = 0
+    solution = np.array([0] * len(M))
+
+    fig = plt.figure()
+    fig.set_size_inches(18.5, 10.5)
+    fig.suptitle("Evolução do Sistema no Tempo")
+
+    X0 = [15, 5, 25, 15, 5, -5, 25, 15, 5, -5, 15, 5, 20, 0]
+    Y0 = [40, 40, 30, 30, 30, 30, 20, 20, 20, 20, 10, 10, 0, 0]
+
+    bar_lines = [0] * len(bars)
+
+    ax = fig.add_subplot(111)
+
+    mat = ax.plot(X0, Y0, 'o')
+    
+    for k, (i, j, _, _) in enumerate(bars):
+        bar_lines[k] = ax.plot([X0[i - 1], X0[j - 1]], [Y0[i - 1], Y0[j - 1]], c = 'k')
+
+    patch = reduce(lambda a, b: a+b, bar_lines) + list(mat) 
+
+    def animate(index):
+        t = index * 0.025
+
+        solution = [mode[j] * np.cos(freq * t) for j in range(24)]
+        solution += (0, 0, 0, 0)
+
+        X = np.array([X0[i // 2] + solution[i] for i in range(0, 28, 2)])
+        Y = np.array([Y0[i // 2] + solution[i] for i in range(1, 28, 2)])
+
+        for k, (i, j, _, _) in enumerate(bars):
+            bar_lines[k][0].set_data([X[i - 1], X[j - 1]], [Y[i - 1], Y[j - 1]])
+
+        mat[0].set_data(X,Y)
+
+        return patch
+
+    anim = FuncAnimation(fig, animate, frames=600, interval=1, blit=True)
+    anim.save('samba2.gif', fps = 60)
+
+
+    # print(f"Autovalores obtidos:\n{Lambda}\nAutovetores obtidos:\n{V}\n")
+    # freq = np.sqrt(Lambda)
+    # vib = V.copy()
+    # for i in range(24):
+    #     vib[i] /= np.sqrt(M[i // 2])
+
+    # print(f"Frequências:\n{freq}\nModos de vibração:\n{vib}\n")
+    # print(f"x(t) = [\n\t{vib[:, 0]}exp({freq[0]:7.3f} it)", end = "")
+    # for i in range(1, 24):
+    #     print(f",\n\t{vib[:, i]}exp({freq[i]:7.3f} it)", end = "")
+
+    # print("\n]")
 
 
 if __name__ == "__main__":
+    np.set_printoptions(precision = 5, suppress = True, linewidth = 500)
     aplicacao()
