@@ -410,8 +410,6 @@ def teste_2():
     print(f"\n      Teste de ortogonalidade:\n")
     print("      VVt =", np.array2string(np.matmul(V, np.transpose(V)), prefix = "            "))
 
-    print("\n      >> Para melhor apreciação do usuário, os resultados sem truncamento da exibição das grandezas matriciais foram\n      colocados no arquivo `result-b.txt`!")
-
     print("\n      Rotina de teste concluída! Obrigado pela execução!")
 
 def addBar(
