@@ -143,8 +143,6 @@ Apenas para o teste 2, pode-se visualizar também as formas de onda dos deslocam
 
 # Implementação {#sec:impl}
 
-Para o Algoritmo QR, foi utilizada a mesma implementação do EP anterior. A única modificação feita sobre a função `qr_algorithm` foi a adição de uma parâmetro de entrada, `V0`, que é utilizado ao invés da identidade para o cálculo dos autovetores.
-
 ## As Transformações de Householder
 
 Conforme [@MAP3121], as _Transformações de Householder_ são transformações lineares ortogonais $H_w:\mathbb{R}^n\rightarrow\mathbb{R}^n$ da forma $H_w=I-\frac{2ww^T}{w\cdot w}$ que operam sobre o espaço de vetores como uma reflexão em relação ao espaço $w^\perp$. Dado um vetor de interesse $x$, se $y=H_wx$, então:
@@ -257,6 +255,14 @@ def tridiagonalization(A: np.array) -> Tuple[np.array, np.array, np.array]:
 **\label{code:trid}Código \ref{code:trid}:** Função que implementa a tridiagonalização de uma matriz dada, `A`.
 
 O código segue a descrição formal apresentada anteriormente. A linha 9 define o vetor $\bar{w}_i$ da Tranformação de Householder, $H_{\bar{w}_i}$, de uma dada iteração `i` e o inicializa com $\bar{a}_i$. Sa linhas 11 e 12 adicionam os elementos calculados da diagonal principal e da sua sobrediagonal aos vetores `alphas` e `betas`, respectivamente. A linha 14 modifica o $w_i$ de acordo com a expressão $\bar{w}_i=\bar{a}_i+||\bar{a}_i||\delta e_1$. A linha 15 define uma variável auxiliar `w_i2`, equivalente a $\bar{w}_i\cdot\bar{w}_i$. A linha 17 atualiza a variável `A` para armazenar a submatriz de uma dada iteração. As linhas 19 a 22 executam as multiplicações $H_{\bar{w}_i}\bar{A}H_{\bar{w}_i}$ e $H^TH_{\bar{w}_i}$. As linhas 24 e 25 adicionam os últimos elementos da diagonal principal e da sobrediagonal da matriz resultante em `alphas` e `betas`, respectivamente.
+
+\newpage
+
+## O Algoritmo QR
+
+Após se obter a matriz $T$, tridiagonal, a partir das transformações de Householder, podemos obter seus autovetores e autovalores utilizando o _Algoritmo QR_. Apesar de $A$ e $T$ serem matrizes semelhantes, isto é, possuem mesmos autovalores, seus autovetores são distintos. Ou seja, para se obter os autovalores de $A$, precisamos que $V^{(0)}$ seja equivalente a $H^T$, pois, utilizando-se a matriz identidade como $V^{0)}$, obteríamos os autovetores de $T$.
+
+Para a implementação do Algoritmo QR, foi utilizada a mesma função, `qr_algorithm`, do EP anterior. A única modificação feita sobre ela foi a adição de um parâmetro de entrada, `V0`, que é utilizado ao invés da identidade para o cálculo dos autovetores.
 
 \pagebreak
 
