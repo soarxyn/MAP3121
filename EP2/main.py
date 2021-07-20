@@ -255,6 +255,30 @@ def qr_algorithm(
 
 
 def tridiagonalization(A: np.array) -> Tuple[np.array, np.array, np.array]:
+    """
+    Tridiagonalização
+    --------------------------------------
+    Dada uma matriz real simétrica, `A`, efetua a sua tridiagonalização, através de
+    subsequentes transformações de Householder, e retorna a matriz tridiagonal resultante,
+    representada pelos vetores `alphas` e `betas`: sua diagonal principal e sua sobrediagonal, respectivamente;
+    e a matriz `Ht`, resultado do produtório das matrizes de transformação de Householder à direita da identidade.
+
+    Parâmetros
+    ----------
+
+    A  :   np.array
+        Matriz real simétrica qualquer.
+
+    Retorna
+    -------
+
+    (alphas, betas, Ht)   :   Tuple[np.array, np.array, np.array]
+        Tupla que retorna os vetores `alphas` e `betas`, que representam a matriz
+        tridiagonal simétrica resultante, através de sua diagonal principal e sua sobrediagonal;
+        e `Ht`, a matriz resultante do produtório sucessivo das matrizes de transformação
+        de Householder à direita da matriz identidade.
+
+    """
     A = A.copy()
     alphas = []
     betas = []
