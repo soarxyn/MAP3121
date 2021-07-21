@@ -258,13 +258,15 @@ Para a implementação do Algoritmo QR, foi utilizada a mesma função, `qr_algo
 Ambos testes A e B podem ter suas matrizes de entrada obtidas a partir da leitura de um arquivo, conforme detalhado em [@MAP3121]. Neste arquivo, que utilizamos como padrão neste exercício-programa, a primeira linha contém o tamanho `n` da matriz $A \in \mathbb{R}^{n\times n}$. As linhas subsequentes contêm as entradas equivalentes de cada linha da matriz, sendo as entradas separadas por espaços, uma linha da matriz por linha do arquivo. O código \ref{code:readfile} implementa essa função.
 
 ~~~~ {#readfile .python .numberLines}
-def matrix_from_file(filename):
+def matrix_from_file(filename: str) -> np.array:
     with open(filename, encoding="utf-8") as file:
         matrix_size: int = int(file.readline())
         matrix = np.zeros((matrix_size, matrix_size))
 
         treatline = lambda line: list(map(float, line.split()))
-        rows = list(filter(lambda line: len(line) > 0, map(treatline, file.readlines())))
+        rows = list(
+            filter(lambda line: len(line) > 0, map(treatline, file.readlines()))
+        )
 
         for i, line in enumerate(rows):
             matrix[i, :] = line
@@ -311,7 +313,7 @@ Na linha 13, calculamos a contribuição da massa da barra para os nós `i` e `j
 Considerando que a primeira linha do arquivo contém o número total de nós, o número de nós livres e o número de barras, e que a segunda linha contém a densidade, a área da seção transversal e o módulo de Young (em $GPa$), bem como as linhas subsequentes descrevem cada barra, cujas entradas são os nós que compõem a barra, o ângulo com a horizontal e o comprimento da barra, nesta ordem, separadas por espaços, criou-se a função \ref{code:readTruss} que implementa a leitura de uma treliça por um arquivo.
 
 ~~~~ {#readTruss .python .numberLines}
-def truss_from_file(filename):
+def truss_from_file(filename: str) -> Tuple[np.array, np.array, int, int, int]:
     with open(filename, encoding="utf-8") as file:
         total_nodes, free_nodes, _ = map(int, file.readline().split())
         p, A, E = map(float, file.readline().split())
