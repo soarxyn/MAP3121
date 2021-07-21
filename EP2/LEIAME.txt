@@ -1,0 +1,17 @@
+EP2 - MAP3121
+Gabriel Macias de Oliveira (NUSP 11260811) Eng. Elétrica
+Rodrigo Ryuji Ikegami      (NUSP 10297265) Eng. Elétrica
+
+Linguagem de Programação: Python Versão 3.7.9 ou superior.
+Necessário Interpretador do Python (disponível via https://www.python.org/ ou package manager)
+
+Bibliotecas necessárias:
+-  Matplotlib
+-  Numpy
+
+Para fazer o download das bibliotecas, execute em um terminal: pip install -r requirements.txt
+Para executar o exercício-programa, utilize o comando: python main.py ou python3 main.py
+
+O terminal deve estar aberto na pasta descompactada em que se encontra o arquivo main.py. Por exemplo,
+se o arquivo .zip foi descompactado para c:/downloads/ep2 deve-se abrir o terminal no contexto da pasta para,
+então, executar python main.py

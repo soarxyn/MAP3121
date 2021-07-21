@@ -156,6 +156,7 @@ De acordo com o proposto em [@MAP3121], utilizamos $\delta$ com sinal igual ao d
 Utilizando a propriedade em (1), podemos provar que
 $$
     H_{w_i}\tilde{a}_i=\tilde{a}_i-\delta w_i
+$$ $$
     H_{w_i}\tilde{a}_i=(0,0,...,0,-\delta||\tilde{a}_i||,0,...,0)^T\,.
 $$
 
