@@ -1037,7 +1037,7 @@ $$
     \end{bmatrix}
 $$
 
-cujos autovalores são conhecidos e gerador por
+cujos autovalores são conhecidos e gerados por
 
 $$
     \lambda_i=\frac{1}{2}\bigg[1-cos\frac{(2i-1)\pi}{2n+1}\bigg]^{-1}\,,\,i=1,2,...,n.
@@ -1075,8 +1075,10 @@ e, após aplicar sobre ela o Algoritmo QR, obtivemos:
         \hline
     \end{tabular}
     \caption{Autovalores esperados e obtidos após a execução do Algoritmo.}
-    \label{table:1}
+    \label{table:2}
 \end{table}
+
+\pagebreak
 
 Para os testes da relação autovalor-autovetor, obtivemos:
 
@@ -1111,6 +1113,10 @@ $$
         -0. & 0. & 0. & \cdots & 0. & 0. & 1.
     \end{bmatrix}
 $$
+
+**Conclusões:** Inicialmente, podemos comparar os autovalores obtidos em \ref{table:2}. Observamos que todos os autovalores convergiram e são muito próximos dos valores corretos. Além disso, ao analisarmos os autovetores, pode-se notar que a matriz de autovetores encontrada é igual àquela obtida pela forma de geração. Julgamos que nossa implementação está concordante com o proposto e a teoria.
+
+O algoritmo utilizado é **muito** eficiente em calcular os autovalores, principalmente ao considerarmos que conseguimos atingir erros extremamente pequenos (menores que $10^{-10}$) com apenas 31 iterações para uma matriz 20x20. Além disso, chegamos a este resultando com precisão $\epsilon=10^{-7}$ para a convergência dos $\beta_j$ no Algoritmo QR.
 
 \pagebreak
 
