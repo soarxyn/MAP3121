@@ -264,17 +264,149 @@ Após se obter a matriz $T$, tridiagonal, a partir das transformações de House
 
 Para a implementação do Algoritmo QR, foi utilizada a mesma função, `qr_algorithm`, do EP anterior. A única modificação feita sobre ela foi a adição de um parâmetro de entrada, `V0`, que é utilizado ao invés da identidade para o cálculo dos autovetores.
 
+## Leitura de Matrizes em Arquivos
+
+Ambos testes A e B podem ter suas matrizes de entrada obtidas a partir da leitura de um arquivo, conforme detalhado em [@MAP3121]. Neste arquivo, que utilizamos como padrão neste exercício-programa, a primeira linha contém o tamanho `n` da matriz $A \in \mathbb{R}^{n\times n}$. As linhas subsequentes contêm as entradas equivalentes de cada linha da matriz, sendo as entradas separadas por espaços, uma linha da matriz por linha do arquivo. O código \ref{code:readfile} implementa essa função.
+
+~~~~ {#readfile .python .numberLines}
+def matrix_from_file(filename):
+    with open(filename, encoding="utf-8") as file:
+        matrix_size: int = int(file.readline())
+        matrix = np.zeros((matrix_size, matrix_size))
+
+        treatline = lambda line: list(map(float, line.split()))
+        rows = list(filter(lambda line: len(line) > 0, map(treatline, file.readlines())))
+
+        for i, line in enumerate(rows):
+            matrix[i, :] = line
+
+    return matrix
+~~~~
+**\label{code:readfile}Código \ref{code:readfile}:** Função de leitura de uma matriz a partir de um arquivo.
+
+Em resumo, abrimos os arquivos e extraímos o tamanho da matriz pelo valor (inteiro) da primeira linha. Criamos uma matriz preenchida com zeros do tamanho lido. Funcionalmente, transformamos cada linha de uma _array_ de _strings_ para uma _array_ de _floats_, por meio da aplicação de dois mapeamentos nas linhas 6 e 7. Aplica-se um filtro que garante que as linhas lidas não são vazias, após o qual se converte a lista de _arrays_ para uma matriz de retorno.
+
+## Leitura de Treliças em Arquivos
+
+É possível também para a aplicação do algoritmo ao problema de treliças planas, descrever as estruturas para as quais desejamos solucionar por meio de arquivos. Em particular, utilizaremos a descrição dada em [@MAT3121]. Para isso, implementamos duas funções. A primeira, `addBar` é uma função auxiliar que, dados os índices `i` e `j` dos nós que formam uma barra, seu comprimento `L`, o cosseno e seno do ângulo que forma com a horizontal, o módulo de Young em $Pa$ do material da barra, bem como sua densidade `p` em $kg/m^3$ e a área da seção transversal da barra `A` em $m^2$, adiciona a contribuição da barra correspondente às matrizes de massa $M$ e de rigidez $K$, cuja descrição está no código \ref{code:addBar}.
+
+~~~~ {#addBar .python .numberLines}
+def addBar(
+    i: int,
+    j: int,
+    L: float,
+    c: float,
+    s: float,
+    E: float,
+    p: float,
+    A: float,
+    M: np.array,
+    K: np.array,
+):
+    mass_contribution = 0.5 * p * A * L
+    M[i] += mass_contribution
+
+    local_stiffness = (A * E) / L * np.array([[c ** 2, c * s], [c * s, s ** 2]])
+    K[2 * i : 2 * i + 2, 2 * i : 2 * i + 2] += local_stiffness
+
+    if j in range(len(M)):
+        M[j] += mass_contribution
+        K[2 * i : 2 * i + 2, 2 * j : 2 * j + 2] += -local_stiffness
+        K[2 * j : 2 * j + 2, 2 * i : 2 * i + 2] += -local_stiffness
+        K[2 * j : 2 * j + 2, 2 * j : 2 * j + 2] += local_stiffness
+~~~~
+**\label{code:addBar}Código \ref{code:addBar}:** Função auxiliar que adiciona a contribuição de uma barra às matrizes que descrevem o sistema total.
+
+Na linha 13, calculamos a contribuição da massa da barra para os nós `i` e `j` que a definem. Notamos que `j` pode ser um nó fixado, portanto devemos verificar se este índice corresponde a um ponto móvel, isto é, se $j$ é menor que o tamanho do vetor $M$. Na linha 16, calculamos a matriz de rigidez local $K_{i,j}$, adicionando essa contribuição à matriz de rigidez total conforme descrito em [@MAT3121].
+
+Considerando que a primeira linha do arquivo contém o número total de nós, o número de nós livres e o número de barras, e que a segunda linha contém a densidade, a área da seção transversal e o módulo de Young (em $GPa$), bem como as linhas subsequentes descrevem cada barra, cujas entradas são os nós que compõem a barra, o ângulo com a horizontal e o comprimento da barra, nesta ordem, separadas por espaços, criou-se a função \ref{code:readTruss} que implementa a leitura de uma treliça por um arquivo.
+
+~~~~ {#readTruss .python .numberLines}
+def truss_from_file(filename):
+    with open(filename, encoding="utf-8") as file:
+        total_nodes, free_nodes, _ = map(int, file.readline().split())
+        p, A, E = map(float, file.readline().split())
+        E *= 1e9
+
+        treatline = lambda line: tuple(map(int, line.split()[:2])) + tuple(
+            map(float, line.split()[2:])
+        )
+        bars = list(
+            filter(lambda line: len(line) > 0, map(treatline, file.readlines()))
+        )
+
+        K = np.zeros((2 * free_nodes, 2 * free_nodes), float)
+        M = np.zeros(free_nodes, float)
+
+        for bar in bars:
+            (i, j, theta, L) = bar
+            theta = np.deg2rad(theta)
+            addBar(i - 1, j - 1, L, np.cos(theta), np.sin(theta), E, p, A, M, K)
+
+    return M, K, total_nodes, free_nodes, bars
+~~~~
+**\label{code:readTruss}Código \ref{code:readTruss}:** Função de leitura de uma treliça plana a partir de um arquivo.
+
+Nas linhas 3 e 4 obtemos os dados da treliça, convertendo o módulo de Young de $GPa$ em $Pa$ pela multiplicação por $10^9$ na linha 5. Convertemos as linhas do arquivo de _arrays_ de _strings_ para _arrays_ de _floats_ da mesma forma que realizado na última seção. Criamos a matriz de rigidez total $K$ e o vetor de massas $M$ utilizando o tamanho lido no arquivo. Para cada barra lida, adicionamos sua contribuição às matrizes de descrição do sistema nas linhas 18 a 20, convertendo, primeiramente, o ângulo de graus para radianos. Retorna-se o vetor de massa, a matriz de rigidez, o número de nós totais e livres e o número de barras. A razão pela representação de $M$ como uma matriz será descrita em seção posterior.
+
 \pagebreak
 
 # Construção dos Testes {#sec:test}
 
-Os aspectos matemáticos da construção de cada teste serão apresentados na Seção \ref{sec:results} junto aos resultados. Nesta seção, deseja-se detalhar a implementação _em código_ de tais testes.
+Foram construídos 4 diferentes rotinas de teste para o programa. As duas primeiras são implementações dos testes A e B descritos em [@MAP3121]. Já a terceira corresponde à aplicação para solução de treliças planas em oscilações de baixa energia total. Por fim, a quarta e última rotina permite ao usuário verificar a utilização do algoritmo para uma matriz qualquer, inserida manual- ou automaticamente. Em seguida, descreveremos as construções destes testes, na ordem que foram apresentados.
+
+## Teste A: Matriz de Autovalores Inteiros Conhecidos
+
+Nesta instância, desejamos obter os autovalores e autovetores da matriz $A$ descrita abaixo, cujos valores são conhecidos e valem $\Lambda = (7,2,-1,-2)$, sendo: $$A =
+    \begin{bmatrix}
+        2 & 4 & 1 & 1 \\
+        4 & 2 & 1 & 1 \\
+        1 & 1 & 1 & 2 \\
+        1 & 1 & 2 & 1 
+    \end{bmatrix}
+$$
+
+Com os autovalores e autovetores calculados, verificamos se é válida a relação $Av_j=\lambda_jv_j$ para cada autovalor $\lambda_j$ e seu autovetor correspondente, bem como realizar o teste de ortogonalidade dos autovetores, isto é, identificar se vale $VV^T=I$. O Código \ref{code:testA} abaixo implementa o teste.
+
+~~~~ {#testA .python .numberLines}
+Código Dahora ;D
+~~~~
+**\label{code:testA}Código \ref{code:testA}:** Implementação do Teste A.
+
+Na linha 8, lemos a matriz do arquivo `input-a`, fornecido com o enunciado, bem como enviado no arquivo compactado da solução do exercício. Com a matriz lida, executamos o processo de tridiagonalização por transformações de Householder na linha 13, decompondo a matriz em seus vetores de `alphas` e `betas`, de acordo com a descrição do Exercício Programa 1. Na linha 24, aplica-se o Algoritmo QR, cujo resultado contém os autovalores e autovetores da matriz $A$. Nas linhas 40 e 41, verificamos a definição para os autovalores e vetores encontrados, isto é, se verificamos $Av=\lambda v$. Por fim, a linha 62 executa o teste de ortogonalidade.
+
+## Teste B: Matriz de Autovalores dados por Fórmula
+
+Neste teste, encontraremos os autovalores e autovetores da matriz $A$ abaixo, cujos autovalores são dados pela fórmula $\lambda_j=\frac{1}{2}\big[1- \cos\frac{(2i-1)\pi}{2n+1}\big]^{-1}$ com $i=1,2,\dots,n$. $$A =
+    \begin{bmatrix}
+        n & n-1   & n-2 & \cdots & 2 & 1\\
+        n-1 & n-1 & n-2 & \cdots & 2 & 1 \\
+        n-2 & n-2 & n-2 & \cdots & 2 & 1\\
+        \vdots & \vdots & \vdots & \cdots & 2 & 1 \\
+        1&1&1&1&1&1\\ 
+    \end{bmatrix}
+$$
+
+Apresenta-se as mesmas verificações descritas no teste acima. O Código \ref{code:testB} abaixo detalha a implementação do teste. 
+
+~~~~ {#testB .python .numberLines}
+Código Dahora ;D
+~~~~
+**\label{code:testB}Código \ref{code:testB}:** Implementação do Teste B.
+
+A implementação é análoga ao Teste A, diferindo apenas na construção dos autovalores para comparação, pois são dados pela fórmula apresentada.
+
+## Aplicação do Algoritmo a Treliças Planas
+
+
+
+
 
 <!-- ## Teste 1: Matriz Tridiagonal Simétrica a valores Constantes
 
 ### Implementação do Teste
 
-Na seção 2.3a de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência
+Na seção 2.3a de [@MAT3121], é apresentada uma família de matrizes cujos autovalores e autovetores são conhecidos. É pedido que se execute o Algoritmo QR sobre algumas dessas matrizes para testar o funcionamento da implementação feita. Além disso, é pedido para que se compare o número de iterações necessárias para a convergência. 
 
 \scriptsize
 
