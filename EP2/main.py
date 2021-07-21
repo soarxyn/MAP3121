@@ -679,7 +679,7 @@ def teste_4():
         sys.stdout.write("\x1b[2K")
         print(
             f"""
-      Você escolheu o modo de leitura de uma matriz de um arquivo. Agora, você deve inserir as {n}
+      Você escolheu o modo de leitura de uma matriz de um arquivo. Agora, você deve inserir as {n**2}
       entradas de sua matriz. Para isto, digite a entrada e pressione ENTER, até que a matriz esteja
       completa em sua exibição.\n"""
         )
@@ -790,7 +790,7 @@ if __name__ == "__main__":
       (1) Teste A.
       (2) Teste B.
       (3) Aplicação: Treliças Planas.
-      (4) Matriz arbitrária.
+      (4) Matriz Simétrica Arbitrária.
 
       Digite um número (1 - 4): """
         )
