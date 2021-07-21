@@ -310,20 +310,15 @@ def tridiagonalization(A: np.array) -> Tuple[np.array, np.array, np.array]:
 
     return (np.array(alphas), np.array(betas), H)
 
-
-def lines_to_rows(lines):
-    line_to_list = map(lambda l: l.split(), lines)
-    str_to_float = map(lambda l: list(map(float, l)), line_to_list)
-
-    return enumerate(str_to_float)
-
-
 def matrix_from_file(filename):
     with open(filename, encoding="utf-8") as file:
         matrix_size: int = int(file.readline())
         matrix = np.zeros((matrix_size, matrix_size))
 
-        for i, line in lines_to_rows(file.readlines()):
+        treatline = lambda line: list(map(float, line.split()))
+        rows = list(filter(lambda line: len(line) > 0, map(treatline, file.readlines())))
+
+        for i, line in enumerate(rows):
             matrix[i, :] = line
 
     return matrix
