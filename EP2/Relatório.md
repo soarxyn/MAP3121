@@ -982,13 +982,13 @@ Pela aplicação das _Transformações de Householder_ à matriz A, obtemos sua 
     \label{table:1}
 \end{table}
 
-A matriz de autovetores $V$ de $A$ é dada abaixo: $$V=\begin{pNiceMatrix}[first-row]
+A matriz de autovetores $V$ de $A$ é dada abaixo: $$V=\begin{bNiceMatrix}[first-row]
 \symbf{v}_1 & \symbf{v}_2 & \symbf{v}_3 & \symbf{v}_4 \\
 0,632456 &  0,707107 &  0,316228 &   0       \\
 0,632456 & -0,707107 &  0,316228 &   0       \\
 0,316228 &  0        & -0,632456 &  -0,707107 \\
 0,316228 &  0        & -0,632456 &   0,707107
-\end{pNiceMatrix}$$
+\end{bNiceMatrix}$$
         
 Podemos realizar o teste de autovalor-autovetor, calculando $A\symbf{v}_j$ e comparando com $\lambda_j\symbf{v}_j$, para cada $j$.
 
@@ -1117,6 +1117,106 @@ $$
 **Conclusões:** Inicialmente, podemos comparar os autovalores obtidos em \ref{table:2}. Observamos que todos os autovalores convergiram e são muito próximos dos valores corretos. Além disso, ao analisarmos os autovetores, pode-se notar que a matriz de autovetores encontrada é igual àquela obtida pela forma de geração. Julgamos que nossa implementação está concordante com o proposto e a teoria.
 
 O algoritmo utilizado é **muito** eficiente em calcular os autovalores, principalmente ao considerarmos que conseguimos atingir erros extremamente pequenos (menores que $10^{-10}$) com apenas 31 iterações para uma matriz 20x20. Além disso, chegamos a este resultando com precisão $\epsilon=10^{-7}$ para a convergência dos $\beta_j$ no Algoritmo QR.
+
+## Resultados para a Aplicação de Treliças
+
+Como descrito anteriormente, aplicaremos o método a um problema de treliças planas com 14 nós, 12 destes móveis, a 28 barras. Temos $\rho=7800 kg/m^3$, $A=0,1m^2$, $E=200GPa$. A matriz de Rigidez vale 
+
+\setcounter{MaxMatrixCols}{50}
+
+$$
+    K=
+    \begin{bmatrix}
+         2.707\cdot10^9 & 7.071\cdot10^8 &-2.\cdot 10^9 & 0. & \cdots & 0. & 0. & 0. & 0. \\
+         7.071\cdot10^8 & 2.707\cdot10^9 & 0. & 0. & \cdots & 0. & 0. & 0. & 0. \\
+        -2.\cdot10^9 & 0. & 2.707\cdot10^9 &-7.071\cdot10^8 & \cdots & 0. & 0. & 0. & 0. \\
+         0. & 0. &-7.071\cdot10^8 & 2.707\cdot10^9 & \cdots & 0. & 0. & 0. & 0. \\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots \\
+         0. & 0. & 0. & 0. & \cdots & 3.833\cdot10^9 &-9.106\cdot10^8 &-2.\cdot10^9 & 0. \\
+         0. & 0. & 0. & 0. & \cdots &-9.106\cdot10^8 & 4.480\cdot10^9 & 0. & 0. \\
+         0. & 0. & 0. & 0. & \cdots &-2.\cdot10^9 & 0. & 3.833\cdot10^9 & 9.106\cdot10^8 \\
+         0. & 0. & 0. & 0. & \cdots & 0. & 0. & 9.106\cdot10^8 & 4.480\cdot10^9
+    \end{bmatrix}
+$$ E a matriz de massas tem a forma $$M = \begin{bmatrix}
+        13315.433&&&&&&&&0\\
+        & 13315.433\\
+        && 13315.433\\
+        &&&26630.866\\
+        &&&&26630.866\\
+        &&&&&\ddots\\
+        &&&&&&7800\\
+        &&&&&&&24706.59\\
+        0&&&&&&&&24706.59\\
+    \end{bmatrix}
+$$ Aplicando $\tilde{K}=M^{-\frac{1}{2}}KM^{-\frac{1}{2}}$, obtemos: $$
+    \tilde{K}=
+    \begin{bmatrix}
+             203305.95 &   53104.30 & -150201.65 &      0.   & \cdots &      0.   &      0.   &      0.   &      0.   \\
+              53104.30 &  203305.95 &       0.   &      0.   & \cdots &      0.   &      0.   &      0.   &      0.   \\
+            -150201.65 &       0.   &  203305.95 & -53104.30 & \cdots &      0.   &      0.   &      0.   &      0.   \\
+                  0.   &       0.   &  -53104.30 & 203305.95 & \cdots &      0.   &      0.   &      0.   &      0.   \\
+                \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots \\
+                  0.   &       0.   &       0.   &      0.   & \cdots & 155137.71 & -36857.27 & -80950.06 &      0.   \\
+                  0.   &       0.   &       0.   &      0.   & \cdots & -36857.27 & 181309.69 &      0.   &      0.   \\
+                  0.   &       0.   &       0.   &      0.   & \cdots & -80950.06 &      0.   & 155137.71 &  36857.27 \\
+                  0.   &       0.   &       0.   &      0.   & \cdots &      0.   &      0.   &  36857.27 & 181309.69
+    \end{bmatrix}
+$$ Podemos aplicar as _Transformações de Householder_ na matriz $\tilde{K}$, obtendo $T=H\tilde{K}H^T$, de modo que $$T=\begin{bmatrix}
+             203305.95 & -167930.55 &      0.   &      0.   & \cdots &      0.   &      0.   &      0.   &     0.   \\
+            -167930.55 &  213926.81 & 115650.91 &      0.   & \cdots &      0.   &      0.   &      0.   &     0.   \\
+                  0.   &  115650.91 & 278200.56 & -91760.99 & \cdots &      0.   &      0.   &      0.   &     0.   \\
+                  0.   &       0.   & -91760.99 & 219567.32 & \cdots &      0.   &      0.   &      0.   &     0.   \\
+            \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots \\
+                  0.   &       0.   &      0.   &      0.   & \cdots & 263804.61 & -21905.03 &      0.   &     0.   \\
+                  0.   &       0.   &      0.   &      0.   & \cdots & -21905.03 & 183156.23 &  59507.23 &     0.   \\
+                  0.   &       0.   &      0.   &      0.   & \cdots &      0.   &  59507.23 & 107386.95 & 29727.60 \\
+                  0.   &       0.   &      0.   &      0.   & \cdots &      0.   &      0.   &  29727.60 & 19744.43
+\end{bmatrix}$$ matriz esta que serve de entrada para o Algoritmo QR, pelo qual encontraremos seus autovalores e autovetores. Os autovalores de $T$ são: $$\Lambda=\begin{pmatrix}604.793  &  8466.29   &  8968.727 &  20394.61  &  22747.314 &\cdots   & 442927.026 & 459787.049\end{pmatrix}^T$$ Tomando os 5 menores autovalores, podemos encontrar as 5 menores frequências de oscilação, que respeitarão a linearidade do modelo, tomando $\omega_j=\sqrt{\lambda_j}$, cujo resultado está na Tabela \ref{table:3} abaixo.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+         & $\omega_j$ & $\lambda_j$ \\
+        \hline
+        $1^\circ$ & $24.593 $ & $604.793  $  \\
+        $2^\circ$ & $92.012 $ & $8466.29  $    \\
+        $3^\circ$ & $94.703 $ & $8968.727 $   \\
+        $4^\circ$ & $142.810$ & $20394.61 $    \\
+        $5^\circ$ & $150.822$ & $22747.314$ \\
+        \hline
+    \end{tabular}
+    \caption{Os 5 menores autovalores e frequências de oscilação para o sistema.}
+    \label{table:3}
+\end{table}
+
+Os modos de vibração associados a cada frequência são dados por $\symbf{y}_j=M^{-\frac{1}{2}}\symbf{z}_j$, em que $\{\symbf{z}\}^5_j$ representa a família de autovetores encontrados de $\tilde{K}$. Apresentamos tais modos na matriz abaixo. $$\symbf{Z}=\begin{bNiceMatrix}[first-row]
+\omega_1 & \omega_2 & \omega_3 & \omega_4 & \omega_5 \\
+-0.003496 & -0.000006 & -0.000779 &  0.003869 & -0.00009  \\ 
+ 0.000612 & -0.002186 &  0.000808 & -0.00193  &  0.001923 \\ 
+-0.003496 &  0.000006 & -0.000779 &  0.003869 &  0.00009  \\ 
+-0.000612 & -0.002186 & -0.000808 &  0.00193  &  0.001923 \\ 
+-0.002269 &  0.000473 &  0.000641 & -0.001488 &  0.001505 \\
+\vdots    & \vdots    & \vdots    & \vdots    & \vdots    \\
+-0.001817 & -0.003087 & -0.002941 & -0.002913 & -0.003717 \\ 
+-0.000042 &  0.000042 &  0.001157 & -0.000231 &  0.00005  \\ 
+ 0.000296 & -0.001097 & -0.000056 &  0.000045 &  0.000679 \\ 
+-0.000042 & -0.000042 &  0.001157 & -0.000231 & -0.00005  \\ 
+-0.000296 & -0.001097 &  0.000056 & -0.000045 &  0.000679 \\ 
+\end{bNiceMatrix}$$
+
+Com os modos de vibração e as frequências, foram construídas 5 animações, uma para cada frequência, em que tomamos a treliça na sua posição não deformada e somamos o deslocamento de cada ponto. Um exemplo de animação está na Figura \ref{fig:anim} abaixo.
+
+\begin{figure}[h]
+    \includegraphics[width = \linewidth]{fig.png}
+    \centering
+    \caption{Animação para a frequência mais alta de oscilação.}
+    \label{fig:anim}
+\end{figure}
+
+Para a deformação de cada ponto, utilizamos como condição inicial um múltiplo do modo associado de vibração para que a animação possa ser bem visualizada. Como declarado anteriormente, o vetor de deslocamentos é dado por $\symbf{x}(t)=A\symbf{z}_j\cos \omega_j t$ em que cada $(h_i,v_i)=(\symbf{x}_{2i}, \symbf{x}_{2i+1})$ para todo $i=0,\dots,n-1$. 
+
+**Conclusões:** Observamos a boa convergência dos autovalores e autovetores em pouco número de iterações (apenas 61 para uma matriz $24\times24$ com precisão $\epsilon=10^{-7}$), concordando com o que desenvolvemos em todo o relatório. Ao observar os modos de vibração, notamos um comportamento esperado. Quando bem projetadas, as treliças planas devem ser dinamicamente resistentes, por maior que seja a significância do efeito de ressonância. Isso é confirmado e refletido pelo pequeno valor das entradas dos modos de vibração. Além disso, observamos um comportamento natural nas animações de oscilação, não encontrando artefatos ou comportamentos não normais. 
 
 \pagebreak
 

@@ -570,6 +570,8 @@ def teste_3():
     print(f"\n      5 menores Frequências Encontrados: {frequencies[:5]}")
     print("""\n      Modos de vibração associados às 5 menores frequências:\n""")
 
+    print("      Z = ", np.array2string(np.array(modes).transpose(), prefix="         "))
+
     if (
         str(
             input(
