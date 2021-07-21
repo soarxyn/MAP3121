@@ -560,7 +560,10 @@ para cada barra, incluindo aquelas que conectam nós móveis a nós fixos, pois 
         -c^2 & -cs & c^2 & cs \\
         -cs & -s^2 & cs & s^2 \\
     \end{bmatrix}
-$$ onde $A$ é a área da seção transversal da barra em $m^2$, $E$ o módulo de elasticidade em $Pa$, $L_{i,j}$ o comprimento da barra e $c=cos\theta_{i,j}$ e $s=sin\theta_{i,j}$ sendo $\theta_{i,j}$ o ângulo entre a barra e o eixo horizontal. Não precisamos armazenar todos os senos e cossenos na memória. Basta notar que se $$Q=\begin{bmatrix}
+$$ onde $A$ é a área da seção transversal da barra em $m^2$, $E$ o módulo de elasticidade em $Pa$, $L_{i,j}$ o comprimento da barra e $c=cos\theta_{i,j}$ e $s=sin\theta_{i,j}$ sendo $\theta_{i,j}$ o ângulo entre a barra e o eixo horizontal. Não precisamos armazenar todos os senos e cossenos na memória. Basta notar que se
+
+$$
+    Q=\begin{bmatrix}
         c^2 & cs  \\
         cs & s^2  \\
     \end{bmatrix}$$ então $$K^{i,j}= \frac{AE}{L_{i,j}} \begin{bmatrix}
@@ -932,6 +935,99 @@ if __name__ == "__main__":
 \normalsize
 
 \pagebreak
+
+# Resultados e Discussão {#sec:results}
+
+## Resultados para o Teste B
+
+No teste B, desejamos encontrar os autovalores e autovetores da matriz A dada por
+$$
+    A =
+    \begin{bmatrix}
+        20 & 19 & 18 & \cdots & 3 & 2 & 1\\
+        19 & 19 & 18 & \cdots & 3 & 2 & 1 \\
+        18 & 18 & 18 & \cdots & 3 & 2 & 1 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+        3 & 3 & 3 & \cdots & 3 & 2 & 1 \\
+        2 & 2 & 2 & \cdots & 2 & 2 & 1 \\
+        1 & 1 & 1 & \cdots & 1 & 1 & 1
+    \end{bmatrix}
+$$
+
+cujos autovalores são conhecidos e gerador por
+
+$$
+    \lambda_i=\frac{1}{2}\bigg[1-cos\frac{(2i-1)\pi}{2n+1}\bigg]^{-1}\,,\,i=1,2,...,n.
+$$
+
+Além disso, devemos verificar se vale a relação autovalor-autovetor. Isto é, se, para cada autovalor $\lambda_j$ e seu correspondente autovetor $v_j$, tem-se $Av_j=\lambda_jv_j$, e realizar o teste de ortogonalidade para a matriz de autovetores $V$.
+
+Após as transformações de Householder, obtemos a matriz tridiagonal
+
+$$
+    T=
+    \begin{bmatrix}
+        20 & -49.699095 & & \\
+        -49.699095 & 152.2 & \ddots & \\
+        & \ddots & \ddots & 0.008679 \\
+        & & 0.008679 & 0.260274
+    \end{bmatrix}
+$$
+
+e, após aplicar sobre ela o Algoritmo QR, obtivemos:
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Autovalor & Esperado & Obtido \\
+        \hline
+        $\lambda_1$ & $170,404268$ & $170,404268$ \\
+        $\lambda_2$ & $19,008099$ & $19,008099$ \\
+        $\lambda_3$ & $6,896785$ & $6,896785$ \\
+        $\vdots$ & $\vdots$ & $\vdots$ \\
+        $\lambda_{18}$ & $0,263690$ & $0,263690$ \\
+        $\lambda_{19}$ & $0,255964$ & $0,255964$ \\
+        $\lambda_{20}$ & $0,251474$ & $0,251474$ \\
+        \hline
+    \end{tabular}
+    \caption{Autovalores esperados e obtidos após a execução do Algoritmo.}
+    \label{table:1}
+\end{table}
+
+Para os testes da relação autovalor-autovetor, obtivemos:
+
+**Para $j=1$**: \begin{align*}
+A\symbf{v}_1=\begin{pmatrix}53.186293 & 52.874175 & 52.25177 & ... & 12.127583 & 8.124812 & 4.074361\end{pmatrix}^T \\
+\lambda_1\symbf{v}_1=\begin{pmatrix}53.186293 & 52.874175 & 52.25177 & ... & 12.127583 & 8.124812 & 4.074361\end{pmatrix}^T
+\end{align*}
+
+**Para $j=2$**: \begin{align*}
+A\symbf{v}_2=\begin{pmatrix}5.89796 & 5.587673 & 4.983424 & ... & -3.777456 & -2.634424 & -1.352797\end{pmatrix}^T \\
+\lambda_2\symbf{v}_2=\begin{pmatrix}5.89796 & 5.587673 & 4.983424 & ... & -3.777456 & -2.634424 & -1.352797\end{pmatrix}^T
+\end{align*}
+
+**Para $j=3$**: \begin{align*}
+A\symbf{v}_3=\begin{pmatrix}-2.11479 & -1.808156 & -1.239348 & ... & -1.96571 & -1.493788 & -0.805274\end{pmatrix}^T \\
+\lambda_3\symbf{v}_3=\begin{pmatrix}-2.11479 & -1.808156 & -1.239348 & ... & -1.96571 & -1.493788 & -0.805274\end{pmatrix}^T
+\end{align*}
+
+Os demais resultados podem ser obtidos pela execução do script.
+
+Por fim, ao executar o teste de ortogonalidade, encontramos:
+
+$$
+    VV^T=
+    \begin{bmatrix}
+        1. & 0. & -0. & \cdots & -0. & 0. & -0. \\
+        0. & 1. & -0. & \cdots & -0. & 0. & 0. \\
+        -0. & -0. & 1. & \cdots & -0. & -0. & 0. \\
+        \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+        -0. & -0. & -0. & \cdots & 1. & 0. & 0. \\
+        0. & 0. & -0. & \cdots & 0. & 1. & 0. \\
+        -0. & 0. & 0. & \cdots & 0. & 0. & 1.
+    \end{bmatrix}
+$$
 
 # Referências {-}
 
