@@ -187,7 +187,7 @@ def qr_algorithm(
     betas: np.array,
     V0: np.array,
     spectralShift: bool = True,
-    epsilon: float = 1e-6,
+    epsilon: float = 1e-7,
 ) -> Tuple[np.array, np.array, np.array, int]:
     """
     Algoritmo QR
@@ -296,28 +296,38 @@ def tridiagonalization(A: np.array) -> Tuple[np.array, np.array, np.array]:
 
         A = A[1:, 1:]
 
-        for Acol, Arow, Hrow in zip(np.transpose(A), A, H[:, -m:]):
-            Acol -= 2 * np.dot(w_i, Acol) / w_i2 * w_i
-            Arow -= 2 * np.dot(w_i, Arow) / w_i2 * w_i
-            Hrow -= 2 * np.dot(w_i, Hrow) / w_i2 * w_i
+        for col in np.transpose(A):
+            col -= 2 * np.dot(w_i, col) / w_i2 * w_i
+
+        for row in A:
+            row -= 2 * np.dot(w_i, row) / w_i2 * w_i
+
+        for row in H[:, -m:]:
+            row -= 2 * np.dot(w_i, row) / w_i2 * w_i
 
     alphas.extend(np.diag(A))
     betas.append(A[1, 0])
 
     return (np.array(alphas), np.array(betas), H)
 
+
+def lines_to_rows(lines):
+    line_to_list = map(lambda l: l.split(), lines)
+    str_to_float = map(lambda l: list(map(float, l)), line_to_list)
+
+    return enumerate(str_to_float)
+
+
 def matrix_from_file(filename):
     with open(filename, encoding="utf-8") as file:
         matrix_size: int = int(file.readline())
         matrix = np.zeros((matrix_size, matrix_size))
 
-        treatline = lambda line: list(map(float, line.split()))
-        rows = list(filter(lambda line: len(line) > 0, map(treatline, file.readlines())))
-
-        for i, line in enumerate(rows):
+        for i, line in lines_to_rows(file.readlines()):
             matrix[i, :] = line
 
     return matrix
+
 
 def teste_1():
     print(

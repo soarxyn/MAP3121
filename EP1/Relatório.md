@@ -13,7 +13,7 @@ citation-style: abnt
 monofont: FiraCode-Regular.ttf
 colorlinks: true
 header-includes: |
-    \usepackage[bb=ams]{mathalpha}
+    \usepackage[bb=ams]{m   athalpha}
     \usepackage{algorithm}
     \usepackage{algpseudocode}
     \usepackage[utf8]{inputenc}
