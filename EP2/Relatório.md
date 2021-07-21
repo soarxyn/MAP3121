@@ -746,6 +746,191 @@ def teste_3():
 
 Na linha 9, carregamos as matrizes $M$ e $K$ do arquivo `input-c`. Na linha 21, calculamos $\tilde{K}$, armazenando na mesma instância de memória que $K$ (pois não precisaremos mais dela). Nas linhas 26 e 27, tridigonalizamos $\tilde{K}$, aplicando, em sequência, o Algoritmo QR. Nas linhas 39 a 48, encontramos as frequências de oscilação natural a partir dos autovalores de $\tilde{K}$ e os modos associados por meio de seus autovetores, para as 5 menores frequências de oscilação, respeitando a condição de lineraridade. As linhas seguintes, até o final, constroem a animação e exibição dos dados, que podem ser vistas pela execução do programa. **NOTA:** As oscilações iniciais foram tomadas como múltiplos dos modos de oscilação, de modo que se pudesse visualizar bem a movimentação, portanto pode haver exageros no fator de escala. _Recomendamos a visualização da animação, pois gostamos muito dela!_
 
+## Teste com Matriz Simétrica Arbitrária
+
+Neste teste, o usuário pode fornecer uma matriz, seja manualmente ou por meio de um arquivo no mesmo formato do arquivo usado nos testes A e B, conforme descrito em [@MAP3121]. A matriz é tridiagonalizada e seus autovetores e autovalores são calculados pelo Algoritmo QR. Informações relevantes (as mesmas que para os dois primeiros testes) são exibidas. O Código \ref{code:input} contém a construção deste teste.
+
+\tiny
+~~~~ {#input .python .numberLines}
+def teste_4():
+    print(
+        """
+      >> Você selecionou o Teste com uma Matriz Arbitrária.
+      
+      Para este teste, há duas opções: 
+        (1) Ler uma matriz de um arquivo
+        (2) Entrar com uma matriz, manualmente.\n"""
+    )
+
+    choice = int(input("      Escolha: "))
+    sys.stdout.write("\x1b[1A")
+    sys.stdout.write("\x1b[2K")
+    sys.stdout.write("\x1b[1A")
+    sys.stdout.write("\x1b[2K")
+
+    if choice == 1:
+        print(
+            """
+      Você escolheu o modo de leitura de uma matriz de um arquivo. Este arquivo DEVE
+      ser formatado conforme as entradas para o teste A e B. Isto é, a primeira entrada
+      do arquivo deve conter o tamanho da matriz e as linhas subsequentes contêm as
+      entradas, linha a linha. IMPORTANTE: a última linha não pode estar em branco.\n"""
+        )
+
+        filename = str(input("      Entre com o nome e extensão do arquivo: "))
+        matrix = matrix_from_file(filename)
+
+    else:
+        n = int(
+            input(
+                """
+      Você escolheu o modo de entrada manual. Entre, primeiro, com o tamanho da matriz: """
+            )
+        )
+        sys.stdout.write("\x1b[1A")
+        sys.stdout.write("\x1b[2K")
+        print(
+            f"""
+      Você escolheu o modo de leitura de uma matriz de um arquivo. Agora, você deve inserir as {n**2}
+      entradas de sua matriz. Para isto, digite a entrada e pressione ENTER, até que a matriz esteja
+      completa em sua exibição.\n"""
+        )
+
+        matrix = np.zeros((n, n))
+        for i in range(n):
+            if i != 0:
+                print("")
+            for j in range(n):
+                if i == 0:
+                    print("      A = [", end="")
+                else:
+                    print("           ", end="")
+                print("[", *matrix[i, :j], end=" ")
+                matrix[i, j] = float((input("")))
+                sys.stdout.write("\x1b[1A")
+            if i == 0:
+                print("      A = [", end="")
+            else:
+                print("           ", end="")
+            print("[", *matrix[i, :], "]", end="")
+        print("]")
+
+    if choice != 2:
+        print("""      Matriz de entrada:\n""")
+        print("     ", np.array2string(matrix, prefix="      "))
+
+    alphas, betas, H = tridiagonalization(matrix)
+
+    print("""\n      Matriz tridiagonalizada:\n""")
+    print(
+        "     ",
+        np.array2string(
+            np.diag(betas, k=1) + np.diag(betas, k=-1) + np.diag(alphas),
+            prefix="      ",
+        ),
+    )
+
+    Lambda, _, V, _ = qr_algorithm(alphas, betas, H)
+
+    print(
+        f"\n      Autovalores Encontrados:\t{np.array(sorted(Lambda, reverse = True))}"
+    )
+    print(f"\n      Matriz de Autovetores:\n")
+    print("     ", np.array2string(V, prefix="      "))
+
+    print(
+        "\n      OBS.: Caso λ não seja renderizado corretamente em seu terminal, este \n      char é um Lambda, indicando o autovalor da matriz A."
+    )
+
+    for i in range(len(Lambda)):
+        result = np.matmul(matrix, V[:, i])
+
+        print(f"\n      A * v{i+1} = {result}")
+        print(f"      λ * v{i+1} = {Lambda[i] * V[:, i]}")
+
+        def ratio(a, b):
+            return np.array(
+                [Lambda[i] if a[j] < 1e-6 else a[j] / b[j] for j in range(len(a))]
+            )
+
+        print(
+            f"\n      Proporção Entrada Depois/Antes Transformação:\n\tEsperada: {Lambda[i]:.4f}\n\tObtida:   {ratio(result, V[:, i])}"
+        )
+
+        input("\n     Pressione [ENTER] para continuar.")
+        sys.stdout.write("\x1b[1A")
+        sys.stdout.write("\x1b[2K")
+        sys.stdout.write("\x1b[1A")
+        sys.stdout.write("\x1b[2K")
+        print("      -")
+
+    print(f"\n      Teste de ortogonalidade:\n")
+    print(
+        "      VVt =",
+        np.array2string(np.matmul(V, np.transpose(V)), prefix="            "),
+    )
+
+    print("\n      Rotina de teste concluída! Obrigado pela execução!")
+~~~~
+**\label{code:input}Código \ref{code:input}:** Implementação do Teste com Matriz Simétrica Arbitrária.
+\normalsize
+
+
+## Função Principal
+
+A função principal está descrita no Código \ref{code:main} abaixo. Nela, cria-se a interface com o usuário, em que se pode escolher a execução de um dos 4 testes descritos acima.
+
+\small
+~~~~ {#main .python .numberLines}
+import sys
+
+if __name__ == "__main__":
+    np.set_printoptions(
+        precision=6, linewidth=250, suppress=True, sign=" ", threshold=10, edgeitems=5
+    )
+
+    teste = int(
+        input(
+            """
+           _____ ____ ____       __  __    _    ____ _____ _ ____  _ 
+          | ____|  _ \___ \     |  \/  |  / \  |  _ \___ // |___ \/ |
+          |  _| | |_) |__) |____| |\/| | / _ \ | |_) ||_ \| | __) | |
+          | |___|  __// __/_____| |  | |/ ___ \|  __/___) | |/ __/| |
+          |_____|_|  |_____|    |_|  |_/_/   \_\_|  |____/|_|_____|_|
+                                                            
+                [ Exercício Programa # 2 - Métodos  Numéricos ]
+
+      Autovalores e Autovetores de Matrizes Reais Simétricas & Aplicações
+      ===================================================================
+
+         Gabriel Macias de Oliveira - NUSP: 11260811   - Eng. Elétrica
+         Rodrigo Ryuji Ikegami      - NUSP: 10297265   - Eng. Elétrica
+
+      Por favor, selecione um dos testes para ser executado:
+
+      (1) Teste A.
+      (2) Teste B.
+      (3) Aplicação: Treliças Planas.
+      (4) Matriz Simétrica Arbitrária.
+
+      Digite um número (1 - 4): """
+        )
+    )
+
+    if teste == 1:
+        teste_1()
+    elif teste == 2:
+        teste_2()
+    elif teste == 3:
+        teste_3()
+    elif teste == 4:
+        teste_4()
+    else:
+        print("\n      Inválido. Por favor, recomece, obedecendo as instruções.")
+~~~~
+**\label{code:main}Código \ref{code:main}:** Função Principal do Programa.
+\normalsize
+
 \pagebreak
 
 # Referências {-}
