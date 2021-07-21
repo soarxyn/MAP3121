@@ -56,13 +56,13 @@ header-includes: |
 
 # Introdução
 
-<!-- Matrizes reais simétricas surgem comumente no estudo de aplicações de métodos em engenharia. Além disso, seus autovalores e autovetores carregam informações sobre diversos modelos e descrições de muito interesse na análise e projeto de sistemas.
+Matrizes reais simétricas surgem comumente no estudo de aplicações de métodos em engenharia. Além disso, seus autovalores e autovetores carregam informações sobre diversos modelos e descrições de muito interesse na análise e projeto de sistemas.
 
-Neste Exercício Programa, implementamos o _Algoritmo QR_ aplicado a _Matrizes Tridiagonais Simétricas_, embora seu uso seja relevante para matrizes quaisquer. Abordaremos aspectos mais formais da implementação, como a descrição em código, bem como características de desempenho e acertividade. Por fim, o método será aplicado à solução de um Sistema de EDOs Lineares de Segunda Ordem.
+Neste Exercício Programa, implementamos as _Transformações de Householder_ aplicadas a _Matrizes Reais Simétricas_, de modo a obter uma matriz semelhante tridiagonal simétrica. Além disso, utilizamos o _Algoritmo QR_ implementado no EP anterior para obter os autovalores e autovetores da matriz original, utilizando a saída do algoritmo implementado neste EP. Abordaremos aspectos mais formais da implementação, como a descrição em código, bem como características de desempenho e acertividade. Por fim, o método será aplicado à solução de um Sistema de EDOs Lineares de Segunda Ordem.
 
-Nosso objetivo é, dada uma matriz $A \in \mathbb{R}^{n\times n}$ tridiagonal simétrica, encontrar seus autovalores $\{\lambda_1, \lambda_2, \cdots, \lambda_n\}$ e seus respectivos autovetores $\{\symbf{v}_1, \symbf{v}_2, \cdots, \symbf{v}_n\}$, de forma eficiente e atendendo limites de erro e convergência. Recordamos que, segundo [@Algelin], o Teorema Espectral garante que uma matriz real simétrica é ortogonalmente diagonalizável, todos os seus autovalores são reais e podemos escolher os respectivos autovetores de modo a formar uma base ortonormal do $\mathbb{R}^n$.
+Nosso objetivo é, dada uma matriz $A \in \mathbb{R}^{n\times n}$ real simétrica, encontrar seus autovalores $\{\lambda_1, \lambda_2, \cdots, \lambda_n\}$ e seus respectivos autovetores $\{\symbf{v}_1, \symbf{v}_2, \cdots, \symbf{v}_n\}$, de forma eficiente e atendendo limites de erro e convergência. Recordamos que, segundo [@Algelin], o Teorema Espectral garante que uma matriz real simétrica é ortogonalmente diagonalizável, todos os seus autovalores são reais e podemos escolher os respectivos autovetores de modo a formar uma base ortonormal do $\mathbb{R}^n$.
 
-Na Seção \ref{sec:impl}, detalha-se a implementação do Algoritmo QR em funções. Primeiro, há uma descrição da base matemática que orienta a construção de cada função, acompanhada pelo código e alguns comentários. A execução dos testes propostos é detalhada na Seção \ref{sec:test}, em que se retrata especificamente como foram implementados e o que se espera observar nas variáveis de retorno. Também é descrita a interface de comando (CLI) que acompanha o programa. Ao final, a Seção \ref{sec:results} contém a exibição, análise e discussão dos resultados dos testes, bem como comentários gerais sobre o desempenho do algoritmo. -->
+Na Seção \ref{sec:impl}, detalha-se a implementação do Algoritmo de tridiagonalização. Primeiro, há uma descrição da base matemática que orienta a construção da função, acompanhada pelo código e alguns comentários. A execução dos testes propostos é detalhada na Seção \ref{sec:test}, em que se retrata especificamente como foram implementados e o que se espera observar nas variáveis de retorno. Também é descrita a interface de comando (CLI) que acompanha o programa. Ao final, a Seção \ref{sec:results} contém a exibição, análise e discussão dos resultados dos testes.
 
 ## Ferramentas Utilizadas
 
@@ -89,16 +89,16 @@ Estando o _Python_ atualizado para uma versão compatível, isto é, 3.7.9 ou ma
 
 O arquivo principal deve ser executado no mesmo diretório em que foi descompactado, utilizando o comando `python main.py`. A exibição do terminal deve ser da CLI que acompanha o programa, conforme a Figura \ref{fig:1}.
 
-<!-- \begin{figure}[h]
+\begin{figure}[h]
     \includegraphics[width = \linewidth]{fig_term1.png}
     \centering
     \caption{Exibição inicial da Command Line Interface (CLI) do programa.}
     \label{fig:1}
 \end{figure}
 
-Na visualização principal do programa, deve-se escolher uma entre cinco rotinas de exibição. As 3 primeiras rotinas exibem autovalores, autovetores e outras grandezas relevantes para os 3 testes propostos no enunciado em [@MAP3121]. A quarta rotina permite a diagonalização de uma matriz tridiagonal simétrica arbitrária. Por último, a quinta rotina exibe os gráficos relevantes para cada um dos testes, conforme se esclarecerá em sequência.
+Na visualização principal do programa, deve-se escolher uma entre quatro rotinas de exibição. As 2 primeiras rotinas exibem autovalores, autovetores e outras grandezas relevantes para os 2 testes propostos no enunciado em [@MAP3121]. A terceira rotina exibe autovalores, autovetores e animações relevantes para a aplicação ao problema de treliças planas descrito em [@MAP3121], conforme se esclarecerá em sequência. Por último, a quarta rotina permite a diagonalização de uma matriz real simétrica arbitrária.
 
-Ao escolher a primeira rotina, são exibidos, em sequência, os resultados para o primeiro teste considerando cada especificação do tamanho da matriz. Entre uma execução e outra, deve-se pressionar `[ENTER]` para prosseguir para a próxima entrada, como se observa na Figura \ref{fig:2} abaixo. Desejamos que o usuário possa analisar os autovalores e autovetores das matrizes propostas, bem como comparar a (_grande!_) diferença do número de iterações quando utilizamos ou não o deslocamento espectral.
+Ao escolher a primeira rotina, são exibidos, em sequência, os resultados para cada autovetor da matriz do primeiro teste. Entre uma execução e outra, deve-se pressionar `[ENTER]` para prosseguir para a próxima entrada, como se observa na Figura \ref{fig:2} abaixo. Desejamos que o usuário possa analisar os autovetores da matriz propostas e todas as suas características relevantes.
 
 \begin{figure}[h]
     \includegraphics[height = 10cm]{fig_term2.png}
@@ -109,35 +109,20 @@ Ao escolher a primeira rotina, são exibidos, em sequência, os resultados para 
 
 \pagebreak
 
-A segunda rotina, associada ao teste do sistema de 5 massas e 6 molas, exibe os valores dos coeficientes elásticos de cada mola, a matriz $A$ dos coeficientes do sistema de EDOs $X''(t)+AX(t)=0$ solucionado, bem como a frequência de vibração das massas e seus modos naturais de vibração.
+A segunda rotina exibe as mesmas informações que a primeira, porém considerando a matriz de entrada do teste 2. O que varia, de uma execução para outra, é o tamanho da matriz exibida, bem como a própria matriz a ser diagonalizada.
 
-A terceira rotina exibe as mesmas informações que a segunda, porém considerando o sistema de 10 massas e 11 molas. O que varia, de uma execução para outra, é o tamanho das matrizes exibidas, bem como a matriz a ser diagonalizada.
+A terceira rotina gera, além de informações relevantes à matriz da aplicação proposta no enunciado em [@MAP3121], animações (caso desejado) da treliça com seus nós vibrando aos 5 modos naturais de menor frequência.
 
-A quarta rotina permite ao usuário a inserção de uma matriz tridiagonal simétrica, fornecendo sua diagonal principal e sua sobrediagonal.
+A quarta rotina exibe as mesmas informações que a primeira e a segunda, porém considerando umaa matriz de entrada arbitrária. Ela permite ao usuário a inserção de uma matriz real simétrica, cujos elementos podem ser inseridos manualmente, 1 a 1, ou passados por um arquivo de entrada, com formatação igual à de _input-a_ ou _input-b_.
 
-**Nota:** Ao fornecer as entradas, é essencial que o usuário pressione `[ENTER]` entre uma entrada e outra. Logo, o padrão de digitação deve ser, por exemplo `1 [ENTER] 2 [ENTER]` etc, para garantir que todas as entradas sejam lidas corretamente. Um exemplo de execução está na Figura \ref{fig:4} abaixo.
+**Nota:** Ao fornecer as entradas, é essencial que o usuário pressione `[ENTER]` entre uma entrada e outra. Logo, o padrão de digitação deve ser, por exemplo `1 [ENTER] 2 [ENTER]` etc, para garantir que todas as entradas sejam lidas corretamente. Um exemplo de execução está na Figura \ref{fig:3} abaixo.
 
 \begin{figure}[H]
-    \includegraphics[height = 10cm]{fig_term4.png}
+    \includegraphics[height = 10cm]{fig_term3.png}
     \centering
     \caption{Exemplo de execução ao selecionar a quarta rotina.}
-    \label{fig:4}
+    \label{fig:3}
 \end{figure}
-
-A quinta rotina gera gráficos relevantes aos testes propostos no enunciado em [@MAP3121]. Ao selecioná-la, será pedido um número ao usuário, correspondente ao teste para o qual se deseja gerar os gráficos.
-
-Para o teste 1, são mostrados gráficos do número de iterações até a convergência, para a execução do Algoritmo QR sem e com deslocamento espectral, e da evolução do erro médio, todos em função de $n$, o comprimento da diagonal de $A$.
-
-Para os testes 2 e 3, são mostrados gráficos dos deslocamentos durante os primeiros 10 segundos para todas as massas. É possível também visualizar uma animação das massas e molas, com o desenvolvimento do sistema físico ao longo do tempo.
-
-Apenas para o teste 2, pode-se visualizar também as formas de onda dos deslocamentos avançando no tempo. A fim de evitar poluição visual, essa opção não foi inclusa para o teste 3, dada a grande quantidade de gráficos.
-
-\begin{figure}[H]
-    \includegraphics[height = 10cm]{fig_term5.png}
-    \centering
-    \caption{Exemplo de execução ao selecionar a quinta rotina.}
-    \label{fig:5}
-\end{figure} -->
 
 \newpage
 
@@ -259,8 +244,6 @@ def tridiagonalization(A: np.array) -> Tuple[np.array, np.array, np.array]:
 **\label{code:trid}Código \ref{code:trid}:** Função que implementa a tridiagonalização de uma matriz dada, `A`.
 
 O código segue a descrição formal apresentada anteriormente. A linha 9 define o vetor $\bar{w}_i$ da Tranformação de Householder, $H_{\bar{w}_i}$, de uma dada iteração `i` e o inicializa com $\bar{a}_i$. Sa linhas 11 e 12 adicionam os elementos calculados da diagonal principal e da sua sobrediagonal aos vetores `alphas` e `betas`, respectivamente. A linha 14 modifica o $w_i$ de acordo com a expressão $\bar{w}_i=\bar{a}_i+||\bar{a}_i||\delta e_1$. A linha 15 define uma variável auxiliar `w_i2`, equivalente a $\bar{w}_i\cdot\bar{w}_i$. A linha 17 atualiza a variável `A` para armazenar a submatriz de uma dada iteração. As linhas 19 a 22 executam as multiplicações $H_{\bar{w}_i}\bar{A}H_{\bar{w}_i}$ e $H^TH_{\bar{w}_i}$. As linhas 24 e 25 adicionam os últimos elementos da diagonal principal e da sobrediagonal da matriz resultante em `alphas` e `betas`, respectivamente.
-
-\newpage
 
 ## O Algoritmo QR
 
