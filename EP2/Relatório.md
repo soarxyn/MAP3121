@@ -20,6 +20,7 @@ header-includes: |
     \usepackage{amsmath,amsthm}
     \usepackage{graphicx,cite,enumerate}
     \usepackage[brazil]{babel}
+    \usepackage{nicematrix}
 ---
 
 \begin{titlepage}
@@ -938,6 +939,88 @@ if __name__ == "__main__":
 
 # Resultados e Discussão {#sec:results}
 
+## Resultados para o Teste A
+
+No teste A, desejamos encontrar os autovalores e autovetores da matriz A dada por $$A =
+    \begin{bmatrix}
+        2 & 4 & 1 & 1 \\
+        4 & 2 & 1 & 1 \\
+        1 & 1 & 1 & 2 \\
+        1 & 1 & 2 & 1 
+    \end{bmatrix}
+$$ cujos autovalores são conhecidos e valem 7, 2, -1 e -2. Além disso, devemos verificar se vale a relação autovalor-autovetor, isto é, se para cada autovalor $\lambda_j$ e o correspondente autovetor $\symbf{v}_j$ tem-se $A\symbf{v}_j=\lambda_j\symbf{v}_j$, e realizar o teste de ortogonalidade para a matriz de autovetores $V$.
+
+Pela aplicação das _Transformações de Householder_ à matriz A, obtemos sua forma tridiagonal simétrica semelhante: $$T=HAH^T=
+    \begin{bmatrix}
+        2 & -4.242641 &  &  \\
+        -4.242641 & 3 & 1.414214 &  \\
+         & 1.414214 & 2 & 0 \\
+         &  & 0 & -1 
+\end{bmatrix} $$ em que utilizaremos a matriz $H^T$ como primeira iteração para a matriz de autovetores do Algoritmo QR, pois a matriz de autovetores de $A$, $V$, é dada por $V=H^TV_T$, sendo $V_T$ a matriz de autovetores de $T$ obtida pela execução do Algoritmo QR. Temos que: $$H^T=
+    \begin{bmatrix}
+        1 & 0 & 0 & 0 \\
+        0 & -0.942809 &  0.333333 & 0 \\
+        0 & -0.235702 & -0.666667 & -0.707107 \\
+        0 & -0.235702 & -0.666667 &  0.707107  
+\end{bmatrix}$$ Da execução do Algoritmo QR, encontramos os autovalores da Tabela \ref{table:1} abaixo.
+
+\setlength{\tabcolsep}{18pt}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Autovalor & Esperado & Obtido \\
+        \hline
+        $\lambda_1$ & $ 7,000000000000000$ & $ 7,000000000000002$ \\
+        $\lambda_2$ & $ 2,000000000000000$ & $ 1,999999999999999$ \\
+        $\lambda_3$ & $-1,000000000000000$ & $-1,000000000000000$ \\
+        $\lambda_4$ & $-2,000000000000000$ & $-2,000000000000000$ \\
+        \hline
+    \end{tabular}
+    \caption{Autovalores esperados e obtidos após a execução do Algoritmo.}
+    \label{table:1}
+\end{table}
+
+A matriz de autovetores $V$ de $A$ é dada abaixo: $$V=\begin{pNiceMatrix}[first-row]
+\symbf{v}_1 & \symbf{v}_2 & \symbf{v}_3 & \symbf{v}_4 \\
+0,632456 &  0,707107 &  0,316228 &   0       \\
+0,632456 & -0,707107 &  0,316228 &   0       \\
+0,316228 &  0        & -0,632456 &  -0,707107 \\
+0,316228 &  0        & -0,632456 &   0,707107
+\end{pNiceMatrix}$$
+        
+Podemos realizar o teste de autovalor-autovetor, calculando $A\symbf{v}_j$ e comparando com $\lambda_j\symbf{v}_j$, para cada $j$.
+
+**Para $j=1$**: \begin{align*}
+A\symbf{v}_1= \begin{pmatrix} 4,427189 &  4,427189 &  2,213594 &  2,213594\end{pmatrix}^T \\
+\lambda_1\symbf{v}_1=\begin{pmatrix} 4,427189 &  4,427189 &  2,213594 &  2,213594\end{pmatrix}^T
+\end{align*}
+
+**Para $j=2$**: \begin{align*}
+A\symbf{v}_2=\begin{pmatrix} -1,414214 &  1,414214 & -0 &       -0\end{pmatrix}^T \\
+\lambda_2\symbf{v}_2=\begin{pmatrix} -1,414214 &  1,414214 & -0 &       -0\end{pmatrix}^T
+\end{align*}
+
+**Para $j=3$**: \begin{align*}
+A\symbf{v}_3=\begin{pmatrix} 0,632456 &  0,632456 & -1,264911 & -1,264911\end{pmatrix}^T \\
+\lambda_3\symbf{v}_3=\begin{pmatrix} 0,632456 &  0,632456 & -1,264911 & -1,264911\end{pmatrix}^T
+\end{align*}
+
+**Para $j=4$**: \begin{align*}
+A\symbf{v}_4=\begin{pmatrix}-0 &       -0 &        0,707107 & -0,707107\end{pmatrix}^T \\
+\lambda_4\symbf{v}_4=\begin{pmatrix}-0 &       -0 &        0,707107 & -0,707107\end{pmatrix}^T
+\end{align*}
+
+Por fim, ao executar o teste de ortogonalidade, encontramos: $$VV^T=  \begin{bmatrix}
+ 1, & -0,  & -0, & -0, \\
+-0, &  1,  &  0, &  0, \\
+-0, &  0,  &  1, &  0, \\
+-0, &  0,  &  0, &  1, \\
+    \end{bmatrix}$$     
+
+**Conclusões:** Comparando os resultados esperados e obtidos para os autovalores na \ref{table:1}, observamos alta precisão, sendo o erro entre o valor esperado e obtido para cada autovalor da ordem de $10^{-15}$, suficiente para afirmar que o método convergiu com sucesso e rapidamente. Além disso, das comparações pela definição de autovalor-autovetor, observamos que os autovetores encontrados também são corretos e os valores encontrados tanto pela multiplicação matriz-vetor como escalar-vetor são aproximadamente iguais, considerando alta precisão. Por fim, o teste de ortogonalidade também mostra que $VV^T\rightarrow I$. O erro entrada por entrada de $VV^T$, $VV^T-I$, é da ordem de $10^{-20}$. Consideramos, desta forma, que o algoritmo obteve _sucesso_ em encontrar os autovalores e autovetores de $A$, sendo uma característica de relativo interesse também que a convergência se deu muito rapidamente (apenas **6 iterações** para uma precisão $\epsilon=10^{-7}$)!
+
 ## Resultados para o Teste B
 
 No teste B, desejamos encontrar os autovalores e autovetores da matriz A dada por
@@ -1028,6 +1111,8 @@ $$
         -0. & 0. & 0. & \cdots & 0. & 0. & 1.
     \end{bmatrix}
 $$
+
+\pagebreak
 
 # Referências {-}
 
