@@ -312,6 +312,26 @@ def tridiagonalization(A: np.array) -> Tuple[np.array, np.array, np.array]:
 
 
 def matrix_from_file(filename):
+    """
+        Obtenção de matriz em arquivo
+        --------------------------------------
+        Dado um arquivo `filename`, varre as linhas e monta uma matriz simétrica.
+        Observação: a formatação deve seguir à dos arquivos fornecidos
+        _input-a_ e _input-b_.
+
+        Parâmetros
+        ----------
+
+        filename  :   str
+            Nome do arquivo com a matriz a ser construída.
+
+        Retorna
+        -------
+
+        matrix   :   np.array
+            Matriz real simétrica presente no arquivo de entrada.
+
+    """
     with open(filename, encoding="utf-8") as file:
         matrix_size: int = int(file.readline())
         matrix = np.zeros((matrix_size, matrix_size))
@@ -328,6 +348,12 @@ def matrix_from_file(filename):
 
 
 def teste_1():
+    """"
+        Realiza a rotina de testes para o Teste A. Realiza a tridiagonalização, aplica o Algoritmo QR e mostra autovalores, autovetores, o teste da definição de autovalor-autovetor e teste de ortogonalidade.
+
+        Não há parâmetros nem retorno.
+    """
+
     print(
         """
       >> Você selecionou o teste A proposto pelo relatório.
@@ -396,6 +422,12 @@ def teste_1():
 
 
 def teste_2():
+    """"
+        Realiza a rotina de testes para o Teste B. Realiza a tridiagonalização, aplica o Algoritmo QR e mostra autovalores, autovetores, o teste da definição de autovalor-autovetor e teste de ortogonalidade.
+
+        Não há parâmetros nem retorno.
+    """
+
     print(
         """
       >> Você selecionou o teste B proposto pelo relatório.
@@ -481,6 +513,44 @@ def addBar(
     M: np.array,
     K: np.array,
 ):
+    """
+        Adição das contribuições de rigidez e massa das barras
+        --------------------------------------
+        Dados:
+        os nós `i` e `j`, pontos extremos da barra;
+        o comprimento da barra, `L`;
+        o cosseno e o seno do ângulo que a barra forma com o eixo horizontal, `c` e `s`, respectivamente;
+        o módulo de Young do material, `E`;
+        a densidade do material, `p`;
+        a área de seção transversal da barra, `A`;
+        as matrizes de massas e rigidez do sistema, `M` e `K`, respectivamente,
+        adiciona as contribuições de rigidez e massa da barra ao sistema.
+
+        Parâmetros
+        ----------
+
+        `i` e `j` :   int, int
+            Índices dos nós nos pontos extremos da barra.
+
+        `L`   :   float
+            O comprimento, em metros, da barra.
+
+        `c` e `s`   :   float, float
+            O cosseno e o seno, respectivamente, do ângulo que a barra forma com o eixo horizontal.
+
+        `E`   :   float
+            O módulo de Young, em Pa, do material que compõe a barra.
+
+        `p`   :   float
+            A densidade, em kg/m^3, do material que compõe a barra.
+
+        `A`   :   float
+            A área, em m^2, de seção transversal da barra.
+
+        `M`, `K`   :   np.array, np.array
+            As matrizes de massas e rigidez do sistema de treliças, respectivamente.
+
+    """
     mass_contribution = 0.5 * p * A * L
     M[i] += mass_contribution
 
@@ -495,6 +565,30 @@ def addBar(
 
 
 def truss_from_file(filename):
+    """
+        Obtenção de treliça em arquivo
+        --------------------------------------
+        Dado um arquivo `filename`, varre as linhas e monta as matrizes de massas e
+        rigidez do sistema de nós de uma treliça.
+        Observação: a formatação deve seguir à do arquivo fornecido _input-c_.
+
+        Parâmetros
+        ----------
+
+        filename  :   str
+            Nome do arquivo com as barras da treliça.
+
+        Retorna
+        -------
+
+        (M, K, total_nodes, free_nodes, bars)   :   Tuple[np.array, np.array, int, int, int]
+            Tupla que retorna:
+            as matrizes de massa e rigidez do sistema, `M` e `K`, respectivamente;
+            o número total de nós do sistema, `total_nodes`;
+            o número de nós livres do sistema, `free_nodes`;
+            o número de barras do sistema, `bars`.
+
+    """
     with open(filename, encoding="utf-8") as file:
         total_nodes, free_nodes, _ = map(int, file.readline().split())
         p, A, E = map(float, file.readline().split())
@@ -519,6 +613,12 @@ def truss_from_file(filename):
 
 
 def teste_3():
+    """"
+        Realiza a rotina de testes para a aplicação de Treliças. Realiza a tridiagonalização, aplica o Algoritmo QR e mostra autovalores, autovetores, encontra frequências e modos de vibração.
+        Por fim, cria e exibe a animação da oscilação da treliça.
+
+        Não há parâmetros nem retorno.
+    """
     print(
         """
       >> Você selecionou a Aplicação em Treliças Planas.
@@ -646,6 +746,11 @@ def teste_3():
 
 
 def teste_4():
+    """"
+        Realiza a rotina de testes para o Teste com Matriz Simétrica Arbitrária. Realiza a tridiagonalização, aplica o Algoritmo QR e mostra autovalores, autovetores, o teste da definição de autovalor-autovetor e teste de ortogonalidade.
+
+        Não há parâmetros nem retorno.
+    """
     print(
         """
       >> Você selecionou o Teste com uma Matriz Arbitrária.
@@ -769,6 +874,10 @@ def teste_4():
 import sys
 
 if __name__ == "__main__":
+    """"
+        Função Principal
+    """
+
     np.set_printoptions(
         precision=6, linewidth=250, suppress=True, sign=" ", threshold=10, edgeitems=5
     )
